@@ -1,0 +1,4 @@
+[workspace]
+members = ["crates/z3-toolkit", "crates/z3-toolkit-derive"]
+
+resolver = "2"

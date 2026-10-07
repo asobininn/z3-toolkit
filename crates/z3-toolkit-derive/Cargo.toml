@@ -1,0 +1,7 @@
+[package]
+name = "z3-toolkit-derive"
+authors = ["asobi"]
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
