@@ -4,7 +4,7 @@ use z3_toolkit::prelude::*;
 fn main() {
     let n = 8;
     let s = Solver::new();
-    let q: Vec<Int> = (0..n).map(|_| Int::fresh_const("q")).collect();
+    let q: Vec<Int> = fresh_n("q", n);
 
     constraints! { s;
         for col in &q { col >= 0, col < n },

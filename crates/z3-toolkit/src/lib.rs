@@ -9,11 +9,12 @@ pub mod __private;
 
 pub use engine::{Engine, Failure};
 pub use lin::{dot, sum};
-pub use ty::{ModelExt, Z3Type, bools, ints};
+pub use ty::{Fresh, ModelExt, Z3Type, bools, bools_n, fresh, fresh_n, ints, ints_n};
 pub use z3_toolkit_derive::{constraint, constraints, lin};
 
 pub mod prelude {
     pub use crate::{
-        Engine, Failure, ModelExt, Z3Type, bools, constraint, constraints, dot, ints, lin, sum,
+        Engine, Failure, Fresh, ModelExt, Z3Type, bools, bools_n, constraint, constraints, dot,
+        fresh, fresh_n, ints, ints_n, lin, sum,
     };
 }
