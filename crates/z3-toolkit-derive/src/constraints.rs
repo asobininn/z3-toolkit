@@ -1,9 +1,9 @@
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::{Span, TokenStream, TokenTree};
 use quote::{quote, quote_spanned};
 use syn::{
     BinOp, Expr, ExprBinary, ExprCall, ExprClosure, Ident, Lit, LitStr, Pat, RangeLimits, Result,
     ReturnType, Token, UnOp, braced, parenthesized,
-    parse::{ParseStream, Parser},
+    parse::{ParseStream, Parser, discouraged::Speculative},
     parse2,
     spanned::Spanned,
     token,
@@ -41,6 +41,12 @@ fn peek_ident(input: ParseStream, name: &str) -> bool {
     input.peek(Ident) && input.fork().parse::<Ident>().is_ok_and(|i| i == name)
 }
 
+fn braced_items(input: ParseStream) -> Result<Vec<Item>> {
+    let content;
+    braced!(content in input);
+    parse_items(&content)
+}
+
 fn parse_items(input: ParseStream) -> Result<Vec<Item>> {
     let mut items = Vec::new();
     while !input.is_empty() {
@@ -56,20 +62,6 @@ fn parse_items(input: ParseStream) -> Result<Vec<Item>> {
 }
 
 fn parse_item(input: ParseStream) -> Result<(Item, bool)> {
-    if input.peek(token::Brace) {
-        let fork = input.fork();
-        let _skipped;
-        braced!(_skipped in fork);
-        if peek_ident(&fork, "implies") {
-            let lhs = braced_items(input)?;
-            let kw: Ident = input.parse()?;
-            if !input.peek(token::Brace) {
-                return Err(syn::Error::new(kw.span(), IMPLIES_HELP));
-            }
-            let rhs = braced_items(input)?;
-            return Ok((Item::Implies(lhs, rhs), true));
-        }
-    }
     if input.peek(Token![for]) {
         input.parse::<Token![for]>()?;
         let pat = Pat::parse_multi_with_leading_vert(input)?;
@@ -85,8 +77,139 @@ fn parse_item(input: ParseStream) -> Result<(Item, bool)> {
     if input.peek(LitStr) && input.peek2(Token![:]) {
         let label: LitStr = input.parse()?;
         input.parse::<Token![:]>()?;
-        let item = parse_leaf(input)?;
-        return Ok((Item::Label(label, Box::new(item)), false));
+        let (item, block_like) = parse_or(input)?;
+        return Ok((Item::Label(label, Box::new(item)), block_like));
+    }
+    parse_or(input)
+}
+
+fn parse_if(input: ParseStream) -> Result<Item> {
+    input.parse::<Token![if]>()?;
+    let cond = Expr::parse_without_eager_brace(input)?;
+    let then = braced_items(input)?;
+    let els = if input.peek(Token![else]) {
+        input.parse::<Token![else]>()?;
+        if input.peek(Token![if]) {
+            Some(vec![parse_if(input)?])
+        } else {
+            Some(braced_items(input)?)
+        }
+    } else {
+        None
+    };
+    Ok(Item::If(cond, then, els))
+}
+
+// `expr`, `x in iter()`
+fn parse_leaf(input: ParseStream) -> Result<Item> {
+    let expr: Expr = input.parse()?;
+    if input.peek(Token![in]) {
+        input.parse::<Token![in]>()?;
+        let rhs: Expr = input.parse()?;
+        return Ok(Item::Member(expr, rhs));
+    }
+    if peek_ident(input, "implies") {
+        return Err(input.error(IMPLIES_HELP));
+    }
+    if !input.is_empty() {
+        return Err(input.error("expected `,`, `&&` or `||` after a constraint"));
+    }
+    Ok(Item::Leaf(expr))
+}
+
+fn at_boundary(input: ParseStream) -> bool {
+    input.is_empty() || input.peek(Token![,]) || input.peek(Token![&&]) || input.peek(Token![||])
+}
+
+fn parse_atom(input: ParseStream) -> Result<Item> {
+    let mut ts = TokenStream::new();
+    while !at_boundary(input) {
+        ts.extend([input.parse::<TokenTree>()?]);
+    }
+    if ts.is_empty() {
+        return Err(input.error("expected a constraint"));
+    }
+    Parser::parse2(parse_leaf, ts)
+}
+
+fn chain(
+    input: ParseStream,
+    kind: fn() -> GroupKind,
+    peek: fn(ParseStream) -> bool,
+    eat: fn(ParseStream) -> Result<()>,
+    next: fn(ParseStream) -> Result<(Item, bool)>,
+) -> Result<(Item, bool)> {
+    let (first, mut block_like) = next(input)?;
+    if !peek(input) {
+        return Ok((first, block_like));
+    }
+    let mut terms = vec![first];
+    while peek(input) {
+        eat(input)?;
+        let (t, b) = next(input)?;
+        terms.push(t);
+        block_like = b;
+    }
+    Ok((Item::Group(kind(), terms), block_like))
+}
+
+fn parse_or(input: ParseStream) -> Result<(Item, bool)> {
+    chain(
+        input,
+        || GroupKind::Any,
+        |i| i.peek(Token![||]),
+        |i| i.parse::<Token![||]>().map(drop),
+        parse_and,
+    )
+}
+
+fn parse_and(input: ParseStream) -> Result<(Item, bool)> {
+    chain(
+        input,
+        || GroupKind::All,
+        |i| i.peek(Token![&&]),
+        |i| i.parse::<Token![&&]>().map(drop),
+        parse_unary,
+    )
+}
+
+fn parse_unary(input: ParseStream) -> Result<(Item, bool)> {
+    if input.peek(Token![!]) {
+        input.parse::<Token![!]>()?;
+        let (inner, block_like) = parse_unary(input)?;
+        return Ok((Item::Group(GroupKind::Not, vec![inner]), block_like));
+    }
+    parse_primary(input)
+}
+
+fn parse_primary(input: ParseStream) -> Result<(Item, bool)> {
+    // `(` or `)`
+    if input.peek(token::Paren) {
+        let fork = input.fork();
+        let content;
+        parenthesized!(content in fork);
+        let inner = parse_or(&content).ok().filter(|_| content.is_empty());
+        if let Some((item, _)) = inner {
+            if at_boundary(&fork) {
+                input.advance_to(&fork);
+                return Ok((item, false));
+            }
+        }
+    }
+    // ` { p } implies { q }`
+    if input.peek(token::Brace) {
+        let fork = input.fork();
+        let _skipped;
+        braced!(_skipped in fork);
+        if peek_ident(&fork, "implies") {
+            let lhs = braced_items(input)?;
+            let kw: Ident = input.parse()?;
+            if !input.peek(token::Brace) {
+                return Err(syn::Error::new(kw.span(), IMPLIES_HELP));
+            }
+            let rhs = braced_items(input)?;
+            return Ok((Item::Implies(lhs, rhs), true));
+        }
     }
     if input.peek(Ident) {
         let fork = input.fork();
@@ -140,44 +263,7 @@ fn parse_item(input: ParseStream) -> Result<(Item, bool)> {
             _ => {}
         }
     }
-    Ok((parse_leaf(input)?, false))
-}
-
-fn braced_items(input: ParseStream) -> Result<Vec<Item>> {
-    let content;
-    braced!(content in input);
-    parse_items(&content)
-}
-
-fn parse_if(input: ParseStream) -> Result<Item> {
-    input.parse::<Token![if]>()?;
-    let cond = Expr::parse_without_eager_brace(input)?;
-    let then = braced_items(input)?;
-    let els = if input.peek(Token![else]) {
-        input.parse::<Token![else]>()?;
-        if input.peek(Token![if]) {
-            Some(vec![parse_if(input)?])
-        } else {
-            Some(braced_items(input)?)
-        }
-    } else {
-        None
-    };
-    Ok(Item::If(cond, then, els))
-}
-
-// `expr`, `x in iter()`
-fn parse_leaf(input: ParseStream) -> Result<Item> {
-    let expr: Expr = input.parse()?;
-    if input.peek(Token![in]) {
-        input.parse::<Token![in]>()?;
-        let rhs: Expr = input.parse()?;
-        return Ok(Item::Member(expr, rhs));
-    }
-    if peek_ident(input, "implies") {
-        return Err(input.error(IMPLIES_HELP));
-    }
-    Ok(Item::Leaf(expr))
+    Ok((parse_atom(input)?, false))
 }
 
 // ==== Leaf rewriting: only the top-level comparsion/logic operators become z3 operators ====
@@ -396,8 +482,16 @@ impl Builder {
             }
             Item::Label(lit, inner) => match labels {
                 Some(l) => {
-                    let b = leaf_bool(inner);
-                    quote!(#l.push((::std::string::String::from(#lit), #b));)
+                    let (v, body) = self.collect(std::slice::from_ref(&**inner));
+                    quote!({
+                        #[allow(unused_mut)]
+                        let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                        #body
+                        #l.push((
+                            ::std::string::String::from(#lit),
+                            ::z3_toolkit::__private::and(#v),
+                        ));
+                    })
                 }
                 None => syn::Error::new(
                     lit.span(),
