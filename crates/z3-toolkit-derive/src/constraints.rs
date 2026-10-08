@@ -206,6 +206,21 @@ fn as_sum_by(call: &ExprCall) -> Option<(&Expr, &ExprClosure)> {
     }
 }
 
+fn as_lifted_call(call: &ExprCall) -> Option<&'static str> {
+    {
+        let Expr::Path(p) = &*call.func else {
+            return None;
+        };
+        let name = match () {
+            _ if p.path.is_ident("abs") && call.args.len() == 1 => "abs",
+            _ if p.path.is_ident("max") && call.args.len() == 2 => "max",
+            _ if p.path.is_ident("min") && call.args.len() == 2 => "min",
+            _ => return None,
+        };
+        Some(name)
+    }
+}
+
 /// Whether the value itself is arithmetic
 fn is_arith(expr: &Expr) -> bool {
     match strip(expr) {
@@ -215,7 +230,7 @@ fn is_arith(expr: &Expr) -> bool {
             b.op,
             BinOp::Add(_) | BinOp::Sub(_) | BinOp::Mul(_) | BinOp::Div(_) | BinOp::Rem(_)
         ),
-        Expr::Call(c) => as_sum_by(c).is_some(),
+        Expr::Call(c) => as_sum_by(c).is_some() || as_lifted_call(c).is_some(),
         _ => false,
     }
 }
@@ -250,6 +265,11 @@ fn operand(expr: &Expr, arith: bool) -> TokenStream {
             let (cap, inputs) = (&cl.capture, &cl.inputs);
             let body = operand(&cl.body, true);
             quote_spanned!(c.span()=> ::z3_toolkit::__private::sum_by(#iter, #cap |#inputs| #body))
+        }
+        Expr::Call(c) if as_lifted_call(c).is_some() => {
+            let f = Ident::new(as_lifted_call(c).unwrap(), c.func.span());
+            let args = c.args.iter().map(|e| operand(e, true));
+            quote_spanned!(c.span()=> ::z3_toolkit::#f(#(#args),*))
         }
         _ if arith => quote_spanned!(expr.span()=> ::z3_toolkit::__private::Arith::arith(&(#expr))),
         _ => quote_spanned!(expr.span()=> ::z3_toolkit::__private::Operand::operand(&(#expr))),

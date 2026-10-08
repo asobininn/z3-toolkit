@@ -26,3 +26,18 @@ where
         .map(|(x, y)| x.arith() * y.arith())
         .sum()
 }
+
+pub fn abs(x: impl Arith) -> Int {
+    let x = x.arith();
+    x.lt(0).ite(&-&x, &x)
+}
+
+pub fn max(lhs: impl Arith, rhs: impl Arith) -> Int {
+    let (lhs, rhs) = (lhs.arith(), rhs.arith());
+    lhs.ge(&rhs).ite(&lhs, &rhs)
+}
+
+pub fn min(lhs: impl Arith, rhs: impl Arith) -> Int {
+    let (lhs, rhs) = (lhs.arith(), rhs.arith());
+    lhs.le(&rhs).ite(&lhs, &rhs)
+}
