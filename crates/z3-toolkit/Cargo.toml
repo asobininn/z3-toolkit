@@ -6,3 +6,4 @@ edition = "2024"
 
 [dependencies]
 z3 = "^0.21"
+z3-toolkit-derive = { path = "../z3-toolkit-derive" }
