@@ -3,6 +3,10 @@ use z3::ast::Int;
 use crate::__private::Arith;
 
 /// todo
+///
+/// ## Examples
+/// ```
+/// ```
 pub fn sum<I>(items: I) -> Int
 where
     I: IntoIterator,
@@ -12,6 +16,10 @@ where
 }
 
 /// todo
+///
+/// ## Examples
+/// ```
+/// ```
 pub fn dot<L, R>(lhs: L, rhs: R) -> Int
 where
     L: IntoIterator,
@@ -27,16 +35,31 @@ where
         .sum()
 }
 
+/// todo
+///
+/// ## Examples
+/// ```
+/// ```
 pub fn abs(x: impl Arith) -> Int {
     let x = x.arith();
     x.lt(0).ite(&-&x, &x)
 }
 
+/// todo
+///
+/// ## Examples
+/// ```
+/// ```
 pub fn max(lhs: impl Arith, rhs: impl Arith) -> Int {
     let (lhs, rhs) = (lhs.arith(), rhs.arith());
     lhs.ge(&rhs).ite(&lhs, &rhs)
 }
 
+/// todo
+///
+/// ## Examples
+/// ```
+/// ```
 pub fn min(lhs: impl Arith, rhs: impl Arith) -> Int {
     let (lhs, rhs) = (lhs.arith(), rhs.arith());
     lhs.le(&rhs).ite(&lhs, &rhs)

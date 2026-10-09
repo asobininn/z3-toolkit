@@ -2,6 +2,12 @@ use proc_macro::TokenStream;
 
 mod constraints;
 
+/// todo
+/// 
+/// ## Examples
+/// ```
+/// constraint!()
+/// ```
 #[proc_macro]
 pub fn constraint(input: TokenStream) -> TokenStream {
     constraints::constraint(input.into())
@@ -9,6 +15,12 @@ pub fn constraint(input: TokenStream) -> TokenStream {
         .into()
 }
 
+/// todo
+/// 
+/// ## Examples
+/// ```
+/// constraints! {}
+/// ```
 #[proc_macro]
 pub fn constraints(input: TokenStream) -> TokenStream {
     constraints::constraints(input.into())
@@ -16,6 +28,12 @@ pub fn constraints(input: TokenStream) -> TokenStream {
         .into()
 }
 
+/// todo
+/// 
+/// ## Examples
+/// ```
+/// 
+/// ```
 #[proc_macro]
 pub fn lin(input: TokenStream) -> TokenStream {
     constraints::lin(input.into())

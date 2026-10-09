@@ -7,9 +7,12 @@ use z3::{
 
 const LABEL_PREFIX: &str = "z3-toolkit:";
 
+/// Why [`Engine::solve`] returned no model.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Failure {
+    /// `core`: labels of the conflicting labeled constraint. Unlabeled ones not appear.
     Unsat { core: Vec<String> },
+    /// Giveup  (timeout, incompletness, ..), or `Sat` without a model.
     Unknown { reason: String },
 }
 
@@ -25,7 +28,7 @@ impl std::fmt::Display for Failure {
 
 impl std::error::Error for Failure {}
 
-/// Operations Common to `Solver` and `Optimize`
+/// Common ops of `Solver` / `Optimize`. Usually driven by [`constraints!`].
 pub trait Engine {
     fn assert_one(&self, constraint: &Bool);
     fn assert_tracked(&self, constraint: &Bool, tracker: &Bool);
@@ -44,11 +47,23 @@ pub trait Engine {
         }
     }
 
+    /// Tracked so that `label` shows up in [`Failure::Unsat`]'s core.
     fn assert_labeled(&self, label: &str, constraint: &Bool) {
         let tracker = Bool::new_const(format!("{LABEL_PREFIX}{label}"));
         self.assert_tracked(constraint, &tracker);
     }
 
+    /// `check_sat` + model as a `Result`.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::Solver; use z3_toolkit::prelude::*;
+    /// let [x] = ints("x");
+    /// let s = Solver::new();
+    /// constraints! { s; "low": x > 5, "high": x < 3 };
+    /// let Err(Failure::Unsat { core }) = s.solve() else { panic!() };
+    /// # assert_eq!(core.len(), 2);
+    /// ```
     fn solve(&self) -> Result<Model, Failure> {
         match self.check_sat() {
             SatResult::Sat => self.model().ok_or_else(|| Failure::Unknown {

@@ -3,11 +3,11 @@ use z3::{
     ast::{Bool, Int},
 };
 
-/// Linking Rust and Z3 types
+/// Rust type ↔ Z3 type: `bool` ↔ `Bool`, `i64` ↔ `Int`, nested in `Vec` / `[T; N]`.
 pub trait Z3Type: Sized {
     type Repr;
 
-    /// Extract values from the model
+    /// Extract values from the model. Unconstrained variables get a default.
     fn eval(model: &Model, repr: &Self::Repr) -> Option<Self>;
 }
 
@@ -40,7 +40,7 @@ impl<T: Z3Type, const N: usize> Z3Type for [T; N] {
     }
 }
 
-/// todo
+/// Shapes [`fresh`] can create: `Int`, `Bool`, `[T; N]`, and tuples up to 4.
 pub trait Fresh: Sized {
     fn fresh(prefix: &str) -> Self;
 }
@@ -77,40 +77,87 @@ fresh_tuple!(T1, T2);
 fresh_tuple!(T1, T2, T3);
 fresh_tuple!(T1, T2, T3, T4);
 
-/// todo
+/// Fresh constants shaped by `T`. Names not collide, even with the same prefix.
+///
+/// ## Examples
+/// ```
+/// # use z3::ast::{Bool, Int}; use z3_toolkit::fresh;
+/// let (grid, flag): ([[Int; 3]; 3], Bool) = fresh("g");
+/// ```
 pub fn fresh<T: Fresh>(prefix: &str) -> T {
     T::fresh(prefix)
 }
 
-/// todo
+/// [`fresh`] with a runtime length.
+///
+/// ## Examples
+/// ```
+/// # use z3::ast::Int; use z3_toolkit::fresh_n;
+/// let rows: Vec<[Int; 2]> = fresh_n("r", 5);
+/// ```
 pub fn fresh_n<T: Fresh>(prefix: &str, len: usize) -> Vec<T> {
     std::iter::repeat_with(|| T::fresh(prefix))
         .take(len)
         .collect()
 }
 
-/// todo
+/// `N` fresh `Int`s. Destructure to name them.
+///
+/// ## Examples
+/// ```
+/// # use z3_toolkit::ints;
+/// let [x, y, z] = ints("v");
+/// ```
 pub fn ints<const N: usize>(prefix: &str) -> [Int; N] {
     fresh(prefix)
 }
 
-/// todo
+/// `N` fresh `Bool`s. Destructure to name them.
+///
+/// ## Examples
+/// ```
+/// # use z3_toolkit::bools;
+/// let [p, q] = bools("p");
+/// ```
 pub fn bools<const N: usize>(prefix: &str) -> [Bool; N] {
     fresh(prefix)
 }
 
-/// todo
+/// [`ints`] with a runtime length.
+///
+/// ## Examples
+/// ```
+/// # use z3_toolkit::ints_n;
+/// let q = ints_n("q", 5);
+/// ```
 pub fn ints_n(prefix: &str, len: usize) -> Vec<Int> {
     fresh_n(prefix, len)
 }
 
-/// todo
+/// [`bools`] with a runtime length.
+///
+/// ## Examples
+/// ```
+/// # use z3_toolkit::bools_n;
+/// let picks = bools_n("pick", 5);
+/// ```
 pub fn bools_n(prefix: &str, len: usize) -> Vec<Bool> {
     fresh_n(prefix, len)
 }
 
-/// Extract values from the model
+/// Typed readback from a `Model`.
 pub trait ModelExt {
+    /// `None` if a value doesn't fit in `T` (e.g. outside `i64`).
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::Solver; use z3_toolkit::prelude::*;
+    /// let xs = ints_n("x", 2);
+    /// let s = Solver::new();
+    /// constraints! { s; xs[0] == 1, xs[1] == 2 };
+    /// let m = s.solve().unwrap();
+    /// assert_eq!(m.get::<Vec<i64>>(&xs), Some(vec![1, 2]));
+    /// ```
     fn get<T: Z3Type>(&self, repr: &T::Repr) -> Option<T>;
 }
 
