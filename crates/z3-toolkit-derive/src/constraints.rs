@@ -189,11 +189,11 @@ fn parse_primary(input: ParseStream) -> Result<(Item, bool)> {
         let content;
         parenthesized!(content in fork);
         let inner = parse_or(&content).ok().filter(|_| content.is_empty());
-        if let Some((item, _)) = inner {
-            if at_boundary(&fork) {
-                input.advance_to(&fork);
-                return Ok((item, false));
-            }
+        if let Some((item, _)) = inner
+            && at_boundary(&fork)
+        {
+            input.advance_to(&fork);
+            return Ok((item, false));
         }
     }
     // ` { p } implies { q }`
