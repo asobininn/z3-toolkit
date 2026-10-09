@@ -7,4 +7,4 @@
 | [n_queen](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/n_queen.rs) | Place 8 queens so that none attack each other. |
 | [knapsack](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/knapsack.rs) | Pack the most valuable items under a weight limit. |
 
-Run one with `cargo run z3-toolkit --example <name>`.
+Run one with `cargo run -p z3-toolkit --example <name>`.
