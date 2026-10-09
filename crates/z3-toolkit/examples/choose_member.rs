@@ -5,7 +5,7 @@
 //! - Alex and Ethan never work together,
 //! - and at least one member writes Rust.
 
-use z3::{ast::Bool, Optimize};
+use z3::{Optimize, ast::Bool};
 use z3_toolkit::prelude::*;
 
 struct Member<'a> {
@@ -54,10 +54,8 @@ fn main() -> Result<(), Failure> {
     opt.maximize(&power);
 
     let model = opt.solve()?;
-    for member in &team {
-        if model.get::<bool>(&member.pick) == Some(true) {
-            println!("{}", member.name);
-        }
+    for member in team.iter().filter(|m| model.get(&m.pick) == Some(true)) {
+        println!("{}", member.name);
     }
     Ok(())
 }

@@ -24,29 +24,26 @@ struct Knapsack<'a> {
 
 impl<'a> Knapsack<'a> {
     fn solve(&self) -> Result<Solution<'_>, Failure> {
-        let picks = ints_n("x", self.items.len());
+        let picks = bools_n("pick", self.items.len());
         let weight = dot(self.items.iter().map(|i| i.weight), &picks);
         let value = dot(self.items.iter().map(|i| i.value), &picks);
 
         let opt = Optimize::new();
-        constraints! { opt;
-            for x in &picks { x in 0..=1 },
-            weight <= self.capacity,
-        };
+        constraints! { opt; weight <= self.capacity };
         opt.maximize(&value);
 
         let m = opt.solve()?;
-        let taken = m.get::<Vec<i64>>(&picks).ok_or_else(out_of_range)?;
+        let taken: Vec<bool> = m.get(&picks).ok_or_else(out_of_range)?;
         Ok(Solution {
             chosen: self
                 .items
                 .iter()
-                .zip(&taken)
-                .filter(|&(_, &t)| t == 1)
+                .zip(taken)
+                .filter(|(_, t)| *t)
                 .map(|(i, _)| i)
                 .collect(),
-            total_value: m.get::<i64>(&value).ok_or_else(out_of_range)?,
-            total_weight: m.get::<i64>(&weight).ok_or_else(out_of_range)?,
+            total_value: m.get(&value).ok_or_else(out_of_range)?,
+            total_weight: m.get(&weight).ok_or_else(out_of_range)?,
         })
     }
 }
