@@ -1,8 +1,14 @@
 [package]
 name = "z3-toolkit"
-authors = ["asobi"]
-version = "0.1.0"
-edition = "2024"
+description = "An ergonomic constraint DSL for the [`z3`] crate."
+readme = "../../README.md"
+keywords = ["z3", "smt", "dsl", "constraints"]
+categories = ["science", "mathematics"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
 
 [dependencies]
 z3 = "^0.21"

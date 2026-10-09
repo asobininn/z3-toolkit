@@ -1,8 +1,12 @@
 [package]
 name = "z3-toolkit-derive"
-authors = ["asobi"]
-version = "0.1.0"
-edition = "2024"
+description = "Procedural macros for z3-toolkit."
+readme = "../../README.md"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
 
 [lib]
 proc-macro = true

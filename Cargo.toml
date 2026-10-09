@@ -1,4 +1,10 @@
 [workspace]
 members = ["crates/z3-toolkit", "crates/z3-toolkit-derive"]
-
 resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["asobi"]
+license = "MIT"
+repository = "https://github.com/asobininn/z3-toolkit"
