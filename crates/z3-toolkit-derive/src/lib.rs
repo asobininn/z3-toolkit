@@ -2,11 +2,15 @@ use proc_macro::TokenStream;
 
 mod constraints;
 
-/// todo
-/// 
+/// Same syntax as [`constraints!`], but returns one ANDed `Bool` instead of asserting.
+///
+/// Labels are not allowed here.
+///
 /// ## Examples
 /// ```
-/// constraint!()
+/// # use z3_toolkit::prelude::*;
+/// let [x, y] = ints("v");
+/// let c = constraint!(x < y, x in 0..10);
 /// ```
 #[proc_macro]
 pub fn constraint(input: TokenStream) -> TokenStream {
@@ -15,12 +19,33 @@ pub fn constraint(input: TokenStream) -> TokenStream {
         .into()
 }
 
-/// todo
-/// 
+/// Asserts constraints into a `Solver` / `Optimize`
+///
 /// ## Examples
 /// ```
-/// constraints! {}
+/// # use z3::Solver; use z3_toolkit::prelude::*;
+/// let q = ints_n("q", 4);
+/// let s = Solver::new();
+/// constraints! { s;
+///     for c in &q { c in 0..4 },
+///     distinct(q.iter()),
+///     for i in 0..4 { for j in i + 1..4 { abs(q[i] - q[j]) != j - i } }
+/// }
+/// # assert!(s.solve().is_ok());
 /// ```
+///
+/// ## Items
+/// - `x < y`, `p == q`, `!p`, `p && q`, `p || q`: only the top-level operators are translated
+/// - `2 * x + 1`, `sum(xs, |v| e)`, `abs` / `max` / `min`: Rust ints are lifted, `Bool` is 0/1
+/// - `x in 1..=3`, `x in [2, 5]`, `x in iter`
+/// - `all { .. }`, `any { .. }`, `not { .. }`
+/// - `{ p } implies { q }`
+/// - `exactly(k) { .. }`, `at_most(k) { .. }`, `at_least(k) { .. }`
+/// - `distinct(iter)`
+/// - `for` / `if`: plain Rust, unrolled at runtime
+/// - `"label": item`: named in the unsat core. Not inside logic blocks (`all`, `implies`, ..).
+///
+/// `,` is optional after an item ending with `}`.
 #[proc_macro]
 pub fn constraints(input: TokenStream) -> TokenStream {
     constraints::constraints(input.into())
@@ -28,11 +53,14 @@ pub fn constraints(input: TokenStream) -> TokenStream {
         .into()
 }
 
-/// todo
-/// 
+/// Arithmetic expression → `Int`, with the same lifting rules as [`constraints!`].
+///
 /// ## Examples
 /// ```
-/// 
+/// # use z3::Optimize; use z3_toolkit::prelude::*;
+/// let ([x], [p]) = (ints("x"), bools("p"));
+/// let opt = Optimize::new();
+/// opt.maximize(&lin!(3 * p - x));
 /// ```
 #[proc_macro]
 pub fn lin(input: TokenStream) -> TokenStream {
