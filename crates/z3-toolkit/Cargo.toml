@@ -1,6 +1,6 @@
 [package]
 name = "z3-toolkit"
-description = "An ergonomic constraint DSL for the [`z3`] crate."
+description = "An ergonomic constraint DSL for the z3 crate."
 readme = "../../README.md"
 keywords = ["z3", "smt", "dsl", "constraints"]
 categories = ["science", "mathematics"]
