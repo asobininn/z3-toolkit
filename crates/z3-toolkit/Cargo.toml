@@ -12,4 +12,4 @@ license.workspace = true
 
 [dependencies]
 z3 = "^0.21"
-z3-toolkit-derive = { path = "../z3-toolkit-derive" }
+z3-toolkit-derive = { path = "../z3-toolkit-derive", version = "0.1.0" }
