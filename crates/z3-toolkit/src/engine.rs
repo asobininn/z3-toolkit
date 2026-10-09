@@ -1,8 +1,8 @@
-use std::borrow::Borrow;
+use std::{borrow::Borrow, iter::FusedIterator};
 
 use z3::{
     Model, Optimize, SatResult, Solver,
-    ast::{Ast, Bool},
+    ast::{Ast, Bool, Dynamic},
 };
 
 const LABEL_PREFIX: &str = "z3-toolkit:";
@@ -86,6 +86,25 @@ pub trait Engine {
             }),
         }
     }
+
+    /// Every solution, as an iterator of models.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::{ Model, Solver, ast::Int }; use z3_toolkit::prelude::*;
+    /// let [x, y] = ints("v");
+    /// let s = Solver::new();
+    /// constraints! { s; x in 0..3, y in 0..3, x < y };
+    /// let res: Vec<Result<Model, Failure>> = s.solve_all::<Int>().collect();
+    /// assert_eq!(res.into_iter().flatten().count(), 3);
+    /// ```
+    fn solve_all<'a, A: Ast + Clone + 'a>(&self) -> Solutions<'_, Self> {
+        Solutions {
+            engine: self,
+            vars: None,
+            done: false,
+        }
+    }
 }
 
 impl Engine for Solver {
@@ -129,3 +148,71 @@ impl Engine for Optimize {
         self.get_reason_unknown()
     }
 }
+
+/// Iterator returned by [`Engine::solve_all`]
+pub struct Solutions<'a, E: ?Sized> {
+    engine: &'a E,
+    vars: Option<Vec<Dynamic>>,
+    done: bool,
+}
+
+impl<E: ?Sized> Solutions<'_, E> {
+    /// Compare only `vars` when blocking, so other constants don't make new solutions.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::{Solver, ast::Int}; use z3_toolkit::prelude::*;
+    /// let [x, y] = ints("v");
+    /// let s = Solver::new();
+    /// constraints! { s; x in 0..3, y in 0..3 }
+    /// assert_eq!(s.solve_all::<Int>().over([&x]).count(), 3);
+    /// ```
+    pub fn over<'a, A: Ast + 'a>(mut self, vars: impl IntoIterator<Item = &'a A>) -> Self {
+        self.vars = Some(vars.into_iter().map(|v| Dynamic::from_ast(v)).collect());
+        self
+    }
+}
+
+fn differs_all(model: &Model) -> Bool {
+    let ne: Vec<Bool> = model
+        .iter()
+        .filter(|d| d.arity() == 0 && !d.name().starts_with(LABEL_PREFIX))
+        .map(|d| {
+            let c = d.apply(&[]);
+            c.ne(model
+                .eval(&c, true)
+                .expect("model can evalute its own constants"))
+        })
+        .collect();
+    Bool::or(&ne)
+}
+
+impl<E: Engine + ?Sized> Iterator for Solutions<'_, E> {
+    type Item = Result<Model, Failure>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.done {
+            return None;
+        }
+        match self.engine.solve() {
+            Ok(m) => {
+                let block = match &self.vars {
+                    Some(vars) => crate::differs(&m, vars),
+                    None => differs_all(&m),
+                };
+                self.engine.assert_one(&block);
+                Some(Ok(m))
+            }
+            Err(Failure::Unsat { .. }) => {
+                self.done = true;
+                None
+            }
+            Err(e) => {
+                self.done = true;
+                Some(Err(e))
+            }
+        }
+    }
+}
+
+impl<E: Engine + ?Sized> FusedIterator for Solutions<'_, E> {}

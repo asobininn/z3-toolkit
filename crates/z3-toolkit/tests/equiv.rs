@@ -1,6 +1,6 @@
 use z3::{
     Optimize, SatResult, Solver,
-    ast::{Bool, Int},
+    ast::{Bool, Dynamic, Int},
 };
 use z3_toolkit::prelude::*;
 
@@ -215,4 +215,51 @@ fn differs_semantics() {
     for (name, lhs, rhs) in &cases {
         assert!(equiv(lhs, rhs), "{name}")
     }
+}
+
+#[test]
+fn solve_all_works() {
+    let [x] = ints("x");
+    let s = Solver::new();
+    constraints! { s; x in 0..3, "label": x >= 0 }
+    assert_eq!(s.solve_all::<Int>().count(), 3);
+    assert_eq!(s.solve_all::<Int>().count(), 0);
+    // over
+    let [y] = ints("y");
+    let s = Solver::new();
+    constraints! { s; x in 0..3, y in 0..3 }
+    assert_eq!(s.solve_all::<Int>().over([&x]).count(), 3);
+    // `Optimize` yields the best first
+    let opt = Optimize::new();
+    constraints! { opt; x in 0..3 }
+    opt.maximize(&x);
+    let order: Vec<i64> = opt
+        .solve_all::<Int>()
+        .map(|m| m.unwrap().get(&x).unwrap())
+        .collect();
+    assert_eq!(order, [2, 1, 0]);
+}
+
+#[test]
+fn sove_all_reports_unknown_once() {
+    struct GiveUp;
+    impl Engine for GiveUp {
+        fn assert_one(&self, _: &Bool) {}
+        fn assert_tracked(&self, _: &Bool, _: &Bool) {}
+        fn check_sat(&self) -> SatResult {
+            SatResult::Unknown
+        }
+        fn model(&self) -> Option<z3::Model> {
+            None
+        }
+        fn unsat_core(&self) -> Vec<Bool> {
+            Vec::new()
+        }
+        fn reason_unknown(&self) -> Option<String> {
+            Some("test".to_owned())
+        }
+    }
+    let mut it = GiveUp.solve_all::<Dynamic>();
+    assert!(matches!(it.next(), Some(Err(Failure::Unknown { .. }))));
+    assert!(it.next().is_none());
 }
