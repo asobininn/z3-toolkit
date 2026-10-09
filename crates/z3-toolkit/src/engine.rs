@@ -28,7 +28,7 @@ impl std::fmt::Display for Failure {
 
 impl std::error::Error for Failure {}
 
-/// Common ops of `Solver` / `Optimize`. Usually driven by [`constraints!`].
+/// Common ops of `Solver` / `Optimize`. Usually driven by [`constraints!`](crate::constraints).
 pub trait Engine {
     fn assert_one(&self, constraint: &Bool);
     fn assert_tracked(&self, constraint: &Bool, tracker: &Bool);

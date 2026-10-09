@@ -1,3 +1,16 @@
+//! An ergonomic constraint DSL for the [`z3`] crate.
+//!
+//! It keeps z3's own `Int`, `Bool`, `Solver` and `Optimize`, and adds one-line variable
+//! declarations, linear helpers, solution enumeration, and typed readback around them.
+//! Only `bool` / `i64` (Z3 `Bool` / `Int`) are supported for now.
+//!
+//! ## Example
+//!
+#![doc = concat!("```\n", include_str!("../examples/choose_member.rs"), "```")]
+//!
+//! ## More examples
+#![doc = include_str!("../examples.md")]
+
 extern crate self as z3_toolkit;
 
 mod engine;
