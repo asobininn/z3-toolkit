@@ -192,3 +192,27 @@ fn semantics() {
         assert!(equiv(lhs, rhs), "{name}")
     }
 }
+
+#[test]
+fn differs_semantics() {
+    let [x, y] = ints("x");
+    let [p, q] = bools("p");
+    let xs: [Int; 2] = fresh("xs");
+    let s = Solver::new();
+    constraints! { s; x == 1, y == 2, xs[0] == 3, xs[1] == 4, p, !q }
+    let m = s.solve().unwrap();
+
+    let cases: Vec<(&str, Bool, Bool)> = vec![
+        ("int", differs(&m, [&x, &y]), constraint!(x != 1 || y != 2)),
+        ("bool", differs(&m, [&p, &q]), constraint!(!p || q)),
+        ("empty", differs::<Int>(&m, []), Bool::from_bool(false)),
+        (
+            "iter",
+            constraint!(differs(&m, xs.iter())),
+            constraint!(xs[0] != 3 || xs[1] != 4),
+        ),
+    ];
+    for (name, lhs, rhs) in &cases {
+        assert!(equiv(lhs, rhs), "{name}")
+    }
+}
