@@ -307,6 +307,22 @@ fn as_lifted_call(call: &ExprCall) -> Option<&'static str> {
     }
 }
 
+fn is_differs(call: &ExprCall) -> bool {
+    matches!(&*call.func, Expr::Path(p) if p.path.is_ident("differs")) && call.args.len() == 2
+}
+
+/// `[x, y]` → `[&(x), &(y)]`
+fn borrow_elems(expr: &Expr) -> TokenStream {
+    let Expr::Array(arr) = strip(expr) else {
+        return quote!(#expr);
+    };
+    let elems = arr.elems.iter().map(|e| match strip(e) {
+        Expr::Reference(_) => quote!(#e),
+        _ => quote_spanned!(e.span()=> &(#e)),
+    });
+    quote_spanned!(arr.span()=> [#(#elems),*])
+}
+
 /// Whether the value itself is arithmetic
 fn is_arith(expr: &Expr) -> bool {
     match strip(expr) {
@@ -435,6 +451,10 @@ fn leaf(expr: &Expr) -> TokenStream {
                 None => passthrough(expr),
             },
         },
+        Expr::Call(c) if is_differs(c) => {
+            let (model, vars) = (&c.args[0], borrow_elems(&c.args[1]));
+            quote_spanned!(c.span()=> ::z3_toolkit::differs(#model, #vars))
+        }
         _ => passthrough(expr),
     }
 }

@@ -41,7 +41,7 @@ pub fn constraint(input: TokenStream) -> TokenStream {
 /// - `all { .. }`, `any { .. }`, `not { .. }`
 /// - `{ p } implies { q }`
 /// - `exactly(k) { .. }`, `at_most(k) { .. }`, `at_least(k) { .. }`
-/// - `distinct(iter)`
+/// - `distinct(iter)`, `differs(&model, vars)`: an array literal `[x, y]` is borrowed, not moved
 /// - `for` / `if`: plain Rust, unrolled at runtime
 /// - `"label": item`: named in the unsat core. Not inside logic blocks (`all`, `implies`, ..).
 ///

@@ -1,6 +1,6 @@
 use z3::{
     Model,
-    ast::{Bool, Int},
+    ast::{Ast, Bool, Int},
 };
 
 /// Rust type ↔ Z3 type: `bool` ↔ `Bool`, `i64` ↔ `Int`, nested in `Vec` / `[T; N]`.
@@ -165,4 +165,30 @@ impl ModelExt for Model {
     fn get<T: Z3Type>(&self, repr: &T::Repr) -> Option<T> {
         T::eval(self, repr)
     }
+}
+
+/// "At least one of `vars` takes a different value than in `model`."
+///
+/// Asserting it blocks that solution, so looping finds every solution (projected onto `vars`).
+/// Inside `constraints!`, an array literal `[x, y]` is borrowed, so the vars aren't moved.
+///
+/// ## Examples
+/// ```
+/// # use z3::Solver; use z3_toolkit::prelude::*;
+/// let [x, y] = ints("v");
+/// let s = Solver::new();
+/// constraints! { s; x in 0..3, y in 0..3, x < y };
+/// let mut count = 0;
+/// while let Ok(model) = s.solve() {
+///     count += 1;
+///     constraints! { s; differs(&model, [x, y]) }
+/// }
+/// assert_eq!(count, 3);
+/// ```
+pub fn differs<'a, A: Ast + 'a>(model: &Model, vars: impl IntoIterator<Item = &'a A>) -> Bool {
+    let ne: Vec<Bool> = vars
+        .into_iter()
+        .map(|v| v.ne(model.eval(v, true).expect("model can evalute every var")))
+        .collect();
+    Bool::or(&ne)
 }
