@@ -17,7 +17,7 @@ fn main() {
     }
 
     let m = s.solve().expect("sat");
-    let cols = m.get::<Vec<i64>>(&q).expect("every queen has a colmun");
+    let cols = m.get::<Vec<i64>>(&q).expect("every queen has a column");
     for &c in &cols {
         let line: String = (0..n)
             .map(|x| if x as i64 == c { 'Q' } else { '.' })

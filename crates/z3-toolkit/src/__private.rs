@@ -1,4 +1,4 @@
-//! Runtime pieces used by macro-generated code. Not plubic API
+//! Runtime pieces used by macro-generated code. Not public API
 
 pub use z3::Model;
 pub use z3::ast::{Ast, Bool, Int};
@@ -100,7 +100,7 @@ impl<T: Arith + ?Sized> Arith for &T {
     }
 }
 
-/// Expansion target of `sum(iter, |x| e)`
+/// Expantion target of `sum(iter, |x| e)`
 pub fn sum_by<I, F>(iter: I, f: F) -> Int
 where
     I: IntoIterator,
@@ -109,7 +109,7 @@ where
     iter.into_iter().map(f).sum()
 }
 
-/// Expantion target of `e in <iter>`
+/// Expansion target of `e in <iter>`
 pub fn member<I>(lhs: &Int, items: I) -> Bool
 where
     I: IntoIterator,

@@ -266,7 +266,7 @@ fn parse_primary(input: ParseStream) -> Result<(Item, bool)> {
     Ok((parse_atom(input)?, false))
 }
 
-// ==== Leaf rewriting: only the top-level comparsion/logic operators become z3 operators ====
+// ==== Leaf rewriting: only the top-level comparison/logic operators become z3 operators ====
 
 fn strip(mut expr: &Expr) -> &Expr {
     loop {
