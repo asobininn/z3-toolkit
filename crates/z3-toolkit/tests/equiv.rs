@@ -1,6 +1,6 @@
 use z3::{
     Optimize, SatResult, Solver,
-    ast::{Bool, Dynamic, Int},
+    ast::{Bool, Int},
 };
 use z3_toolkit::prelude::*;
 
@@ -222,19 +222,19 @@ fn solve_all_works() {
     let [x] = ints("x");
     let s = Solver::new();
     constraints! { s; x in 0..3, "label": x >= 0 }
-    assert_eq!(s.solve_all::<Int>().count(), 3);
-    assert_eq!(s.solve_all::<Int>().count(), 0);
+    assert_eq!(s.solve_all().count(), 3);
+    assert_eq!(s.solve_all().count(), 0);
     // over
     let [y] = ints("y");
     let s = Solver::new();
     constraints! { s; x in 0..3, y in 0..3 }
-    assert_eq!(s.solve_all::<Int>().over([&x]).count(), 3);
+    assert_eq!(s.solve_all().over([&x]).count(), 3);
     // `Optimize` yields the best first
     let opt = Optimize::new();
     constraints! { opt; x in 0..3 }
     opt.maximize(&x);
     let order: Vec<i64> = opt
-        .solve_all::<Int>()
+        .solve_all()
         .map(|m| m.unwrap().get(&x).unwrap())
         .collect();
     assert_eq!(order, [2, 1, 0]);
@@ -259,7 +259,7 @@ fn sove_all_reports_unknown_once() {
             Some("test".to_owned())
         }
     }
-    let mut it = GiveUp.solve_all::<Dynamic>();
+    let mut it = GiveUp.solve_all();
     assert!(matches!(it.next(), Some(Err(Failure::Unknown { .. }))));
     assert!(it.next().is_none());
 }

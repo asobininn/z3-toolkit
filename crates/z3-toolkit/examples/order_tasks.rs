@@ -6,7 +6,7 @@
 //! ```
 //!
 
-use z3::{Solver, ast::Int};
+use z3::Solver;
 use z3_toolkit::prelude::*;
 
 fn main() -> Result<(), Failure> {
@@ -27,7 +27,7 @@ fn main() -> Result<(), Failure> {
         test < release
     };
 
-    for model in s.solve_all::<Int>() {
+    for model in s.solve_all() {
         let found: [i64; N] = model?.get(&steps).unwrap();
         let mut order = [""; N];
         for i in 0..N {

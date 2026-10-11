@@ -95,10 +95,10 @@ pub trait Engine {
     /// let [x, y] = ints("v");
     /// let s = Solver::new();
     /// constraints! { s; x in 0..3, y in 0..3, x < y };
-    /// let res: Vec<Result<Model, Failure>> = s.solve_all::<Int>().collect();
+    /// let res: Vec<Result<Model, Failure>> = s.solve_all().collect();
     /// assert_eq!(res.into_iter().flatten().count(), 3);
     /// ```
-    fn solve_all<'a, A: Ast + Clone + 'a>(&self) -> Solutions<'_, Self> {
+    fn solve_all(&self) -> Solutions<'_, Self> {
         Solutions {
             engine: self,
             vars: None,
@@ -165,7 +165,7 @@ impl<E: ?Sized> Solutions<'_, E> {
     /// let [x, y] = ints("v");
     /// let s = Solver::new();
     /// constraints! { s; x in 0..3, y in 0..3 }
-    /// assert_eq!(s.solve_all::<Int>().over([&x]).count(), 3);
+    /// assert_eq!(s.solve_all().over([&x]).count(), 3);
     /// ```
     pub fn over<'a, A: Ast + 'a>(mut self, vars: impl IntoIterator<Item = &'a A>) -> Self {
         self.vars = Some(vars.into_iter().map(|v| Dynamic::from_ast(v)).collect());

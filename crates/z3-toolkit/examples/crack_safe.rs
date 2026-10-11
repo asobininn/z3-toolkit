@@ -7,7 +7,7 @@
 //!
 //! How many codes are still possible?
 
-use z3::{Solver, ast::Int};
+use z3::Solver;
 use z3_toolkit::prelude::*;
 
 fn main() {
@@ -28,7 +28,7 @@ fn main() {
     }
 
     let mut codes: Vec<_> = s
-        .solve_all::<Int>()
+        .solve_all()
         .flatten()
         .map(|m| m.get::<i64>(&code).unwrap())
         .collect();
