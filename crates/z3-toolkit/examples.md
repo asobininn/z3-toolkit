@@ -8,5 +8,6 @@
 | [knapsack](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/knapsack.rs) | Pack the most valuable items under a weight limit. |
 | [jug](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/jug.rs) | Measure 4L with 3L and 5L jugs in the fewest moves, naming each move. |
 | [timetable](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/timetable.rs) | Find which scheduling rules conflict,from the unsat core. |
+| [race](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/race.rs) | Work out who won a race from clues about the winner and the last runner. |
 
 Run one with `cargo run -p z3-toolkit --example <name>`.

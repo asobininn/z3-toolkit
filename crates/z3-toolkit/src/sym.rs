@@ -4,11 +4,17 @@ use z3::ast::{Bool, Int};
 pub trait Symbolic: Sized {
     /// `Vec`s of different length panic.
     fn ite(cond: &Bool, then: &Self, otherwise: &Self) -> Self;
+
+    /// Element-wise `==`. `Vec`s of different lengths are unequal.
+    fn equal(lhs: &Self, rhs: &Self) -> Bool;
 }
 
 impl Symbolic for Int {
     fn ite(cond: &Bool, then: &Self, otherwise: &Self) -> Self {
         cond.ite(then, otherwise)
+    }
+    fn equal(lhs: &Self, rhs: &Self) -> Bool {
+        lhs.eq(rhs)
     }
 }
 
@@ -16,11 +22,22 @@ impl Symbolic for Bool {
     fn ite(cond: &Bool, then: &Self, otherwise: &Self) -> Self {
         cond.ite(then, otherwise)
     }
+    fn equal(lhs: &Self, rhs: &Self) -> Bool {
+        lhs.eq(rhs)
+    }
+}
+
+fn all_equal<T: Symbolic>(lhs: &[T], rhs: &[T]) -> Bool {
+    let eqs: Vec<Bool> = lhs.iter().zip(rhs).map(|(l, r)| T::equal(l, r)).collect();
+    Bool::and(&eqs)
 }
 
 impl<T: Symbolic, const N: usize> Symbolic for [T; N] {
     fn ite(cond: &Bool, then: &Self, otherwise: &Self) -> Self {
         std::array::from_fn(|i| T::ite(cond, &then[i], &otherwise[i]))
+    }
+    fn equal(lhs: &Self, rhs: &Self) -> Bool {
+        all_equal(lhs, rhs)
     }
 }
 
@@ -36,6 +53,12 @@ impl<T: Symbolic> Symbolic for Vec<T> {
             .map(|(t, o)| T::ite(cond, t, o))
             .collect()
     }
+    fn equal(lhs: &Self, rhs: &Self) -> Bool {
+        if lhs.len() != rhs.len() {
+            return Bool::from_bool(false);
+        }
+        all_equal(lhs, rhs)
+    }
 }
 
 macro_rules! symbolic_tuple {
@@ -43,6 +66,9 @@ macro_rules! symbolic_tuple {
         impl<$($t: Symbolic),+> Symbolic for ($($t,)+) {
             fn ite(cond: &Bool, then: &Self, otherwise: &Self) -> Self {
                 ($($t::ite(cond, &then.$i, &otherwise.$i),)+)
+            }
+            fn equal(lhs: &Self, rhs: &Self) -> Bool {
+                Bool::and(&[$($t::equal(&lhs.$i, &rhs.$i)),+])
             }
         }
     };
@@ -155,6 +181,9 @@ pub trait SymbolicSlice {
     type Elem: Symbolic;
     type Owned;
 
+    #[doc(hidden)]
+    fn elems(&self) -> Vec<Self::Elem>;
+
     /// `self[idx]`. Panics on an empty slice.
     ///
     /// ## Examples
@@ -181,6 +210,68 @@ pub trait SymbolicSlice {
     where
         I: ToSymbolic<Output = Int> + ?Sized,
         V: ToSymbolic<Output = Self::Elem> + ?Sized;
+
+    /// Index of the first element equal to `value`, or `len` if none.
+    /// 
+    /// ## Examples
+    /// ```
+    /// # use z3::Solver; use z3_toolkit::prelude::*;
+    /// let [x, i] = ints("v");
+    /// let s = Solver::new();
+    /// constraints! { s; x == 7, i == [5, 7, 7].position(&x) };
+    /// assert_eq!(s.solve().unwrap().get(&i), Ok(1)); // the first 7
+    /// ```
+    fn position<V: ToSymbolic<Output = Self::Elem> + ?Sized>(&self, value: &V) -> Int {
+        let value = value.to_symbolic();
+        let elems = self.elems();
+        elems
+            .iter()
+            .enumerate()
+            .rev()
+            .fold(index(elems.len()), |acc, (i, e)| {
+                Symbolic::equal(e, &value).ite(&index(i), &acc)
+            })
+    }
+
+    /// Index of the first largest element. Panics on an empty slice.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3_toolkit::prelude::*;
+    /// let [x, y] = ints("v");
+    /// let winner = constraint!([&x, &y].argmax() == 0);  // x >= y
+    /// ```
+
+    fn argmax(&self) -> Int
+    where
+        Self: SymbolicSlice<Elem = Int>,
+    {
+        arg_best(self.elems(), |p, q| p.gt(q), "argmax")
+    }
+
+    /// Index of the first smallest element. Panics on an empty slice.
+    fn argmin(&self) -> Int
+    where
+        Self: SymbolicSlice<Elem = Int>,
+    {
+        arg_best(self.elems(), |p, q| p.lt(q), "argmin")
+    }
+}
+
+fn index(i: usize) -> Int {
+    Int::from_u64(i as u64)
+}
+
+fn arg_best(elems: Vec<Int>, beats: fn(&Int, &Int) -> Bool, name: &str) -> Int {
+    let mut elems = elems.into_iter().enumerate();
+    let (_, first) = elems
+        .next()
+        .unwrap_or_else(|| panic!("`{name}` on an empty slice"));
+    let (best_i, _) = elems.fold((index(0), first), |(best_i, best), (i, e)| {
+        let better = beats(&e, &best);
+        (better.ite(&index(i), &best_i), better.ite(&e, &best))
+    });
+    best_i
 }
 
 fn is_at(idx: &Int, i: usize) -> Bool {
@@ -190,6 +281,10 @@ fn is_at(idx: &Int, i: usize) -> Bool {
 impl<E: ToSymbolic> SymbolicSlice for [E] {
     type Elem = E::Output;
     type Owned = Vec<E::Output>;
+
+    fn elems(&self) -> Vec<Self::Elem> {
+        self.iter().map(E::to_symbolic).collect()
+    }
 
     fn at<I: ToSymbolic<Output = Int> + ?Sized>(&self, idx: &I) -> Self::Elem {
         let idx = idx.to_symbolic();
@@ -218,6 +313,10 @@ impl<E: ToSymbolic> SymbolicSlice for [E] {
 impl<E: ToSymbolic, const N: usize> SymbolicSlice for [E; N] {
     type Elem = E::Output;
     type Owned = [E::Output; N];
+
+    fn elems(&self) -> Vec<Self::Elem> {
+        self.as_slice().elems()
+    }
 
     fn at<I: ToSymbolic<Output = Int> + ?Sized>(&self, idx: &I) -> Self::Elem {
         self.as_slice().at(idx)

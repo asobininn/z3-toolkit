@@ -100,6 +100,7 @@ fn main() -> Result<(), Failure> {
 | [knapsack](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/knapsack.rs) | Pack the most valuable items under a weight limit. |
 | [jug](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/jug.rs) | Measure 4L with 3L and 5L jugs in the fewest moves, naming each move. |
 | [timetable](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/timetable.rs) | Find which scheduling rules conflict, from the unsat core. |
+| [race](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/race.rs) | Work out who won a race from clues about the winner and the last runner. |
 
 Run one with `cargo run -p z3-toolkit --example <name>`.
 
@@ -111,7 +112,7 @@ Run one with `cargo run -p z3-toolkit --example <name>`.
 | Constraints | `constraints!` asserts into a `Solver` / `Optimize`; `constraint!` builds one `Bool` |
 | DSL | comparisons and `&&` / `\|\|` / `!`, `x in 1..=3`, `{ p } implies { q }`, `all` / `any` / `not`, `exactly` / `at_most` / `at_least`, `distinct`, `for` / `if` |
 | Shapes | `==`/`!=` compare arrays, `Vec` and tuples element-wise, also against Rust values: `grid[0] == [0, 1]` |
-| Symbolic | `ite(&p, &x, &0)` follows the shape; `xs.at(&i)`/`xs.with(&i, &v)` read/write at a symbolic index |
+| Symbolic | `ite(&p, &x, &0)` follows the shape; `xs.at(&i)`/`xs.with(&i, &v)` read/write at a symbolic index; `xs.position(&v)`, `xs.argmax()`, `xs.argmin()` |
 | Linear terms | `sum`, `dot`, `lin!`, `abs`, `max`, `min`; `Bool` counts as 0/1, Rust integers are lifted |
 | Labels | `"name": item` shows up in the unsat core; `"name" @ item` is read back with `model.labels(&expr)` when `item` is true |
 | Solving | `solve()` returns `Result<Model, Failure>`; labeled constraints appear in the unsat core |

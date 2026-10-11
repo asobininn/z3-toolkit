@@ -224,6 +224,27 @@ fn semantics() {
             constraint!({ x in 0..3 } implies { xs.with(&x, &0).at(&x) == 0 }),
             Bool::from_bool(true),
         ),
+        // position / argmax / argmin
+        (
+            "position",
+            constraint!([5, 7, 7].position(&x) == 1),
+            constraint!(x == 7),
+        ),
+        (
+            "position none",
+            constraint!([5, 7, 7].position(&x) == 3),
+            constraint!(x != 5 && x != 7),
+        ),
+        (
+            "argmax",
+            constraint!([&x, &y].argmax() == 1),
+            constraint!(y > x),
+        ),
+        (
+            "argmin",
+            constraint!([&x, &y].argmin() == 1),
+            constraint!(y < x),
+        ),
         // display label keeps the value
         (
             "@",
