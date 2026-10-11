@@ -45,8 +45,7 @@ pub fn constraint(input: TokenStream) -> TokenStream {
 /// - `distinct(iter)`, `differs(&model, vars)`: an array literal `[x, y]` is borrowed, not moved
 /// - `for` / `if`: plain Rust, unrolled at runtime
 /// - `"label": item`: named in the unsat core. Not inside logic blocks (`all`, `implies`, ..).
-/// - `"label" @ item`: read back with `model.labels(&expr)` when `item` is true.
-///     Labels only the next term: `"a" @ p || q` labels `p`.
+/// - `"label" @ item`: read back with `model.labels(&expr)` when `item` is true. Labels only the next term: `"a" @ p || q` labels `p`.
 ///
 /// `,` is optional after an item ending with `}`.
 #[proc_macro]
