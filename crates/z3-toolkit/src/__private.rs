@@ -175,3 +175,125 @@ pub fn distinct<'a, A: Ast + 'a>(items: impl IntoIterator<Item = &'a A>) -> Bool
     let v: Vec<&A> = items.into_iter().collect();
     A::distinct(&v)
 }
+
+/// Expansion target of `==` / `!=` without arithmetic: compares shapes element-wise.
+pub trait ShapeEq<Rhs: ?Sized> {
+    fn shape_eq(&self, rhs: &Rhs) -> Bool;
+}
+
+pub fn shape_eq<L, R>(lhs: &L, rhs: &R) -> Bool
+where
+    L: ShapeEq<R> + ?Sized,
+    R: ?Sized,
+{
+    lhs.shape_eq(rhs)
+}
+
+pub fn shape_ne<L, R>(lhs: &L, rhs: &R) -> Bool
+where
+    L: ShapeEq<R> + ?Sized,
+    R: ?Sized,
+{
+    lhs.shape_eq(rhs).not()
+}
+
+impl<R: Operand<Sort = Int> + ?Sized> ShapeEq<R> for Int {
+    fn shape_eq(&self, rhs: &R) -> Bool {
+        self.eq(rhs.operand())
+    }
+}
+
+impl<R: Operand<Sort = Bool> + ?Sized> ShapeEq<R> for Bool {
+    fn shape_eq(&self, rhs: &R) -> Bool {
+        self.eq(rhs.operand())
+    }
+}
+
+impl<R: Operand<Sort = Bool> + ?Sized> ShapeEq<R> for bool {
+    fn shape_eq(&self, rhs: &R) -> Bool {
+        self.operand().eq(rhs.operand())
+    }
+}
+
+macro_rules! shape_eq_int {
+    ($($t:ty),*) => {$(
+        impl<R: Operand<Sort = Int> + ?Sized> ShapeEq<R> for $t {
+            fn shape_eq(&self, rhs: &R) -> Bool {
+                self.operand().eq(rhs.operand())
+            }
+        }
+    )*};
+}
+shape_eq_int!(i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
+
+impl<T: ShapeEq<R> + ?Sized, R: ?Sized> ShapeEq<R> for &T {
+    fn shape_eq(&self, rhs: &R) -> Bool {
+        (**self).shape_eq(rhs)
+    }
+}
+
+fn zip_eq<L: ShapeEq<R>, R>(lhs: &[L], rhs: &[R]) -> Bool {
+    if lhs.len() != rhs.len() {
+        return Bool::from_bool(false);
+    }
+    and(lhs.iter().zip(rhs).map(|(l, r)| l.shape_eq(r)).collect())
+}
+
+impl<L: ShapeEq<R>, R, const N: usize> ShapeEq<[R; N]> for [L; N] {
+    fn shape_eq(&self, rhs: &[R; N]) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L: ShapeEq<R>, R, const N: usize> ShapeEq<[R]> for [L; N] {
+    fn shape_eq(&self, rhs: &[R]) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L: ShapeEq<R>, R, const N: usize> ShapeEq<Vec<R>> for [L; N] {
+    fn shape_eq(&self, rhs: &Vec<R>) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L: ShapeEq<R>, R> ShapeEq<[R]> for [L] {
+    fn shape_eq(&self, rhs: &[R]) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L: ShapeEq<R>, R, const N: usize> ShapeEq<[R; N]> for [L] {
+    fn shape_eq(&self, rhs: &[R; N]) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L: ShapeEq<R>, R> ShapeEq<Vec<R>> for [L] {
+    fn shape_eq(&self, rhs: &Vec<R>) -> Bool {
+        zip_eq(self, rhs)
+    }
+}
+
+impl<L, Rhs: ?Sized> ShapeEq<Rhs> for Vec<L>
+where
+    [L]: ShapeEq<Rhs>,
+{
+    fn shape_eq(&self, rhs: &Rhs) -> Bool {
+        self.as_slice().shape_eq(rhs)
+    }
+}
+
+macro_rules! shape_eq_tuple {
+    ($($l:ident $r:ident $i:tt),+) => {
+        impl<$($l: ShapeEq<$r>,  $r),+> ShapeEq<($($r,)+)> for ($($l,)+) {
+            fn shape_eq(&self, rhs: &($($r,)+)) -> Bool {
+                and(::std::vec![$(self.$i.shape_eq(&rhs.$i)),+])
+            }
+        }
+    };
+}
+shape_eq_tuple!(L1 R1 0);
+shape_eq_tuple!(L1 R1 0, L2 R2 1);
+shape_eq_tuple!(L1 R1 0, L2 R2 1, L3 R3 2);
+shape_eq_tuple!(L1 R1 0, L2 R2 1, L3 R3 2, L4 R4 3);

@@ -36,6 +36,7 @@ pub fn constraint(input: TokenStream) -> TokenStream {
 ///
 /// ## Items
 /// - `x < y`, `p == q`, `!p`, `p && q`, `p || q`: only the top-level operators are translated
+/// - `xs == [0, 1]`, `(x, p) != (1, true)`: arrays, `Vec`s and tuples compare element-wise
 /// - `2 * x + 1`, `sum(xs, |v| e)`, `abs` / `max` / `min`: Rust ints are lifted, `Bool` is 0/1
 /// - `x in 1..=3`, `x in [2, 5]`, `x in iter`
 /// - `all { .. }`, `any { .. }`, `not { .. }`

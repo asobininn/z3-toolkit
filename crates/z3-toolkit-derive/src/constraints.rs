@@ -196,7 +196,7 @@ fn parse_primary(input: ParseStream) -> Result<(Item, bool)> {
             return Ok((item, false));
         }
     }
-    // ` { p } implies { q }`
+    // `{ p } implies { q }`
     if input.peek(token::Brace) {
         let fork = input.fork();
         let _skipped;
@@ -323,6 +323,22 @@ fn borrow_elems(expr: &Expr) -> TokenStream {
     quote_spanned!(arr.span()=> [#(#elems),*])
 }
 
+/// `(x, [y, 0])` → `(x.clone(), [y.clone(), 0])`
+fn unmove(expr: &Expr) -> TokenStream {
+    match strip(expr) {
+        Expr::Array(arr) => {
+            let elems = arr.elems.iter().map(unmove);
+            quote_spanned!(arr.span()=> [#(#elems),*])
+        }
+        Expr::Tuple(tup) => {
+            let elems = tup.elems.iter().map(unmove);
+            quote_spanned!(tup.span()=> (#(#elems,)*))
+        }
+        e @ Expr::Lit(_) => quote!(#e),
+        e => quote_spanned!(e.span()=> ::core::clone::Clone::clone(&(#e))),
+    }
+}
+
 /// Whether the value itself is arithmetic
 fn is_arith(expr: &Expr) -> bool {
     match strip(expr) {
@@ -390,6 +406,14 @@ fn compare(bin_expr: &ExprBinary) -> Option<TokenStream> {
     };
     // Ordering cmp and cmp containing arithmetic treat `Bool` as 0/1
     let arith = ordering || is_arith(&bin_expr.left) || is_arith(&bin_expr.right);
+    if !arith {
+        // `==` / `!=` on plain values
+        let f = Ident::new(&format!("shape_{method}"), bin_expr.op.span());
+        let (lhs, rhs) = (unmove(&bin_expr.left), unmove(&bin_expr.right));
+        return Some(
+            quote_spanned!(bin_expr.span()=> ::z3_toolkit::__private::#f(&(#lhs), &(#rhs))),
+        );
+    }
     let (lhs, rhs) = (
         operand(&bin_expr.left, arith),
         operand(&bin_expr.right, arith),

@@ -78,6 +78,8 @@ fn semantics() {
     let k: usize = 2;
     let count: Int = fs.iter().map(|f| f.ite(&int(1), &int(0))).sum();
     let (yes, no) = (true, false);
+    let grid: [[Int; 2]; 2] = fresh("st");
+    let row = ints_n("row", 2);
 
     let cases: Vec<(&str, Bool, Bool)> = vec![
         // leaf
@@ -163,6 +165,37 @@ fn semantics() {
         (
             "in empty",
             constraint!(x in Vec::<i64>::new()),
+            Bool::from_bool(false),
+        ),
+        // shape eq
+        (
+            "array == array",
+            constraint!(grid[0] == grid[1]),
+            constraint!(grid[0][0] == grid[1][0] && grid[0][1] == grid[1][1]),
+        ),
+        (
+            "array == concrect",
+            constraint!(grid[0] == [0, 1]),
+            constraint!(grid[0][0] == 0 && grid[0][1] == 1),
+        ),
+        (
+            "array == vec",
+            constraint!([0, 1] == row && grid[0] == row),
+            constraint!(row[0] == 0 && row[1] == 1 && grid[0][0] == 0 && grid[0][1] == 1),
+        ),
+        (
+            "tuple",
+            constraint!((x, p) == (k, true)),
+            constraint!(x == 2 && p),
+        ),
+        (
+            "nested !=",
+            constraint!(grid != [[0, 0], [1, 1]]),
+            constraint!(not { all { grid[0] == [0, 0], grid[1] == [1, 1] } }),
+        ),
+        (
+            "vec len mismatch",
+            constraint!(row == [1]),
             Bool::from_bool(false),
         ),
         // linear
