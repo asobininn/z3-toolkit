@@ -212,7 +212,7 @@ pub trait SymbolicSlice {
         V: ToSymbolic<Output = Self::Elem> + ?Sized;
 
     /// Index of the first element equal to `value`, or `len` if none.
-    /// 
+    ///
     /// ## Examples
     /// ```
     /// # use z3::Solver; use z3_toolkit::prelude::*;
@@ -241,7 +241,6 @@ pub trait SymbolicSlice {
     /// let [x, y] = ints("v");
     /// let winner = constraint!([&x, &y].argmax() == 0);  // x >= y
     /// ```
-
     fn argmax(&self) -> Int
     where
         Self: SymbolicSlice<Elem = Int>,
