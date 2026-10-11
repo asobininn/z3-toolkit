@@ -198,6 +198,32 @@ fn semantics() {
             constraint!(row == [1]),
             Bool::from_bool(false),
         ),
+        // ite / at / with
+        (
+            "ite",
+            constraint!(ite(&p, &x, &0) == y),
+            constraint!(any { all {p, x == y}, all { !p, y == 0} }),
+        ),
+        (
+            "ite shape",
+            constraint!(ite(&p, &grid[0], &[0, 1]) == grid[1]),
+            constraint!(any { all { p, grid[0] == grid[1] }, all { !p, grid[1] == [0, 1] } }),
+        ),
+        (
+            "at",
+            constraint!(x in 0..3 && xs.at(&x) == y),
+            constraint!(any { for i in 0..3 { all { x == i, xs[i] ==y } } }),
+        ),
+        (
+            "with",
+            constraint!(xs.with(&1, &y) == [xs[0], y, xs[2]]),
+            Bool::from_bool(true),
+        ),
+        (
+            "with then at",
+            constraint!({ x in 0..3 } implies { xs.with(&x, &0).at(&x) == 0 }),
+            Bool::from_bool(true),
+        ),
         // linear
         ("sum", constraint!(sum(&fs) == 2), count.eq(2)),
         (

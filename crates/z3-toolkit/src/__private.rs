@@ -3,61 +3,10 @@
 pub use z3::Model;
 pub use z3::ast::{Ast, Bool, Int};
 
-/// Turns a value leaf into a Z3 value by borrowing
-pub trait Operand {
-    type Sort;
-    fn operand(&self) -> Self::Sort;
-}
-
-impl Operand for Int {
-    type Sort = Int;
-    fn operand(&self) -> Self::Sort {
-        self.clone()
-    }
-}
-
-impl Operand for Bool {
-    type Sort = Bool;
-    fn operand(&self) -> Self::Sort {
-        self.clone()
-    }
-}
-
-impl Operand for i64 {
-    type Sort = Int;
-    fn operand(&self) -> Self::Sort {
-        Int::from_i64(*self)
-    }
-}
-
-impl Operand for bool {
-    type Sort = Bool;
-    fn operand(&self) -> Self::Sort {
-        Bool::from_bool(*self)
-    }
-}
-
-macro_rules! operand_int {
-    ($($t:ty),*) => {$(
-        impl Operand for $t {
-            type Sort = Int;
-            fn operand(&self) -> Self::Sort {
-                Int::from_i64(i64::try_from(*self).expect("integer does not fit in i64"))
-            }
-        }
-    )*};
-}
-operand_int!(i8, i16, i32, isize, u8, u16, u32, u64, usize);
+use crate::ToSymbolic;
 
 pub fn int_lit(value: i64) -> Int {
     Int::from_i64(value)
-}
-
-impl<T: Operand + ?Sized> Operand for &T {
-    type Sort = T::Sort;
-    fn operand(&self) -> Self::Sort {
-        (**self).operand()
-    }
 }
 
 /// Treat `Bool` implicitly as `Int` values of 0/1
@@ -197,34 +146,21 @@ where
     lhs.shape_eq(rhs).not()
 }
 
-impl<R: Operand<Sort = Int> + ?Sized> ShapeEq<R> for Int {
-    fn shape_eq(&self, rhs: &R) -> Bool {
-        self.eq(rhs.operand())
-    }
-}
-
-impl<R: Operand<Sort = Bool> + ?Sized> ShapeEq<R> for Bool {
-    fn shape_eq(&self, rhs: &R) -> Bool {
-        self.eq(rhs.operand())
-    }
-}
-
-impl<R: Operand<Sort = Bool> + ?Sized> ShapeEq<R> for bool {
-    fn shape_eq(&self, rhs: &R) -> Bool {
-        self.operand().eq(rhs.operand())
-    }
-}
-
-macro_rules! shape_eq_int {
+macro_rules! shape_eq_leaf {
     ($($t:ty),*) => {$(
-        impl<R: Operand<Sort = Int> + ?Sized> ShapeEq<R> for $t {
+        impl<R> ShapeEq<R> for $t
+        where
+            R: ToSymbolic<Output = <$t as ToSymbolic>::Output> + ?Sized,
+        {
             fn shape_eq(&self, rhs: &R) -> Bool {
-                self.operand().eq(rhs.operand())
+                self.to_symbolic().eq(rhs.to_symbolic())
             }
         }
     )*};
 }
-shape_eq_int!(i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
+shape_eq_leaf!(
+    Int, Bool, bool, i8, i16, i32, i64, isize, u8, u16, u32, u64, usize
+);
 
 impl<T: ShapeEq<R> + ?Sized, R: ?Sized> ShapeEq<R> for &T {
     fn shape_eq(&self, rhs: &R) -> Bool {

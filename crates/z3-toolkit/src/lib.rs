@@ -16,6 +16,7 @@ extern crate self as z3_toolkit;
 mod engine;
 mod error;
 mod lin;
+mod sym;
 mod ty;
 
 #[doc(hidden)]
@@ -24,6 +25,7 @@ pub mod __private;
 pub use engine::{Engine, Solutions};
 pub use error::{Failure, ReadError};
 pub use lin::{abs, dot, max, min, sum};
+pub use sym::{Symbolic, SymbolicSlice, ToSymbolic, ite};
 pub use ty::{
     Fresh, FromValue, ModelExt, ReadAs, Readback, bools, bools_n, differs, fresh, fresh_n, ints,
     ints_n,
@@ -32,7 +34,8 @@ pub use z3_toolkit_derive::{constraint, constraints, lin};
 
 pub mod prelude {
     pub use crate::{
-        Engine, Failure, Fresh, ModelExt, ReadError, Readback, Solutions, abs, bools, bools_n,
-        constraint, constraints, differs, dot, fresh, fresh_n, ints, ints_n, lin, max, min, sum,
+        Engine, Failure, Fresh, ModelExt, ReadError, Readback, Solutions, Symbolic, SymbolicSlice,
+        ToSymbolic, abs, bools, bools_n, constraint, constraints, differs, dot, fresh, fresh_n,
+        ints, ints_n, ite, lin, max, min, sum,
     };
 }
