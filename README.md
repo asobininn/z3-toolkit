@@ -13,7 +13,7 @@ cargo add z3-toolkit
 ```toml
 [dependencies]
 z3 = "0.21"
-z3-toolkit = "0.1"
+z3-toolkit = "0.2"
 ```
 
 ## Usage
