@@ -32,8 +32,8 @@ fn main() -> Result<(), Failure> {
     }
 
     let model = s.solve()?;
-    let guilty: [bool; N] = model.get(&guilty).unwrap();
-    let says: [bool; N] = model.get(&says).unwrap();
+    let guilty: [bool; N] = model.get(&guilty)?;
+    let says: [bool; N] = model.get(&says)?;
     for i in 0..N {
         let role = if guilty[i] { "culprit" } else { "innocent" };
         let claim = if says[i] { "true" } else { "false" };

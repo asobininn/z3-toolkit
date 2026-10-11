@@ -30,7 +30,7 @@ fn main() {
     let mut codes: Vec<_> = s
         .solve_all()
         .flatten()
-        .map(|m| m.get::<i64>(&code).unwrap())
+        .map(|m| m.get(&code).unwrap())
         .collect();
     codes.sort();
     println!("{codes:?}");

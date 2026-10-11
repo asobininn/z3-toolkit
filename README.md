@@ -83,7 +83,7 @@ fn main() -> Result<(), Failure> {
     opt.maximize(&power);
 
     let model = opt.solve()?;
-    for member in team.iter().filter(|m| model.get(&m.pick) == Some(true)) {
+    for member in team.iter().filter(|m| model.get(&m.pick) == Ok(true)) {
         println!("{}", member.name);
     }
     Ok(())
@@ -98,6 +98,8 @@ fn main() -> Result<(), Failure> {
 | [find_culprit](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/find_culprit.rs) | Find the culprit among four suspects from their statements. |
 | [n_queen](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/n_queen.rs) | Place 8 queens so that none attack each other. |
 | [knapsack](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/knapsack.rs) | Pack the most valuable items under a weight limit. |
+| [jug](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/jug.rs) | Measure 4L with 3L and 5L jugs in the fewest moves, naming each move. |
+| [timetable](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/timetable.rs) | Find witch scheduling rules conflict,from the unsat core. |
 
 Run one with `cargo run -p z3-toolkit --example <name>`.
 

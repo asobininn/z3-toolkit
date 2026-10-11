@@ -54,7 +54,7 @@ fn main() -> Result<(), Failure> {
     opt.maximize(&power);
 
     let model = opt.solve()?;
-    for member in team.iter().filter(|m| model.get(&m.pick) == Some(true)) {
+    for member in team.iter().filter(|m| model.get(&m.pick) == Ok(true)) {
         println!("{}", member.name);
     }
     Ok(())

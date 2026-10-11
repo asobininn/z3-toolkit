@@ -33,7 +33,7 @@ impl<'a> Knapsack<'a> {
         opt.maximize(&value);
 
         let m = opt.solve()?;
-        let taken: Vec<bool> = m.get(&picks).ok_or_else(out_of_range)?;
+        let taken: Vec<bool> = m.get(&picks)?;
         Ok(Solution {
             chosen: self
                 .items
@@ -42,8 +42,8 @@ impl<'a> Knapsack<'a> {
                 .filter(|(_, t)| *t)
                 .map(|(i, _)| i)
                 .collect(),
-            total_value: m.get(&value).ok_or_else(out_of_range)?,
-            total_weight: m.get(&weight).ok_or_else(out_of_range)?,
+            total_value: m.get(&value)?,
+            total_weight: m.get(&weight)?,
         })
     }
 }
@@ -52,12 +52,6 @@ struct Solution<'a> {
     chosen: Vec<&'a Item<'a>>,
     total_value: i64,
     total_weight: i64,
-}
-
-fn out_of_range() -> Failure {
-    Failure::Unknown {
-        reason: "model value out of range.".to_owned(),
-    }
 }
 
 fn main() {
