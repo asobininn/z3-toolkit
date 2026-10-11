@@ -1,44 +1,96 @@
+use std::fmt::Display;
+
 use z3::{
     Model,
     ast::{Ast, Bool, Int},
 };
 
-/// Rust type ↔ Z3 type: `bool` ↔ `Bool`, `i64` ↔ `Int`, nested in `Vec` / `[T; N]`.
-pub trait Z3Type: Sized {
-    type Repr;
+use crate::ReadError;
 
-    /// Extract values from the model. Unconstrained variables get a default.
-    fn eval(model: &Model, repr: &Self::Repr) -> Option<Self>;
+/// Z3 shapes [`ModelExt::get`] reads back: `Int` → `i64`, `Bool` → `bool`,
+/// and arrays, `Vec`, slices and tuples (up to 4) of them.
+pub trait Readback {
+    type Value;
+
+    /// Unconstrained variables get a defailt.
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError>;
 }
 
-impl Z3Type for bool {
-    type Repr = Bool;
-    fn eval(model: &Model, repr: &Self::Repr) -> Option<Self> {
-        model.eval(repr, true)?.as_bool()
+fn eval<A: Ast + Display>(model: &Model, ast: &A) -> Result<A, ReadError> {
+    model.eval(ast, true).ok_or_else(|| ReadError::NoValue {
+        expr: ast.to_string(),
+    })
+}
+
+fn not_literal(expr: &impl Display, value: &impl Display) -> ReadError {
+    ReadError::NotLiteral {
+        expr: expr.to_string(),
+        value: value.to_string(),
     }
 }
 
-impl Z3Type for i64 {
-    type Repr = Int;
-    fn eval(model: &Model, repr: &Self::Repr) -> Option<Self> {
-        model.eval(repr, true)?.as_i64()
+impl Readback for Int {
+    type Value = i64;
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        let v = eval(model, self)?;
+        v.as_i64().ok_or_else(|| not_literal(self, &v))
     }
 }
 
-impl<T: Z3Type> Z3Type for Vec<T> {
-    type Repr = Vec<T::Repr>;
-    fn eval(model: &Model, repr: &Self::Repr) -> Option<Self> {
-        repr.iter().map(|r| T::eval(model, r)).collect()
+impl Readback for Bool {
+    type Value = bool;
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        let v = eval(model, self)?;
+        v.as_bool().ok_or_else(|| not_literal(self, &v))
     }
 }
 
-impl<T: Z3Type, const N: usize> Z3Type for [T; N] {
-    type Repr = [T::Repr; N];
-    fn eval(model: &Model, repr: &Self::Repr) -> Option<Self> {
-        let v: Option<Vec<T>> = repr.iter().map(|r| T::eval(model, r)).collect();
-        v?.try_into().ok()
+impl<R: Readback + ?Sized> Readback for &R {
+    type Value = R::Value;
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        (**self).read(model)
     }
 }
+
+impl<R: Readback> Readback for [R] {
+    type Value = Vec<R::Value>;
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        self.iter().map(|r| r.read(model)).collect()
+    }
+}
+
+impl<R: Readback> Readback for Vec<R> {
+    type Value = Vec<R::Value>;
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        self.as_slice().read(model)
+    }
+}
+
+impl<R: Readback, const N: usize> Readback for [R; N] {
+    type Value = [R::Value; N];
+    fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+        self.as_slice()
+            .read(model)?
+            .try_into()
+            .map(|arr| Ok(arr))
+            .unwrap_or_else(|_| unreachable!("read keeps the length"))
+    }
+}
+
+macro_rules! readback_tuple {
+    ($($t:ident $i:tt),+) => {
+        impl<$($t: Readback),+> Readback for ($($t,)+) {
+            type Value = ($($t::Value,)+);
+            fn read(&self, model: &Model) -> Result<Self::Value, ReadError> {
+                Ok(($(self.$i.read(model)?,)+))
+            }
+        }
+    };
+}
+readback_tuple!(T1 0);
+readback_tuple!(T1 0, T2 1);
+readback_tuple!(T1 0, T2 1, T3 2);
+readback_tuple!(T1 0, T2 1, T3 2, T4 3);
 
 /// Shapes [`fresh`] can create: `Int`, `Bool`, `[T; N]`, and tuples up to 4.
 pub trait Fresh: Sized {
@@ -147,7 +199,7 @@ pub fn bools_n(prefix: &str, len: usize) -> Vec<Bool> {
 
 /// Typed readback from a `Model`.
 pub trait ModelExt {
-    /// `None` if a value doesn't fit in `T` (e.g. outside `i64`).
+    /// The value of `repr`, typed by its shape.
     ///
     /// ## Examples
     /// ```
@@ -156,16 +208,104 @@ pub trait ModelExt {
     /// let s = Solver::new();
     /// constraints! { s; xs[0] == 1, xs[1] == 2 };
     /// let m = s.solve().unwrap();
-    /// assert_eq!(m.get::<Vec<i64>>(&xs), Some(vec![1, 2]));
+    /// assert_eq!(m.get(&xs), Ok(vec![1, 2]));
     /// ```
-    fn get<T: Z3Type>(&self, repr: &T::Repr) -> Option<T>;
+    fn get<R: Readback + ?Sized>(&self, repr: &R) -> Result<R::Value, ReadError>;
+
+    /// [`get`](ModelExt::get) then convert element-wise (see [`FromValue`]).
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::Solver; use z3_toolkit::prelude::*;
+    /// let [i] = ints("i");
+    /// let s = Solver::new();
+    /// constraints! { s; i == 3 };
+    /// let m = s.solve().unwrap();
+    /// assert_eq!(m.get_as::<usize>(&i), Ok(3usize));
+    /// ```
+    fn get_as<T>(&self, repr: &(impl ReadAs<T> + ?Sized)) -> Result<T, ReadError>;
 }
 
 impl ModelExt for Model {
-    fn get<T: Z3Type>(&self, repr: &T::Repr) -> Option<T> {
-        T::eval(self, repr)
+    fn get<R: Readback + ?Sized>(&self, repr: &R) -> Result<R::Value, ReadError> {
+        repr.read(self)
+    }
+
+    fn get_as<T>(&self, repr: &(impl ReadAs<T> + ?Sized)) -> Result<T, ReadError> {
+        repr.read_as(self)
     }
 }
+
+/// Shapes whose value converts into `T`. Used by [`ModelExt::get_as`].
+pub trait ReadAs<T> {
+    fn read_as(&self, model: &Model) -> Result<T, ReadError>;
+}
+
+impl<T, R> ReadAs<T> for R
+where
+    R: Readback + ?Sized,
+    T: FromValue<R::Value>,
+{
+    fn read_as(&self, model: &Model) -> Result<T, ReadError> {
+        T::from_value(self.read(model)?)
+    }
+}
+
+/// Element-wise conversion of a readback value, e.g. `[i64; 3]` → `[usize; 3]`.
+pub trait FromValue<V>: Sized {
+    fn from_value(value: V) -> Result<Self, ReadError>;
+}
+
+impl FromValue<bool> for bool {
+    fn from_value(value: bool) -> Result<Self, ReadError> {
+        Ok(value)
+    }
+}
+
+macro_rules! from_value_int {
+    ($($t:ty),+) => {$(
+        impl FromValue<i64> for $t {
+            fn from_value(value: i64) -> Result<Self, ReadError> {
+                <$t>::try_from(value).map_err(|_| ReadError::Convert {
+                    value: value.to_string(),
+                    target: stringify!($t),
+                })
+            }
+        }
+    )+};
+}
+from_value_int!(
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize
+);
+
+impl<V, T: FromValue<V>> FromValue<Vec<V>> for Vec<T> {
+    fn from_value(value: Vec<V>) -> Result<Self, ReadError> {
+        value.into_iter().map(T::from_value).collect()
+    }
+}
+
+impl<V, T: FromValue<V>, const N: usize> FromValue<[V; N]> for [T; N] {
+    fn from_value(value: [V; N]) -> Result<Self, ReadError> {
+        Vec::from_value(Vec::from(value))?
+            .try_into()
+            .map(|arr| Ok(arr))
+            .unwrap_or_else(|_| unreachable!("from_value keeps the length"))
+    }
+}
+
+macro_rules! from_value_tuple {
+    ($($t:ident $v:ident $i:tt),+) => {
+        impl<$($v, $t: FromValue<$v>),+> FromValue<($($v,)+)> for ($($t,)+) {
+            fn from_value(value: ($($v,)+)) -> Result<Self, ReadError> {
+                Ok(($($t::from_value(value.$i)?,)+))
+            }
+        }
+    };
+}
+from_value_tuple!(T1 V1 0);
+from_value_tuple!(T1 V1 0, T2 V2 1);
+from_value_tuple!(T1 V1 0, T2 V2 1, T3 V3 2);
+from_value_tuple!(T1 V1 0, T2 V2 1, T3 V3 2, T4 V4 3);
 
 /// "At least one of `vars` takes a different value than in `model`."
 ///

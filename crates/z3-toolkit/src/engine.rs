@@ -5,28 +5,9 @@ use z3::{
     ast::{Ast, Bool, Dynamic},
 };
 
+use crate::Failure;
+
 const LABEL_PREFIX: &str = "z3-toolkit:";
-
-/// Why [`Engine::solve`] returned no model.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Failure {
-    /// `core`: labels of the conflicting labeled constraint. Unlabeled ones not appear.
-    Unsat { core: Vec<String> },
-    /// Giveup  (timeout, incompletness, ..), or `Sat` without a model.
-    Unknown { reason: String },
-}
-
-impl std::fmt::Display for Failure {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Failure::Unsat { core } if core.is_empty() => write!(f, "unsatisfiable"),
-            Failure::Unsat { core } => write!(f, "unsatisfiable (core: {})", core.join(", ")),
-            Failure::Unknown { reason } => write!(f, "unknown ({reason})"),
-        }
-    }
-}
-
-impl std::error::Error for Failure {}
 
 /// Common ops of `Solver` / `Optimize`. Usually driven by [`constraints!`](crate::constraints).
 pub trait Engine {

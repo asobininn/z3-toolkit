@@ -111,6 +111,6 @@ Run one with `cargo run -p z3-toolkit --example <name>`.
 | Linear terms | `sum`, `dot`, `lin!`, `abs`, `max`, `min`; `Bool` counts as 0/1, Rust integers are lifted |
 | Solving | `solve()` returns `Result<Model, Failure>`; labeled constraints appear in the unsat core |
 | Enumerating | `solve_all()` iterates every solution, `.over(vars)` to project; `differs` for hand-written loops |
-| Readback | `model.get::<[i64; 3]>(&digits)`, also `Vec`, nested arrays and `bool` |
+| Readback | `model.get(&digits)?` reads `Int` / `Bool` in arrays, `Vec`, slices and tuples; `get_as::<usize>` converts via `TryFrom` |
 
 Only `bool` / `i64` (Z3 `Bool` / `Int`) are supported for now.

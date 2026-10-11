@@ -21,7 +21,7 @@ fn engines_and_labels() {
     let [x] = ints("x");
     constraints! { opt; x in 0..=10 }
     opt.maximize(&x);
-    assert_eq!(opt.solve().unwrap().get::<i64>(&x), Some(10));
+    assert_eq!(opt.solve().unwrap().get(&x), Ok(10));
     // label
     let s = Solver::new();
     constraints! { s; x >= 0, "low": x >= 5, "high": x <= 3 };
@@ -55,13 +55,18 @@ fn variables_and_readback() {
         flags[0], !flags[1],
     };
     let m = s.solve().unwrap();
-    assert_eq!(
-        (m.get::<i64>(&x), m.get::<i64>(&y), m.get::<bool>(&flag)),
-        (Some(1), Some(2), Some(true))
-    );
-    assert_eq!(m.get::<[[i64; 2]; 2]>(&grid), Some([[0, 1], [2, 3]]));
-    assert_eq!(m.get::<Vec<i64>>(&row), Some(vec![0, 1, 2]));
-    assert_eq!(m.get::<Vec<bool>>(&flags), Some(vec![true, false]));
+    assert_eq!(m.get(&(&x, &y, &flag)), Ok((1, 2, true)));
+    assert_eq!(m.get(&grid), Ok([[0, 1], [2, 3]]));
+    assert_eq!(m.get(&row), Ok(vec![0, 1, 2]));
+    assert_eq!(m.get(&row[1..]), Ok(vec![1, 2]));
+    assert_eq!(m.get(&flags), Ok(vec![true, false]));
+    // get_as
+    assert_eq!(m.get_as::<usize>(&y), Ok(2usize));
+    assert_eq!(m.get_as(&(&grid, &flag)), Ok(([[0u8, 1], [2, 3]], true)));
+    assert!(matches!(
+        m.get_as::<u8>(&int(-1)),
+        Err(ReadError::Convert { .. })
+    ))
 }
 
 #[test]

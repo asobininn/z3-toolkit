@@ -36,7 +36,7 @@ where
 /// constraints! { opt; dot(weights, &picks) <= 9 };
 /// opt.maximize(&dot(values, &picks));
 /// # let m = opt.solve().unwrap();
-/// # assert_eq!(m.get::<[bool; 3]>(&picks), Some([true, true, false]));
+/// # assert_eq!(m.get(&picks), Ok([true, true, false]));
 /// ```
 pub fn dot<L, R>(lhs: L, rhs: R) -> Int
 where
