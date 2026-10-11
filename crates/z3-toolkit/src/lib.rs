@@ -1,8 +1,9 @@
 //! An ergonomic constraint DSL for the [`z3`] crate.
 //!
 //! It keeps z3's own `Int`, `Bool`, `Solver` and `Optimize`, and adds one-line variable
-//! declarations, linear helpers, solution enumeration, and typed readback around them.
-//! Only `bool` / `i64` (Z3 `Bool` / `Int`) are supported for now.
+//! declarations, linear helpers, symbolic indexing, solution enumeration, and typed readback around them.
+//! Made for puzzles and other small problems with `bool` / `i64` only;
+//! see [Scope](https://github.com/asobininn/z3-toolkit#scope) for the trade-offs.
 //!
 //! ## Example
 //!
