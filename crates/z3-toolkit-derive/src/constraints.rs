@@ -25,6 +25,7 @@ enum Item {
     Leaf(Expr),
     Member(Expr, Expr),
     Label(LitStr, Box<Item>),
+    Tag(LitStr, Box<Item>),
     Group(GroupKind, Vec<Item>),
     Implies(Vec<Item>, Vec<Item>),
     Card(CardKind, Expr, Vec<Item>),
@@ -34,11 +35,16 @@ enum Item {
 }
 
 const IMPLIES_HELP: &str = "`implies` needs a block on both sides: `{ p } implies { q }`";
+const STACKED_LABELS: &str = "labels can't be stacked; give the item one label";
 
 // ==== Parser ====================
 
 fn peek_ident(input: ParseStream, name: &str) -> bool {
     input.peek(Ident) && input.fork().parse::<Ident>().is_ok_and(|i| i == name)
+}
+
+fn peek_label(input: ParseStream) -> bool {
+    input.peek(LitStr) && (input.peek(Token![@]) || input.peek2(Token![:]))
 }
 
 fn braced_items(input: ParseStream) -> Result<Vec<Item>> {
@@ -77,6 +83,9 @@ fn parse_item(input: ParseStream) -> Result<(Item, bool)> {
     if input.peek(LitStr) && input.peek2(Token![:]) {
         let label: LitStr = input.parse()?;
         input.parse::<Token![:]>()?;
+        if peek_label(input) {
+            return Err(input.error(STACKED_LABELS));
+        }
         let (item, block_like) = parse_or(input)?;
         return Ok((Item::Label(label, Box::new(item)), block_like));
     }
@@ -174,6 +183,16 @@ fn parse_and(input: ParseStream) -> Result<(Item, bool)> {
 }
 
 fn parse_unary(input: ParseStream) -> Result<(Item, bool)> {
+    // `"label" @ item`
+    if input.peek(LitStr) && input.peek2(Token![@]) {
+        let label: LitStr = input.parse()?;
+        input.parse::<Token![@]>()?;
+        if peek_label(input) {
+            return Err(input.error(STACKED_LABELS));
+        }
+        let (inner, block_like) = parse_unary(input)?;
+        return Ok((Item::Tag(label, Box::new(inner)), block_like));
+    }
     if input.peek(Token![!]) {
         input.parse::<Token![!]>()?;
         let (inner, block_like) = parse_unary(input)?;
@@ -545,6 +564,15 @@ impl Builder {
                 )
                 .to_compile_error(),
             },
+            Item::Tag(lit, inner) => {
+                let (v, body) = self.collect(std::slice::from_ref(&**inner));
+                quote!({
+                    #[allow(unused_mut)]
+                    let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    #body
+                    #out.push(::z3_toolkit::__private::tag(#lit, &::z3_toolkit::__private::and(#v)));
+                })
+            }
             Item::Group(kind, body) => {
                 let (v, inner) = self.collect(body);
                 let call = match kind {

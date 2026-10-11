@@ -15,6 +15,7 @@ extern crate self as z3_toolkit;
 
 mod engine;
 mod error;
+mod label;
 mod lin;
 mod sym;
 mod ty;
@@ -24,6 +25,7 @@ pub mod __private;
 
 pub use engine::{Engine, Solutions};
 pub use error::{Failure, ReadError};
+pub use label::Labeled;
 pub use lin::{abs, dot, max, min, sum};
 pub use sym::{Symbolic, SymbolicSlice, ToSymbolic, ite};
 pub use ty::{

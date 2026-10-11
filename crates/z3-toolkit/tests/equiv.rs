@@ -224,6 +224,12 @@ fn semantics() {
             constraint!({ x in 0..3 } implies { xs.with(&x, &0).at(&x) == 0 }),
             Bool::from_bool(true),
         ),
+        // display label keeps the value
+        (
+            "@",
+            constraint!(!("a" @ p) || "b" @ x < y),
+            constraint!(!p || x < y),
+        ),
         // linear
         ("sum", constraint!(sum(&fs) == 2), count.eq(2)),
         (
@@ -326,4 +332,16 @@ fn sove_all_reports_unknown_once() {
     let mut it = GiveUp.solve_all();
     assert!(matches!(it.next(), Some(Err(Failure::Unknown { .. }))));
     assert!(it.next().is_none());
+}
+
+#[test]
+fn labels_readback() {
+    let [x] = ints("x");
+    let size = constraint!(any { "small" @ x < 3, "mid" @ x in 3..=7, "big" @ x > 7 });
+    let odd = constraint!("odd" @ x % 2 == 1);
+    let s = Solver::new();
+    constraints! { s; size, x == 9 }
+    let m = s.solve().unwrap();
+    assert_eq!(m.labels(&size), Ok(vec!["big"]));
+    assert_eq!(m.labels(&[&odd, &size]), Ok(vec!["odd", "big"]));
 }

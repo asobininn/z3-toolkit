@@ -4,6 +4,7 @@ pub use z3::Model;
 pub use z3::ast::{Ast, Bool, Int};
 
 use crate::ToSymbolic;
+pub use crate::label::tag;
 
 pub fn int_lit(value: i64) -> Int {
     Int::from_i64(value)

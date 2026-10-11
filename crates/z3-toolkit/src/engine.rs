@@ -5,9 +5,10 @@ use z3::{
     ast::{Ast, Bool, Dynamic},
 };
 
-use crate::Failure;
-
-const LABEL_PREFIX: &str = "z3-toolkit:";
+use crate::{
+    Failure,
+    label::{CORE_PREFIX, is_internal},
+};
 
 /// Common ops of `Solver` / `Optimize`. Usually driven by [`constraints!`](crate::constraints).
 pub trait Engine {
@@ -30,7 +31,7 @@ pub trait Engine {
 
     /// Tracked so that `label` shows up in [`Failure::Unsat`]'s core.
     fn assert_labeled(&self, label: &str, constraint: &Bool) {
-        let tracker = Bool::new_const(format!("{LABEL_PREFIX}{label}"));
+        let tracker = Bool::new_const(format!("{CORE_PREFIX}{label}"));
         self.assert_tracked(constraint, &tracker);
     }
 
@@ -54,12 +55,7 @@ pub trait Engine {
                 core: self
                     .unsat_core()
                     .iter()
-                    .filter_map(|b| {
-                        b.decl()
-                            .name()
-                            .strip_prefix(LABEL_PREFIX)
-                            .map(str::to_owned)
-                    })
+                    .filter_map(|b| b.decl().name().strip_prefix(CORE_PREFIX).map(str::to_owned))
                     .collect(),
             }),
             SatResult::Unknown => Err(Failure::Unknown {
@@ -157,7 +153,7 @@ impl<E: ?Sized> Solutions<'_, E> {
 fn differs_all(model: &Model) -> Bool {
     let ne: Vec<Bool> = model
         .iter()
-        .filter(|d| d.arity() == 0 && !d.name().starts_with(LABEL_PREFIX))
+        .filter(|d| d.arity() == 0 && !is_internal(&d.name()))
         .map(|d| {
             let c = d.apply(&[]);
             c.ne(model

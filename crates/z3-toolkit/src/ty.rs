@@ -5,7 +5,7 @@ use z3::{
     ast::{Ast, Bool, Int},
 };
 
-use crate::ReadError;
+use crate::{Labeled, ReadError};
 
 /// Z3 shapes [`ModelExt::get`] reads back: `Int` → `i64`, `Bool` → `bool`,
 /// and arrays, `Vec`, slices and tuples (up to 4) of them.
@@ -72,7 +72,7 @@ impl<R: Readback, const N: usize> Readback for [R; N] {
         self.as_slice()
             .read(model)?
             .try_into()
-            .map(|arr| Ok(arr))
+            .map(Ok)
             .unwrap_or_else(|_| unreachable!("read keeps the length"))
     }
 }
@@ -224,6 +224,19 @@ pub trait ModelExt {
     /// assert_eq!(m.get_as::<usize>(&i), Ok(3usize));
     /// ```
     fn get_as<T>(&self, repr: &(impl ReadAs<T> + ?Sized)) -> Result<T, ReadError>;
+
+    /// `"name" @ e` labels in `expr` whose `e` is true, in order of first appearance.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::Solver; use z3_toolkit::prelude::*;
+    /// let [x] = ints("x");
+    /// let c = constraint!(any { "small" @ x < 3, "big" @ x > 7 });
+    /// let s = Solver::new();
+    /// constraints! {s; c, x == 9 };
+    /// assert_eq!(s.solve().unwrap().labels(&c), Ok(vec!["big"]));
+    /// ```
+    fn labels<L: Labeled + ?Sized>(&self, expr: &L) -> Result<Vec<&'static str>, ReadError>;
 }
 
 impl ModelExt for Model {
@@ -233,6 +246,10 @@ impl ModelExt for Model {
 
     fn get_as<T>(&self, repr: &(impl ReadAs<T> + ?Sized)) -> Result<T, ReadError> {
         repr.read_as(self)
+    }
+
+    fn labels<L: Labeled + ?Sized>(&self, expr: &L) -> Result<Vec<&'static str>, ReadError> {
+        crate::label::true_tags(self, &expr.roots())
     }
 }
 
@@ -288,7 +305,7 @@ impl<V, T: FromValue<V>, const N: usize> FromValue<[V; N]> for [T; N] {
     fn from_value(value: [V; N]) -> Result<Self, ReadError> {
         Vec::from_value(Vec::from(value))?
             .try_into()
-            .map(|arr| Ok(arr))
+            .map(Ok)
             .unwrap_or_else(|_| unreachable!("from_value keeps the length"))
     }
 }
