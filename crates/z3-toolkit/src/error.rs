@@ -47,9 +47,18 @@ impl Display for ReadError {
             NotLiteral { expr, value } => {
                 write!(f, "`{expr}` = `{value}` is not a bool / i64 literal")
             }
-            Convert { value, target } => write!(f, "`{value}` dosen't fit in {target}"),
+            Convert { value, target } => write!(f, "`{value}` doesn't fit in {target}"),
         }
     }
 }
 
 impl std::error::Error for ReadError {}
+
+impl std::error::Error for Failure {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Failure::Read(e) => Some(e),
+            _ => None,
+        }
+    }
+}

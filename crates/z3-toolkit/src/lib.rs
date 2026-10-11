@@ -6,7 +6,7 @@
 //!
 //! ## Example
 //!
-// #![doc = concat!("```\n", include_str!("../examples/choose_member.rs"), "```")]
+#![doc = concat!("```\n", include_str!("../examples/choose_member.rs"), "```")]
 //!
 //! ## More examples
 #![doc = include_str!("../examples.md")]
