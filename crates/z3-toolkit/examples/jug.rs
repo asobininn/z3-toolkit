@@ -27,12 +27,12 @@ impl Puzzle {
         let to_large = min(small, lin!(self.large - large));
         let to_small = min(large, lin!(self.small - small));
         constraint!(any {
-            "fill small" @ all { small_next == self.small && large_next == large },
-            "fill large" @ all { small_next == small && large_next == self.large },
-            "empty small" @ all { small_next == 0 && large_next == large },
-            "empty large" @ all { small_next == small && large_next == 0 },
-            "small -> large" @ all { small_next == small - to_large && large_next == large + to_large },
-            "large -> small" @ all { small_next == small + to_small && large_next == large - to_small },
+            "fill small" @ all { small_next == self.small, large_next == large },
+            "fill large" @ all { small_next == small, large_next == self.large },
+            "empty small" @ all { small_next == 0, large_next == large },
+            "empty large" @ all { small_next == small, large_next == 0 },
+            "small -> large" @ all { small_next == small - to_large, large_next == large + to_large },
+            "large -> small" @ all { small_next == small + to_small, large_next == large - to_small },
         })
     }
 

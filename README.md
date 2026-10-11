@@ -99,7 +99,7 @@ fn main() -> Result<(), Failure> {
 | [n_queen](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/n_queen.rs) | Place 8 queens so that none attack each other. |
 | [knapsack](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/knapsack.rs) | Pack the most valuable items under a weight limit. |
 | [jug](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/jug.rs) | Measure 4L with 3L and 5L jugs in the fewest moves, naming each move. |
-| [timetable](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/timetable.rs) | Find witch scheduling rules conflict,from the unsat core. |
+| [timetable](https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples/timetable.rs) | Find which scheduling rules conflict, from the unsat core. |
 
 Run one with `cargo run -p z3-toolkit --example <name>`.
 
@@ -109,14 +109,14 @@ Run one with `cargo run -p z3-toolkit --example <name>`.
 | --- | --- |
 | Variables | `ints`, `bools`, `fresh` (arrays, nested arrays, tuples), `ints_n` / `bools_n` for runtime lengths |
 | Constraints | `constraints!` asserts into a `Solver` / `Optimize`; `constraint!` builds one `Bool` |
-| DSL | comparisons and `&&` / `\|\|` / `!`, `x in 1..=3`, `{ p } implies { q }`, `all` / `any` / `not`, `exactly` / `at_most` / `at_least`, `distinct`, `for` / `if`, `"label": item` |
-| Shapes | `==`/`!=` compare arrays, `Vec` and tuples element-wise,also against Rust values: `grid[0] == [0, 1]` |
+| DSL | comparisons and `&&` / `\|\|` / `!`, `x in 1..=3`, `{ p } implies { q }`, `all` / `any` / `not`, `exactly` / `at_most` / `at_least`, `distinct`, `for` / `if` |
+| Shapes | `==`/`!=` compare arrays, `Vec` and tuples element-wise, also against Rust values: `grid[0] == [0, 1]` |
 | Symbolic | `ite(&p, &x, &0)` follows the shape; `xs.at(&i)`/`xs.with(&i, &v)` read/write at a symbolic index |
 | Linear terms | `sum`, `dot`, `lin!`, `abs`, `max`, `min`; `Bool` counts as 0/1, Rust integers are lifted |
 | Labels | `"name": item` shows up in the unsat core; `"name" @ item` is read back with `model.labels(&expr)` when `item` is true |
 | Solving | `solve()` returns `Result<Model, Failure>`; labeled constraints appear in the unsat core |
 | Enumerating | `solve_all()` iterates every solution, `.over(vars)` to project; `differs` for hand-written loops |
-| Readback | `model.get(&digits)?` reads `Int` / `Bool` in arrays, `Vec`, slices and tuples; `get_as::<usize>` converts via `TryFrom` |
+| Readback | `model.get(&digits)?` reads `Int` / `Bool` in arrays, `Vec`, slices and tuples; `get_as::<[usize; 3]>` converts via element-wise |
 
 ## Scope
 
@@ -124,6 +124,6 @@ z3-toolkit is for small problems: puzzles, toy scheduling, quick experiments. It
 
 - `at`/`with` unroll into an `ite` over every element.
 - Terms are cloned wherever it saves you a borrow.
-- Only `Int`/`Bool`: no bit-vectors,arrays,reals or quantifiers.
+- Only `Int`/`Bool`: no bit-vectors, arrays,reals or quantifiers.
 
 For large problems, such as business scheduling with thousands of variables, use the z3 crate directly or a dedicated MIP / CP solver.
