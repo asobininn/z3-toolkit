@@ -274,6 +274,26 @@ fn semantics() {
             constraint!([(&x, &p), (&y, &q)].seen_before(1, |_| true)),
             constraint!(x == y && p == q),
         ),
+        // distinct_among
+        (
+            "distinct_among",
+            constraint!(&xs.distinct_among(|j| j != 1)),
+            constraint!(xs[0] != xs[2]),
+        ),
+        (
+            "distinct_among all",
+            constraint!(&xs.distinct_among(|_| true)),
+            constraint!(distinct(&xs)),
+        ),
+        (
+            "distinct_among symbolic",
+            constraint!(&xs.distinct_among(|j| if j == 2 {
+                fs[2].clone()
+            } else {
+                Bool::from_bool(true)
+            })),
+            constraint!(all { xs[0] != xs[1], { fs[2] } implies { xs[0] != xs[2] && xs[1] != xs[2] } }),
+        ),
         // display label keeps the value
         (
             "@",

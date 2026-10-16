@@ -282,6 +282,40 @@ pub trait SymbolicSlice {
             .collect();
         Bool::or(&hits)
     }
+
+    /// Elements with `which(j)` are pairwise different. `which` may return `bool` or `Bool`.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::ast::Int; use z3_toolkit::prelude::*;
+    /// let xs: [Int; 3] = fresh("xs");
+    /// let picked = [true, false, true]; // which positions count
+    /// let unique = constraint!(xs.distinct_among(|j| picked[j])); // xs[0] != xs[2]
+    /// ```
+    fn distinct_among<F, B>(&self, mut witch: F) -> Bool
+    where
+        F: FnMut(usize) -> B,
+        B: ToSymbolic<Output = Bool>,
+    {
+        let elems = self.elems();
+        let picked: Vec<(Bool, &Self::Elem)> = elems
+            .iter()
+            .enumerate()
+            .map(|(j, e)| (witch(j).to_symbolic(), e))
+            .filter(|(w, _)| literal(w) != Some(false))
+            .collect();
+        let mut ne = Vec::new();
+        for (k, (wk, ek)) in picked.iter().enumerate() {
+            for (wj, ej) in &picked[..k] {
+                let diff = Symbolic::equal(*ej, *ek).not();
+                ne.push(match (literal(wj), literal(wk)) {
+                    (Some(true), Some(true)) => diff,
+                    _ => Bool::and(&[wj, wk]).implies(&diff),
+                });
+            }
+        }
+        Bool::and(&ne)
+    }
 }
 
 fn index(i: usize) -> Int {
