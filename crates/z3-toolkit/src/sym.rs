@@ -1,4 +1,4 @@
-use z3::ast::{Bool, Int};
+use z3::ast::{Ast, Bool, Int};
 
 /// Shapes with a value-level if-then-else: `Int`, `Bool`, `[T; N]`, `Vec<T>` and tuples up to 4.
 pub trait Symbolic: Sized {
@@ -255,6 +255,33 @@ pub trait SymbolicSlice {
     {
         arg_best(self.elems(), |p, q| p.lt(q), "argmin")
     }
+
+    /// Some `j < i` with `filter(j)` has `self[j] == self[i]`. Panics if `i` is out of range.
+    /// `filter` may return `bool` (skipped statically) or `Bool`.
+    ///
+    /// ## Examples
+    /// ```
+    /// # use z3::ast::Int; use z3_toolkit::prelude::*;
+    /// let xs: [Int; 3] = fresh("xs");
+    /// let defs = [true, false, true]; // witch positions count
+    /// let bound = constraint!(xs.seen_before(2, |j| defs[j]));  // xs[0] == xs[2]
+    /// ```
+    fn seen_before<F, B>(&self, i: usize, mut filter: F) -> Bool
+    where
+        F: FnMut(usize) -> B,
+        B: ToSymbolic<Output = Bool>,
+    {
+        let elems = self.elems();
+        let tgt = elems
+            .get(i)
+            .unwrap_or_else(|| panic!("`seen_before` at {i} on a slice of len {}", elems.len()));
+        let hits: Vec<Bool> = elems[..i]
+            .iter()
+            .enumerate()
+            .filter_map(|(j, e)| guard(&filter(j), || Symbolic::equal(e, tgt)))
+            .collect();
+        Bool::or(&hits)
+    }
 }
 
 fn index(i: usize) -> Int {
@@ -275,6 +302,23 @@ fn arg_best(elems: Vec<Int>, beats: fn(&Int, &Int) -> Bool, name: &str) -> Int {
 
 fn is_at(idx: &Int, i: usize) -> Bool {
     idx.eq(Int::from_u64(i as u64))
+}
+
+fn literal(b: &Bool) -> Option<bool> {
+    b.simplify().as_bool()
+}
+
+/// `cond ∧ body`, or `None` when `cond` is literally `false`.
+fn guard<B: ToSymbolic<Output = Bool> + ?Sized>(
+    cond: &B,
+    body: impl FnOnce() -> Bool,
+) -> Option<Bool> {
+    let cond = cond.to_symbolic();
+    match literal(&cond) {
+        Some(true) => Some(body()),
+        Some(false) => None,
+        None => Some(Bool::and(&[&cond, &body()])),
+    }
 }
 
 impl<E: ToSymbolic> SymbolicSlice for [E] {

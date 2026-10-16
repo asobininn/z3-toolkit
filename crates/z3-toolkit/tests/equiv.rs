@@ -253,6 +253,27 @@ fn semantics() {
             constraint!([&x, &y].argmin() == 1),
             constraint!(y < x),
         ),
+        // seen_before
+        (
+            "seen_before",
+            constraint!(xs.seen_before(2, |j| j != 0)),
+            constraint!(xs[1] == xs[2]),
+        ),
+        (
+            "seen_before at 0",
+            constraint!(xs.seen_before(0, |_| true)),
+            Bool::from_bool(false),
+        ),
+        (
+            "seen_before symbolic",
+            constraint!(xs.seen_before(2, |j| &fs[j])),
+            constraint!(any { fs[0] && xs[0] == xs[2], fs[1] && xs[1] == xs[2] }),
+        ),
+        (
+            "seen_before tuple",
+            constraint!([(&x, &p), (&y, &q)].seen_before(1, |_| true)),
+            constraint!(x == y && p == q),
+        ),
         // display label keeps the value
         (
             "@",
