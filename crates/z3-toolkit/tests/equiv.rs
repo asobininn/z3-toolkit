@@ -22,6 +22,14 @@ fn engines_and_labels() {
     constraints! { opt; x in 0..=10 }
     opt.maximize(&x);
     assert_eq!(opt.solve().unwrap().get(&x), Ok(10));
+    // `&E`
+    fn at_least_8(opt: &Optimize, x: &Int) {
+        constraints! { opt; x >= 8 }
+    }
+    let opt = Optimize::new();
+    at_least_8(&opt, &x);
+    opt.minimize(&x);
+    assert_eq!(opt.solve().unwrap().get(&x), Ok(8));
     // label
     let s = Solver::new();
     constraints! { s; x >= 0, "low": x >= 5, "high": x <= 3 };

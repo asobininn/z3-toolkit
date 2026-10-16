@@ -126,6 +126,27 @@ impl Engine for Optimize {
     }
 }
 
+impl<E: Engine + ?Sized> Engine for &E {
+    fn assert_one(&self, constraint: &Bool) {
+        (**self).assert_one(constraint);
+    }
+    fn assert_tracked(&self, constraint: &Bool, tracker: &Bool) {
+        (**self).assert_tracked(constraint, tracker);
+    }
+    fn check_sat(&self) -> SatResult {
+        (**self).check_sat()
+    }
+    fn model(&self) -> Option<Model> {
+        (**self).model()
+    }
+    fn unsat_core(&self) -> Vec<Bool> {
+        (**self).unsat_core()
+    }
+    fn reason_unknown(&self) -> Option<String> {
+        (**self).reason_unknown()
+    }
+}
+
 /// Iterator returned by [`Engine::solve_all`]
 pub struct Solutions<'a, E: ?Sized> {
     engine: &'a E,
