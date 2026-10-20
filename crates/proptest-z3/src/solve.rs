@@ -209,7 +209,7 @@ fn optimal(hard: &[Bool], wishes: &[Bool]) -> Result<Model, Failure> {
 }
 
 fn greedy(hard: &[Bool], mut wishes: Vec<Bool>) -> Result<Model, Failure> {
-    let solver = Solver::new_for_logic("QF_LIA").unwrap_or_else(|| Solver::new());
+    let solver = Solver::new_for_logic("QF_LIA").unwrap_or_else(Solver::new);
     assert_hard(&solver, hard);
     loop {
         match solver.check_assumptions(&wishes) {
