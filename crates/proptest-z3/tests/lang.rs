@@ -44,8 +44,8 @@ fn stmt() -> impl Strategy<Value = Frag> {
 
 fn names() -> NameSpec {
     NameSpec::new()
-        .space(VAR, "[a-z]{1,2}", 3)
-        .space(FUNC, "[A-Z][a-z]?", 2)
+        .space(VAR, "[a-c]", 3)
+        .space(FUNC, "[a-c]", 3)
 }
 
 // ==== Checker ====================
