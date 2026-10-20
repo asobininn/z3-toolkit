@@ -18,6 +18,8 @@ pub struct Binds {
     pub name: Vec<Int>,
     pub(crate) hole: Vec<usize>,
     step: Vec<usize>,
+    /// Scopes enclosing this one, innermost first. Empty at the top level (outside any scope).
+    scopes: Vec<Vec<usize>>,
     pub(crate) records: RefCell<Records>,
 }
 
@@ -25,6 +27,8 @@ impl Binds {
     pub(crate) fn new(frag: &Frag) -> Self {
         let n = frag.order.len();
         let info = |i: usize| &frag.holes[frag.order[i]];
+        let path =
+            |s: Option<usize>| std::iter::successors(s, |&cur| frag.scope_parent[cur]).collect();
         Self {
             role: (0..n).map(|i| info(i).role).collect(),
             space: (0..n).map(|i| info(i).space).collect(),
@@ -33,6 +37,7 @@ impl Binds {
             step: (0..n)
                 .map(|i| info(i).step.expect("closed by Skeleton::steps"))
                 .collect(),
+            scopes: (0..n).map(|i| path(info(i).scope)).collect(),
             records: RefCell::default(),
         }
     }
@@ -69,6 +74,14 @@ impl Binds {
     /// Whether `p` and `q` belong to the same step.
     pub fn same_step(&self, p: usize, q: usize) -> bool {
         self.step[p] == self.step[q]
+    }
+
+    /// Whether the scope of hole `outer` contains hole `inner`.
+    pub fn encloses(&self, outer: usize, inner: usize) -> bool {
+        match self.scopes[outer].first() {
+            Some(s) => self.scopes[inner].contains(s),
+            None => true,
+        }
     }
 
     /// Records an expression starting that hole `i` breaks rule `kind`, and return it unchanged.

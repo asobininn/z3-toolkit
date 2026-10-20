@@ -4,7 +4,9 @@ use z3_toolkit::prelude::*;
 
 fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
-    (0..i).filter(move |&k| binds.role[k] == Role::Def && binds.space[k] == space)
+    (0..i).filter(move |&k| {
+        binds.role[k] == Role::Def && binds.space[k] == space && binds.encloses(k, i)
+    })
 }
 
 /// Hole `i` (a reference) points to alive visible name.

@@ -79,6 +79,7 @@ pub(crate) struct HoleInfo {
     pub role: Role,
     pub hint: Hint,
     pub step: Option<usize>,
+    pub scope: Option<usize>,
 }
 
 // A fragment with holes, under construction.
@@ -88,6 +89,7 @@ pub struct Frag {
     pub(crate) holes: Vec<HoleInfo>,
     pub(crate) order: Vec<usize>,
     pub(crate) steps: usize,
+    pub(crate) scope_parent: Vec<Option<usize>>,
 }
 
 impl Frag {
@@ -100,6 +102,7 @@ impl Frag {
                 role,
                 hint,
                 step: None,
+                scope: None,
             }],
             order: vec![0],
             ..Default::default()
@@ -120,17 +123,24 @@ impl Frag {
         for part in parts {
             let hole_base = out.holes.len();
             let step_base = out.steps;
+            let scope_base = out.scope_parent.len();
             out.pieces.extend(part.pieces.into_iter().map(|p| match p {
                 Piece::Hole(h) => Piece::Hole(hole_base + h),
                 text => text,
             }));
             out.holes.extend(part.holes.into_iter().map(|h| HoleInfo {
                 step: h.step.map(|s| step_base + s),
+                scope: h.scope.map(|s| scope_base + s),
                 ..h
             }));
             out.order
                 .extend(part.order.into_iter().map(|h| hole_base + h));
             out.steps += part.steps;
+            out.scope_parent.extend(
+                part.scope_parent
+                    .into_iter()
+                    .map(|p| p.map(|s| scope_base + s)),
+            );
         }
         out
     }
@@ -149,6 +159,20 @@ impl Frag {
         Frag::concat(out)
     }
 
+    /// Creates a nested scope. Each element is closed as one step.
+    pub fn scope(steps: impl IntoIterator<Item = Frag>) -> Self {
+        let mut inner = Frag::closed(steps);
+        let new = Some(inner.scope_parent.len());
+        for parent in inner.scope_parent.iter_mut().filter(|p| p.is_none()) {
+            *parent = new;
+        }
+        inner.scope_parent.push(None);
+        for hole in inner.holes.iter_mut().filter(|h| h.scope.is_none()) {
+            hole.scope = new
+        }
+        inner
+    }
+
     fn closed(steps: impl IntoIterator<Item = Frag>) -> Self {
         Frag::concat(steps.into_iter().map(Frag::close))
     }
@@ -160,7 +184,8 @@ impl Frag {
             hole.step = step;
         }
         let holes = &self.holes;
-        self.order.sort_by_key(|&h| holes[h].role != Role::Use);
+        self.order
+            .sort_by_key(|&h| holes[h].scope.is_none() && holes[h].role != Role::Use);
         self
     }
 }
