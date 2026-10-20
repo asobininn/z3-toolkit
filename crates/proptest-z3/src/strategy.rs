@@ -14,7 +14,7 @@ pub trait FillExt: Strategy<Value = Skeleton> + Sized {
     where
         R: Fn(&Binds) -> Bool + 'static,
     {
-        self.fill_with(Fill::Optimal, names, rule)
+        self.fill_with(Fill::default(), names, rule)
     }
 
     fn fill_with<R>(self, fill: Fill, names: NameSpec, rule: R) -> Filled<Self, R>
@@ -64,14 +64,14 @@ where
         loop {
             let inner = self.inner.new_tree(runner)?;
             let (skeleton, names) = inner.current();
-            match skeleton.solve(&names, Fill::Optimal, &*self.rule) {
+            match skeleton.solve(&names, self.fill, &*self.rule) {
                 Ok(solved) => {
                     return Ok(FilledTree {
                         inner,
+                        fill: self.fill,
                         rule: self.rule.clone(),
                         current: solved.clone(),
                         failing: solved,
-                        fill: Fill::Optimal,
                         failed: HashSet::new(),
                         passed: HashSet::new(),
                         solved: HashMap::new(),

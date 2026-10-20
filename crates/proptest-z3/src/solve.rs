@@ -1,7 +1,7 @@
 use std::{fmt::Debug, ops::Range};
 
 use z3::{
-    Model, Optimize,
+    Model, Optimize, Solver,
     ast::{Bool, Int},
 };
 use z3_toolkit::prelude::*;
@@ -11,7 +11,10 @@ use crate::{Binds, Label, Names, Role, Skeleton, Space, frag::Piece, label::Tag}
 /// How the preferred names (hints) are treated.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Fill {
+    /// Solves with the hints s assumptions; on a conflict, drops the  last hint in the unsat core
+    /// and solves again.
     #[default]
+    Greedy,
     /// Maximizes the number of hints kept. Faithful, but slow with many holes.
     Optimal,
 }
@@ -144,6 +147,7 @@ impl Skeleton {
             })
             .collect();
         let model = match fill {
+            Fill::Greedy => greedy(&hard, wishes)?,
             Fill::Optimal => optimal(&hard, &wishes)?,
         };
         // Number in evalution order → Name of the hole in text order
@@ -195,10 +199,39 @@ impl Skeleton {
 fn assert_hard(engine: &impl Engine, hard: &[Bool]) {
     engine.assert_all(hard);
 }
+
 fn optimal(hard: &[Bool], wishes: &[Bool]) -> Result<Model, Failure> {
     let opt = Optimize::new();
     assert_hard(&opt, hard);
     let agree: Int = sum(wishes);
     opt.maximize(&agree);
     opt.solve()
+}
+
+fn greedy(hard: &[Bool], mut wishes: Vec<Bool>) -> Result<Model, Failure> {
+    let solver = Solver::new_for_logic("QF_LIA").unwrap_or_else(|| Solver::new());
+    assert_hard(&solver, hard);
+    loop {
+        match solver.check_assumptions(&wishes) {
+            z3::SatResult::Sat => {
+                return solver.get_model().ok_or(Failure::Unknown {
+                    reason: "no model".into(),
+                });
+            }
+            z3::SatResult::Unsat => {
+                let core = solver.get_unsat_core();
+                match wishes.iter().rposition(|w| core.contains(w)) {
+                    Some(d) => {
+                        wishes.remove(d);
+                    }
+                    None => return solver.solve(),
+                }
+            }
+            z3::SatResult::Unknown => {
+                return Err(Failure::Unknown {
+                    reason: solver.get_reason_unknown().unwrap_or_default(),
+                });
+            }
+        }
+    }
 }
