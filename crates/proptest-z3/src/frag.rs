@@ -78,6 +78,7 @@ pub(crate) struct HoleInfo {
     pub space: Space,
     pub role: Role,
     pub hint: Hint,
+    pub step: Option<usize>,
 }
 
 // A fragment with holes, under construction.
@@ -86,6 +87,7 @@ pub struct Frag {
     pub(crate) pieces: Vec<Piece>,
     pub(crate) holes: Vec<HoleInfo>,
     pub(crate) order: Vec<usize>,
+    pub(crate) steps: usize,
 }
 
 impl Frag {
@@ -93,7 +95,12 @@ impl Frag {
     pub fn hole(space: Space, role: Role, hint: Hint) -> Self {
         Self {
             pieces: vec![Piece::Hole(0)],
-            holes: vec![HoleInfo { space, role, hint }],
+            holes: vec![HoleInfo {
+                space,
+                role,
+                hint,
+                step: None,
+            }],
             order: vec![0],
             ..Default::default()
         }
@@ -112,13 +119,18 @@ impl Frag {
         let mut out = Frag::default();
         for part in parts {
             let hole_base = out.holes.len();
+            let step_base = out.steps;
             out.pieces.extend(part.pieces.into_iter().map(|p| match p {
                 Piece::Hole(h) => Piece::Hole(hole_base + h),
                 text => text,
             }));
-            out.holes.extend(part.holes);
+            out.holes.extend(part.holes.into_iter().map(|h| HoleInfo {
+                step: h.step.map(|s| step_base + s),
+                ..h
+            }));
             out.order
                 .extend(part.order.into_iter().map(|h| hole_base + h));
+            out.steps += part.steps;
         }
         out
     }
@@ -142,6 +154,11 @@ impl Frag {
     }
 
     fn close(mut self) -> Self {
+        let step = Some(self.steps);
+        self.steps += 1;
+        for hole in self.holes.iter_mut().filter(|h| h.step.is_none()) {
+            hole.step = step;
+        }
         let holes = &self.holes;
         self.order.sort_by_key(|&h| holes[h].role != Role::Use);
         self

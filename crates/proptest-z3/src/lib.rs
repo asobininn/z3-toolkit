@@ -1,5 +1,6 @@
 mod binds;
 mod frag;
+mod label;
 mod names;
 pub mod rules;
 mod solve;
@@ -7,6 +8,7 @@ mod strategy;
 
 pub use binds::Binds;
 pub use frag::{Frag, Hint, IntoFrag, Role, Skeleton, Space, Text};
+pub use label::Label;
 pub use names::{NameSpec, Names};
 pub use solve::{Fill, FilledHole, Hole, Solved};
 pub use strategy::{FillExt, Filled};

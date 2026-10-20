@@ -6,7 +6,7 @@ use z3::{
 };
 use z3_toolkit::prelude::*;
 
-use crate::{Binds, Names, Role, Skeleton, Space, frag::Piece};
+use crate::{Binds, Label, Names, Role, Skeleton, Space, frag::Piece, label::Tag};
 
 /// How the preferred names (hints) are treated.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -37,6 +37,8 @@ pub struct Solved {
     holes: Vec<FilledHole>,
     /// Holes, in evaluation order.
     events: Vec<Hole>,
+    /// Labels whose conditions held.
+    hits: Vec<(Option<Hole>, Tag)>,
 }
 
 impl Solved {
@@ -64,6 +66,13 @@ impl Solved {
         &self.events
     }
 
+    pub fn marks<L: Label>(&self) -> Vec<(Hole, L)> {
+        self.hits
+            .iter()
+            .filter_map(|(h, t)| Some(((*h)?, t.get()?)))
+            .collect()
+    }
+
     /// The text with line number.
     pub fn numbered(&self) -> String {
         (self.text.lines().enumerate())
@@ -76,6 +85,20 @@ impl Debug for Solved {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Solved{{")?;
         write!(f, "{}", self.numbered())?;
+        let mut marks = vec![];
+        for (h, t) in &self.hits {
+            if let Some(h) = h {
+                marks.push(format!(
+                    "{} @ {:?} `{}`",
+                    t.name,
+                    self.span(*h),
+                    self.name(*h)
+                ));
+            }
+        }
+        if !marks.is_empty() {
+            writeln!(f, " marks: {}", marks.join(", "))?;
+        }
         write!(f, "}}")
     }
 }
@@ -134,10 +157,22 @@ impl Skeleton {
                 }
             }
         }
+        let mut hits = vec![];
+        for (at, tag, cond) in &binds.records.borrow().labels {
+            let value = (model.eval(cond, true).and_then(|b| b.as_bool())).ok_or_else(|| {
+                Failure::Unknown {
+                    reason: format!("cannot evalute label {}", tag.name),
+                }
+            })?;
+            if value {
+                hits.push((at.map(|i| Hole(binds.hole[i])), tag.clone()));
+            }
+        }
         Ok(Solved {
             text,
             holes,
             events: binds.hole.iter().map(|&h| Hole(h)).collect(),
+            hits,
         })
     }
 }

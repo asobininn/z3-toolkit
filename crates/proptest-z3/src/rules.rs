@@ -19,3 +19,18 @@ pub fn visible(binds: &Binds, i: usize) -> Bool {
 pub fn bound(binds: &Binds, space: Space) -> Bool {
     constraint!(all { for i in binds.refs(space) { visible(binds, i) } })
 }
+
+/// Exaclty `n` references in `space` point to names that are not visible.
+pub fn unbound(binds: &Binds, space: Space, n: usize) -> Bool {
+    constraint!(exactly(n) { for i in binds.refs(space) { !visible(binds, i) } })
+}
+
+/// There is a `Def` of the same name in the same step as hole `i`.
+pub fn defined_in_same_step(binds: &Binds, i: usize) -> Bool {
+    let same: Vec<Bool> = binds
+        .defs(binds.space[i])
+        .filter(|&k| k != i && binds.same_step(k, i))
+        .map(|k| constraint!(binds.name[k] == binds.name[i]))
+        .collect();
+    Bool::or(&same)
+}
