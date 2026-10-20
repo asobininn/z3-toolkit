@@ -12,6 +12,13 @@ fn program() -> impl Strategy<Value = Skeleton> {
     prop::collection::vec(stmt(), 1..8).prop_map(steps)
 }
 
+fn program_with_kill() -> impl Strategy<Value = Skeleton> {
+    let head = prop::collection::vec(VAR.def().prop_map(|x| frag!["def ", x]), 1..3);
+    let tail = (VAR.kill(), VAR.refer()).prop_map(|(k, u)| [frag!["del ", k], frag!["print ", u]]);
+    (head, prop::collection::vec(stmt(), 0..5), tail)
+        .prop_map(|(head, body, tail)| steps(head.into_iter().chain(body).chain(tail)))
+}
+
 fn steps(stmts: impl IntoIterator<Item = Frag>) -> Skeleton {
     Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"]))
 }
@@ -46,6 +53,13 @@ fn names() -> NameSpec {
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum Bug {
     Unbound,
+    Killed,
+}
+
+#[derive(Debug, PartialEq)]
+enum Error {
+    Undefined(usize),
+    Killed(usize),
 }
 
 fn the_mark(s: &Solved) -> (usize, Bug) {
@@ -55,11 +69,11 @@ fn the_mark(s: &Solved) -> (usize, Bug) {
     (s.span(hole).start, bug)
 }
 
-fn check(text: &str) -> Vec<usize> {
+fn check(text: &str) -> Vec<Error> {
     let mut words =
         (text.split_whitespace()).map(|w| (w, w.as_ptr() as usize - text.as_ptr() as usize));
     let mut frames = vec![HashMap::new()];
-    let mut undefined = vec![];
+    let mut errors = vec![];
     while let Some((word, _)) = words.next() {
         let space = if matches!(word, "fn" | "call") {
             "func"
@@ -74,7 +88,8 @@ fn check(text: &str) -> Vec<usize> {
                 .collect();
             match (state.contains(&true), state.is_empty()) {
                 (true, _) => {}
-                (false, _) => undefined.push(at),
+                (false, true) => errors.push(Error::Undefined(at)),
+                (false, false) => errors.push(Error::Killed(at)),
             }
         };
         match word {
@@ -87,10 +102,18 @@ fn check(text: &str) -> Vec<usize> {
                 frames.last_mut().unwrap().insert((space, x.0), true);
             }
             "print" | "call" => refer(&frames, name()),
+            "del" => {
+                let x = name();
+                refer(&frames, x);
+                frames
+                    .iter_mut()
+                    .filter_map(|f| f.get_mut(&(space, x.0)))
+                    .for_each(|alive| *alive = false);
+            }
             other => panic!("unknown keyword `{other}`"),
         }
     }
-    undefined
+    errors
 }
 
 // ==== Tests ====================
@@ -112,6 +135,21 @@ proptest! {
         }},
     ))) {
         let (at, _) = the_mark(&s);
-        prop_assert_eq!(check(&s.text), vec![at], "{:?}", s)
+        let errors = check(&s.text);
+        prop_assert!(errors == [Error::Undefined(at)] || errors == [Error::Killed(at)], "{:?}", s);
+    }
+
+    /// Negative case: uses a deleted name in exactly one place; the error kind must match too.
+    #[test]
+    fn use_after_kill(s in program_with_kill().fill(names(), |binds| constraint!(
+        bound(binds, FUNC),
+        all { for i in binds.refs(VAR) { visible(binds, i) || killed(binds, i) } },
+        exactly(1) { for i in binds.refs(VAR) {
+            binds.mark(i, Bug::Killed, killed(binds, i))
+        }}
+    ))) {
+        let (at, bug) = the_mark(&s);
+        prop_assert_eq!(bug, Bug::Killed);
+        prop_assert_eq!(check(&s.text), vec![Error::Killed(at)], "{:?}", s);
     }
 }

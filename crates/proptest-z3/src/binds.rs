@@ -66,6 +66,11 @@ impl Binds {
         self.of(space, Role::Use)
     }
 
+    /// `Kill`s in `space`.
+    pub fn kills(&self, space: Space) -> impl Iterator<Item = usize> + '_ {
+        self.of(space, Role::Kill)
+    }
+
     /// References in `space`. the holes that must point to a live name.
     pub fn refs(&self, space: Space) -> impl Iterator<Item = usize> + '_ {
         (0..self.len()).filter(move |&i| self.space[i] == space && self.role[i].is_ref())

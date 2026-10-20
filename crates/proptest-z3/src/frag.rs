@@ -31,6 +31,11 @@ impl Space {
     pub fn refer(self) -> impl Strategy<Value = Frag> {
         self.hole(Role::Use)
     }
+
+    /// A hole that invalidates a name.
+    pub fn kill(self) -> impl Strategy<Value = Frag> {
+        self.hole(Role::Kill)
+    }
 }
 
 /// The role of a hole.
@@ -38,11 +43,12 @@ impl Space {
 pub enum Role {
     Def,
     Use,
+    Kill,
 }
 
 impl Role {
     pub fn is_ref(self) -> bool {
-        matches!(self, Role::Use)
+        matches!(self, Role::Use | Role::Kill)
     }
 }
 
