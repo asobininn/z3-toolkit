@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use proptest::prelude::*;
 use proptest_z3::prelude::*;
@@ -60,6 +60,11 @@ enum Bug {
 enum Error {
     Undefined(usize),
     Killed(usize),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Shape {
+    Reassigned,
 }
 
 fn the_mark(s: &Solved) -> (usize, Bug) {
@@ -151,5 +156,17 @@ proptest! {
         let (at, bug) = the_mark(&s);
         prop_assert_eq!(bug, Bug::Killed);
         prop_assert_eq!(check(&s.text), vec![Error::Killed(at)], "{:?}", s);
+    }
+
+    /// Classification: `observe` reads back labels without changing the distribution.
+    #[test]
+    fn observe_classifies(s in program().fill(names(), |binds| {
+        binds.observe(Shape::Reassigned, !distinct_defs(binds, VAR));
+        bound(binds, VAR) & bound(binds, FUNC)
+    })) {
+        let defs: Vec<&str> = s.holes().filter(|(_, h)| h.space == VAR && h.role == Role::Def)
+            .map(|(_, h)| h.name.as_str()).collect();
+        let unique: HashSet<_> = defs.iter().collect();
+        prop_assert_eq!(s.has(Shape::Reassigned), unique.len() < defs.len(), "{:?}", s);
     }
 }

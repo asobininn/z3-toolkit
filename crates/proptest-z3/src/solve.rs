@@ -66,11 +66,26 @@ impl Solved {
         &self.events
     }
 
+    /// The `(hole, label)` pairs recored with `Binds::mark` that turned out true.
     pub fn marks<L: Label>(&self) -> Vec<(Hole, L)> {
         self.hits
             .iter()
             .filter_map(|(h, t)| Some(((*h)?, t.get()?)))
             .collect()
+    }
+
+    /// The labels of type `L` recorded with `Binds::observe` that turned out true.
+    pub fn labels<L: Label>(&self) -> Vec<L> {
+        self.hits
+            .iter()
+            .filter(|(h, _)| h.is_none())
+            .filter_map(|(_, t)| t.get())
+            .collect()
+    }
+
+    /// Whether the `observe` label `kind` turned out true.
+    pub fn has<L: Label>(&self, kind: L) -> bool {
+        self.labels::<L>().contains(&kind)
     }
 
     /// The text with line number.

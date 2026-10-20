@@ -62,3 +62,12 @@ pub fn killed(binds: &Binds, i: usize) -> Bool {
         .collect();
     constraint!(Bool::or(&cases), !visible(binds, i))
 }
+
+/// The names of the `Def`s in `space` are pairwise distinct.
+///
+/// To include reassignments, use `!distinct_defs(binds, space)`.
+pub fn distinct_defs(binds: &Binds, space: Space) -> Bool {
+    binds
+        .name
+        .distinct_among(|k| binds.role[k] == Role::Def && binds.space[k] == space)
+}

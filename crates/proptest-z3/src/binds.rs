@@ -97,4 +97,14 @@ impl Binds {
             .push((Some(i), Tag::new(kind), broken.clone()));
         broken
     }
+
+    /// Only records the expression; it does not become a constraint.
+    /// 
+    /// After solving, the kinds whose `cond` is true are returned by [`Solved::labels`](crate::Solved::labels).
+    pub fn observe<L: Label>(&self, kind: L, cond: Bool) {
+        self.records
+            .borrow_mut()
+            .labels
+            .push((None, Tag::new(kind), cond));
+    }
 }
