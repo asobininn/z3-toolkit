@@ -6,7 +6,12 @@ use z3::{
 };
 use z3_toolkit::prelude::*;
 
-use crate::{Binds, Label, Names, Role, Skeleton, Space, frag::Piece, label::Tag};
+use crate::{
+    Binds, Label, Names, Role, Skeleton, Space,
+    frag::Piece,
+    label::Tag,
+    rules::{kills_between, reaching_defs},
+};
 
 /// How the preferred names (hints) are treated.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -42,6 +47,8 @@ pub struct Solved {
     events: Vec<Hole>,
     /// Labels whose conditions held.
     hits: Vec<(Option<Hole>, Tag)>,
+    /// The definition each hole resolves to, in text order.
+    targets: Vec<Option<Hole>>,
     pub(crate) declared: BTreeMap<String, bool>,
 }
 
@@ -68,6 +75,12 @@ impl Solved {
     /// Holes in evalution order.
     pub fn events(&self) -> &[Hole] {
         &self.events
+    }
+
+    /// The definition hole a reference resolves to. `None` for a reference that is not visible
+    ///  and for a definition hole. For a `Kill` hole, the definition it kills.
+    pub fn target(&self, hole: Hole) -> Option<Hole> {
+        self.targets[hole.0]
     }
 
     /// The `(hole, label)` pairs recorded with `Binds::mark` that turned out true.
@@ -161,6 +174,17 @@ impl Skeleton {
         for (i, &v) in picked.iter().enumerate() {
             by_hole[binds.hole[i]] = v;
         }
+        // Resolve each reference with the same conditions as `visible`, now on concrete names.
+        let target = |i: usize| {
+            let same = |k: usize| picked[k] == picked[i];
+            reaching_defs(&binds, i)
+                .filter(|&k| same(k) && !kills_between(&binds, k, i).any(same))
+                .max()
+        };
+        let mut targets = vec![None; frag.holes.len()];
+        for i in (0..binds.len()).filter(|&i| binds.role[i].is_ref()) {
+            targets[binds.hole[i]] = target(i).map(|k| Hole(binds.hole[k]));
+        }
         // Insert into the text in order, recording the position of each hole
         let mut text = String::new();
         let mut holes = Vec::with_capacity(frag.holes.len());
@@ -200,6 +224,7 @@ impl Skeleton {
             holes,
             events: binds.hole.iter().map(|&h| Hole(h)).collect(),
             hits,
+            targets,
             declared,
         })
     }

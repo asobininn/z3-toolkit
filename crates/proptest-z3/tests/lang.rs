@@ -74,11 +74,12 @@ fn the_mark(s: &Solved) -> (usize, Bug) {
     (s.span(hole).start, bug)
 }
 
-fn check(text: &str) -> Vec<Error> {
+fn resolve(text: &str) -> (Vec<Error>, HashMap<usize, usize>) {
     let mut words =
         (text.split_whitespace()).map(|w| (w, w.as_ptr() as usize - text.as_ptr() as usize));
     let mut frames = vec![HashMap::new()];
     let mut errors = vec![];
+    let mut targets = HashMap::new();
     while let Some((word, _)) = words.next() {
         let space = if matches!(word, "fn" | "call") {
             "func"
@@ -86,25 +87,29 @@ fn check(text: &str) -> Vec<Error> {
             "var"
         };
         let mut name = || words.next().expect("a name after the keyword");
-        let mut refer = |frames: &Vec<HashMap<_, bool>>, (name, at): (&str, usize)| {
-            let state: Vec<bool> = frames
+        let mut refer = |frames: &Vec<HashMap<_, Option<usize>>>, (name, at): (&str, usize)| {
+            let state: Vec<Option<usize>> = frames
                 .iter()
                 .filter_map(|f| f.get(&(space, name)).copied())
                 .collect();
-            match (state.contains(&true), state.is_empty()) {
-                (true, _) => {}
-                (false, true) => errors.push(Error::Undefined(at)),
-                (false, false) => errors.push(Error::Killed(at)),
+            // match (state.contains(&true), state.is_empty()) {
+            match (state.iter().rev().find_map(|&def| def), state.is_empty()) {
+                (Some(def), _) => drop(targets.insert(at, def)),
+                (None, true) => errors.push(Error::Undefined(at)),
+                (None, false) => errors.push(Error::Killed(at)),
             }
         };
         match word {
             "{" => frames.push(HashMap::new()),
             "}" => drop(frames.pop()),
-            "def" | "fn" => drop(frames.last_mut().unwrap().insert((space, name().0), true)),
+            "def" | "fn" => {
+                let (x, at) = name();
+                frames.last_mut().unwrap().insert((space, x), Some(at));
+            }
             "set" => {
                 let (x, y) = (name(), name());
                 refer(&frames, y);
-                frames.last_mut().unwrap().insert((space, x.0), true);
+                frames.last_mut().unwrap().insert((space, x.0), Some(x.1));
             }
             "print" | "call" => refer(&frames, name()),
             "del" => {
@@ -113,12 +118,16 @@ fn check(text: &str) -> Vec<Error> {
                 frames
                     .iter_mut()
                     .filter_map(|f| f.get_mut(&(space, x.0)))
-                    .for_each(|alive| *alive = false);
+                    .for_each(|alive| *alive = None);
             }
             other => panic!("unknown keyword `{other}`"),
         }
     }
-    errors
+    (errors, targets)
+}
+
+fn check(text: &str) -> Vec<Error> {
+    resolve(text).0
 }
 
 // ==== Tests ====================
@@ -168,6 +177,16 @@ proptest! {
             .map(|(_, h)| h.name.as_str()).collect();
         let unique: HashSet<_> = defs.iter().collect();
         prop_assert_eq!(s.has(Shape::Reassigned), unique.len() < defs.len(), "{:?}", s);
+    }
+
+
+    #[test]
+    fn targets_match_check(s in program().fill(names(), |binds| bound(binds, VAR) & bound(binds, FUNC))) {
+        let (_, expected) = resolve(&s.text);
+        for (hole, filled) in s.holes().filter(|(_, h)| h.role.is_ref()) {
+            let target = s.target(hole).map(|def| s.span(def).start);
+            prop_assert_eq!(target, expected.get(&filled.span.start).copied(), "{:?}", s);
+        }
     }
 }
 

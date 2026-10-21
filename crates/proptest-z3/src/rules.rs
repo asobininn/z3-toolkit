@@ -3,7 +3,7 @@ use z3::ast::Bool;
 use z3_toolkit::prelude::*;
 
 /// `Def`s visible from the reference `i`.
-fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
+pub(crate) fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (0..i).filter(move |&k| {
         binds.role[k] == Role::Def && binds.space[k] == space && binds.encloses(k, i)
@@ -11,7 +11,7 @@ fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
 }
 
 /// `Kill`s between `k` and `i` in the same namespace as `i`.
-fn kills_between(binds: &Binds, k: usize, i: usize) -> impl Iterator<Item = usize> + '_ {
+pub(crate) fn kills_between(binds: &Binds, k: usize, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (k + 1..i).filter(move |&j| binds.role[j] == Role::Kill && binds.space[j] == space)
 }
