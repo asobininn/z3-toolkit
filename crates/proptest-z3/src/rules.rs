@@ -34,7 +34,7 @@ pub fn bound(binds: &Binds, space: Space) -> Bool {
     constraint!(all { for i in binds.refs(space) { visible(binds, i) } })
 }
 
-/// Exaclty `n` references in `space` point to names that are not visible.
+/// Exactly `n` references in `space` point to names that are not visible.
 pub fn unbound(binds: &Binds, space: Space, n: usize) -> Bool {
     constraint!(exactly(n) { for i in binds.refs(space) { !visible(binds, i) } })
 }

@@ -11,7 +11,7 @@ use crate::{Binds, Label, Names, Role, Skeleton, Space, frag::Piece, label::Tag}
 /// How the preferred names (hints) are treated.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Fill {
-    /// Solves with the hints s assumptions; on a conflict, drops the  last hint in the unsat core
+    /// Solves with the hints as assumptions; on a conflict, drops the last hint in the unsat core
     /// and solves again.
     #[default]
     Greedy,
@@ -70,7 +70,7 @@ impl Solved {
         &self.events
     }
 
-    /// The `(hole, label)` pairs recored with `Binds::mark` that turned out true.
+    /// The `(hole, label)` pairs recorded with `Binds::mark` that turned out true.
     pub fn marks<L: Label>(&self) -> Vec<(Hole, L)> {
         self.hits
             .iter()
@@ -104,19 +104,23 @@ impl Debug for Solved {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Solved{{")?;
         write!(f, "{}", self.numbered())?;
-        let mut marks = vec![];
+        let (mut marks, mut labels) = (vec![], vec![]);
         for (h, t) in &self.hits {
-            if let Some(h) = h {
-                marks.push(format!(
+            match h {
+                Some(h) => marks.push(format!(
                     "{} @ {:?} `{}`",
                     t.name,
                     self.span(*h),
                     self.name(*h)
-                ));
+                )),
+                None => labels.push(t.name.as_str()),
             }
         }
         if !marks.is_empty() {
             writeln!(f, " marks: {}", marks.join(", "))?;
+        }
+        if !labels.is_empty() {
+            writeln!(f, " labels: {}", labels.join(", "))?;
         }
         write!(f, "}}")
     }
@@ -151,7 +155,7 @@ impl Skeleton {
             Fill::Greedy => greedy(&binds, &hard, wishes)?,
             Fill::Optimal => optimal(&binds, &hard, &wishes)?,
         };
-        // Number in evalution order → Name of the hole in text order
+        // Number in evaluation order → Name of the hole in text order
         let picked: Vec<usize> = model.get_as(&binds.name)?;
         let mut by_hole = vec![0; frag.holes.len()];
         for (i, &v) in picked.iter().enumerate() {
@@ -177,13 +181,13 @@ impl Skeleton {
                 }
             }
         }
-        // Reloading labes.
+        // Reloading labels.
         let mut declared = BTreeMap::new();
         let mut hits = vec![];
         for (at, tag, cond) in &binds.records.borrow().labels {
             let value = (model.eval(cond, true).and_then(|b| b.as_bool())).ok_or_else(|| {
                 Failure::Unknown {
-                    reason: format!("cannot evalute label {}", tag.name),
+                    reason: format!("cannot evaluate label {}", tag.name),
                 }
             })?;
             *declared.entry(tag.name.clone()).or_insert(false) |= value;
@@ -217,7 +221,7 @@ fn optimal(binds: &Binds, hard: &[Bool], wishes: &[Bool]) -> Result<Model, Failu
 }
 
 fn greedy(binds: &Binds, hard: &[Bool], mut wishes: Vec<Bool>) -> Result<Model, Failure> {
-    let solver = Solver::new_for_logic("QF_LIA").unwrap_or_else(Solver::new);
+    let solver = Solver::new_for_logic("QF_LIA").unwrap_or_default();
     assert_hard(&solver, binds, hard);
     loop {
         match solver.check_assumptions(&wishes) {

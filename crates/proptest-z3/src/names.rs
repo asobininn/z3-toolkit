@@ -1,4 +1,7 @@
-use std::{collections::BTreeMap, fmt::Debug};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fmt::Debug,
+};
 
 use proptest::{
     prelude::prop,
@@ -18,7 +21,7 @@ impl Names {
         self.spaces.get(&space).map(Vec::as_slice).unwrap_or(&[])
     }
 
-    /// Sets candidates by hand (for tests and exaples).
+    /// Sets candidates by hand (for tests and examples).
     pub fn with(
         mut self,
         space: Space,
@@ -41,7 +44,7 @@ impl NameSpec {
         Self::default()
     }
 
-    /// `count` distinct names matcing `regex`.
+    /// `count` distinct names matching `regex`.
     pub fn space(self, space: Space, regex: &str, count: usize) -> Self {
         let one = proptest::string::string_regex(regex).expect("invalid regex for names");
         let names = prop::collection::btree_set(one, count)
@@ -52,6 +55,22 @@ impl NameSpec {
 
     /// Passes a strategy that generate the candidates directly. It must return a sequence without duplicates.
     pub fn space_with(mut self, space: Space, names: BoxedStrategy<Vec<String>>) -> Self {
+        let names = names
+            .prop_map(move |names| {
+                assert!(
+                    names.iter().all(|name| !name.is_empty()),
+                    "empty name in space `{}`",
+                    space.name()
+                );
+                assert_eq!(
+                    names.iter().collect::<BTreeSet<_>>().len(),
+                    names.len(),
+                    "duplicate names in space `{}`",
+                    space.name()
+                );
+                names
+            })
+            .boxed();
         let prev = self.spaces.insert(space, names);
         assert!(prev.is_none(), "space `{}` registered twice", space.name());
         self
@@ -60,9 +79,7 @@ impl NameSpec {
 
 impl Debug for NameSpec {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("NameSpec")
-            .field("spaces", &self.spaces)
-            .finish_non_exhaustive()
+        f.write_str("NameSpec")
     }
 }
 

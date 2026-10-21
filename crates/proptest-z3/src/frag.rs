@@ -17,7 +17,7 @@ impl Space {
         self.0
     }
 
-    /// A strategy for a single hole hole with `role`.
+    /// A strategy for a single hole with `role`.
     pub fn hole(self, role: Role) -> impl Strategy<Value = Frag> {
         any::<Hint>().prop_map(move |hint| Frag::hole(self, role, hint))
     }

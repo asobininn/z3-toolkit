@@ -3,7 +3,7 @@ use std::{any::Any, cell::RefCell, collections::BTreeMap, fmt::Debug, io::Write,
 use z3::ast::Bool;
 use z3_toolkit::Failure;
 
-/// Types usable as labels: anything `Copy` with `debug` and equality
+/// Types usable as labels: anything `Copy` with `Debug` and equality
 pub trait Label: Copy + Debug + PartialEq + Send + Sync + 'static {}
 impl<T: Copy + Debug + PartialEq + Send + Sync + 'static> Label for T {}
 
@@ -36,7 +36,7 @@ pub(crate) struct Records {
     pub required: Vec<(String, Bool)>,
 }
 
-/// Asks this conditin only when all `guards` hold (self ∧ gards).
+/// Asks this condition only when all `guards` hold (self ∧ guards).
 pub trait Given {
     fn given(self, guard: impl IntoIterator<Item = Bool>) -> Bool;
 }
@@ -104,7 +104,7 @@ fn to_stats(labels: &BTreeMap<String, (usize, usize)>) -> Vec<LabelStat> {
         .collect()
 }
 
-/// Per-label statistics of the caases generated so far on this thread.
+/// Per-label statistics of the cases generated so far on this thread.
 pub fn label_stats() -> Vec<LabelStat> {
     with_stats(|s| to_stats(&s.labels))
 }
@@ -129,7 +129,7 @@ impl Drop for Stats {
         {
             let _ = writeln!(
                 err,
-                "proptest-z3 warnings: label `{}` never occurred in {} cases (test `{}`);\
+                "proptest-z3 warning: label `{}` never occurred in {} cases (test `{}`); \
              is it implied by another violation? consider `given`",
                 s.label,
                 s.declared,

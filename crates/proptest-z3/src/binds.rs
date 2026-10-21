@@ -51,7 +51,7 @@ impl Binds {
         self.role.is_empty()
     }
 
-    /// Holes in `space` with role `role` (positions in evalution order).
+    /// Holes in `space` with role `role` (positions in evaluation order).
     pub fn of(&self, space: Space, role: Role) -> impl Iterator<Item = usize> + '_ {
         (0..self.len()).filter(move |&i| self.space[i] == space && self.role[i] == role)
     }
@@ -89,7 +89,7 @@ impl Binds {
         }
     }
 
-    /// Records an expression starting that hole `i` breaks rule `kind`, and return it unchanged.
+    /// Records an expression stating that hole `i` breaks rule `kind`, and return it unchanged.
     pub fn mark<L: Label>(&self, i: usize, kind: L, broken: Bool) -> Bool {
         self.records
             .borrow_mut()

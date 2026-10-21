@@ -126,7 +126,7 @@ fn check(text: &str) -> Vec<Error> {
 proptest! {
     /// Positive case: every reference points to a visible name.
     #[test]
-    fn bound_has_no_erros(s in program().fill(names(), |binds| bound(binds, VAR) & bound(binds, FUNC))) {
+    fn bound_has_no_errors(s in program().fill(names(), |binds| bound(binds, VAR) & bound(binds, FUNC))) {
         prop_assert_eq!(check(&s.text), vec![], "{:?}", s);
     }
 
@@ -141,7 +141,7 @@ proptest! {
     ))) {
         let (at, _) = the_mark(&s);
         let errors = check(&s.text);
-        prop_assert!(errors == [Error::Undefined(at)] || errors == [Error::Killed(at)], "{:?}", s);
+        prop_assert!(errors == [Error::Undefined(at)], "{:?}", s);
     }
 
     /// Negative case: uses a deleted name in exactly one place; the error kind must match too.
