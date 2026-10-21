@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use proptest::{prelude::*, strategy::ValueTree, test_runner::TestRunner};
-use proptest_z3::{prelude::*, take_label_stats};
+use proptest_z3::{prelude::*, take_label_stats, take_rejections};
 
 const VAR: Space = Space::new("var");
 const FUNC: Space = Space::new("func");
@@ -205,7 +205,6 @@ fn given_separates_implied_violations() {
     assert!(run(true).contains(&Bug::Killed));
 }
 
-
 /// Occurrences are counted with `label_stats`.
 #[test]
 fn label_stats_count_cases() {
@@ -222,4 +221,32 @@ fn label_stats_count_cases() {
     };
     assert_eq!((stat.label.as_str(), stat.declared), ("Reassigned", 50));
     assert!(0 < stat.occurred && stat.occurred < 50, "{stat:?}");
+}
+
+#[test]
+fn rejections_are_counted_by_core() {
+    use proptest::test_runner::Config;
+    for fill in [Fill::Greedy, Fill::Optimal] {
+        let strategy = program().fill_with(fill, names(), |binds| {
+            binds.require("bound", bound(binds, VAR));
+            binds.require("one_unbound", unbound(binds, VAR, 1));
+            Bool::from_bool(true)
+        });
+        let mut runner = TestRunner::new(Config {
+            max_local_rejects: 20,
+            ..Config::default()
+        });
+        assert!(strategy.new_tree(&mut runner).is_err());
+        let rejections = take_rejections();
+        let total: usize = rejections.iter().map(|(_, count)| count).sum();
+        assert!(total > 0, "{fill:?}");
+        for (core, _) in &rejections {
+            assert!(!core.is_empty(), "{fill:?}: unnamed core");
+            assert!(
+                core.iter()
+                    .all(|name| name == "bound" || name == "one_unbound"),
+                "{fill:?}: {core:?}"
+            );
+        }
+    }
 }

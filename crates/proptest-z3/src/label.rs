@@ -33,6 +33,7 @@ impl Tag {
 #[derive(Default)]
 pub(crate) struct Records {
     pub labels: Vec<(Option<usize>, Tag, Bool)>,
+    pub required: Vec<(String, Bool)>,
 }
 
 /// Asks this conditin only when all `guards` hold (self ∧ gards).

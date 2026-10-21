@@ -99,12 +99,23 @@ impl Binds {
     }
 
     /// Only records the expression; it does not become a constraint.
-    /// 
+    ///
     /// After solving, the kinds whose `cond` is true are returned by [`Solved::labels`](crate::Solved::labels).
     pub fn observe<L: Label>(&self, kind: L, cond: Bool) {
         self.records
             .borrow_mut()
             .labels
             .push((None, Tag::new(kind), cond));
+    }
+
+    /// Adds a named constraint.
+    ///
+    /// When solving fails, the names in the unsat core are counted as rejection reasons
+    /// ([`take_rejections`](crate::take_rejections)).
+    pub fn require<L: Label>(&self, label: L, constraint: Bool) {
+        self.records
+            .borrow_mut()
+            .required
+            .push((Tag::new(label).name, constraint));
     }
 }

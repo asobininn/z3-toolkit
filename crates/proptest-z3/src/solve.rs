@@ -148,8 +148,8 @@ impl Skeleton {
             })
             .collect();
         let model = match fill {
-            Fill::Greedy => greedy(&hard, wishes)?,
-            Fill::Optimal => optimal(&hard, &wishes)?,
+            Fill::Greedy => greedy(&binds, &hard, wishes)?,
+            Fill::Optimal => optimal(&binds, &hard, &wishes)?,
         };
         // Number in evalution order → Name of the hole in text order
         let picked: Vec<usize> = model.get_as(&binds.name)?;
@@ -201,21 +201,24 @@ impl Skeleton {
     }
 }
 
-fn assert_hard(engine: &impl Engine, hard: &[Bool]) {
+fn assert_hard(engine: &impl Engine, binds: &Binds, hard: &[Bool]) {
     engine.assert_all(hard);
+    for (label, constraint) in &binds.records.borrow().required {
+        engine.assert_labeled(label, constraint);
+    }
 }
 
-fn optimal(hard: &[Bool], wishes: &[Bool]) -> Result<Model, Failure> {
+fn optimal(binds: &Binds, hard: &[Bool], wishes: &[Bool]) -> Result<Model, Failure> {
     let opt = Optimize::new();
-    assert_hard(&opt, hard);
+    assert_hard(&opt, binds, hard);
     let agree: Int = sum(wishes);
     opt.maximize(&agree);
     opt.solve()
 }
 
-fn greedy(hard: &[Bool], mut wishes: Vec<Bool>) -> Result<Model, Failure> {
+fn greedy(binds: &Binds, hard: &[Bool], mut wishes: Vec<Bool>) -> Result<Model, Failure> {
     let solver = Solver::new_for_logic("QF_LIA").unwrap_or_else(Solver::new);
-    assert_hard(&solver, hard);
+    assert_hard(&solver, binds, hard);
     loop {
         match solver.check_assumptions(&wishes) {
             z3::SatResult::Sat => {
