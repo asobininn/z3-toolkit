@@ -7,7 +7,10 @@ use std::{
 use proptest::{prelude::*, strategy::ValueTree};
 use z3::ast::Bool;
 
-use crate::{Binds, Fill, NameSpec, Names, Skeleton, Solved};
+use crate::{
+    Binds, Fill, NameSpec, Names, Skeleton, Solved,
+    label::{count_case, count_rejection},
+};
 
 pub trait FillExt: Strategy<Value = Skeleton> + Sized {
     fn fill<R>(self, names: NameSpec, rule: R) -> Filled<Self, R>
@@ -66,6 +69,7 @@ where
             let (skeleton, names) = inner.current();
             match skeleton.solve(&names, self.fill, &*self.rule) {
                 Ok(solved) => {
+                    count_case(&solved.declared);
                     return Ok(FilledTree {
                         inner,
                         fill: self.fill,
@@ -77,8 +81,9 @@ where
                         solved: HashMap::new(),
                     });
                 }
-                Err(_failure) => {
-                    runner.reject_local("unsat")?;
+                Err(failure) => {
+                    count_rejection(&failure);
+                    runner.reject_local("unsat (see proptest_z3::take_rejections)")?;
                 }
             }
         }

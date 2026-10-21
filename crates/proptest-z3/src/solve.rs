@@ -1,4 +1,4 @@
-use std::{fmt::Debug, ops::Range};
+use std::{collections::BTreeMap, fmt::Debug, ops::Range};
 
 use z3::{
     Model, Optimize, Solver,
@@ -42,6 +42,7 @@ pub struct Solved {
     events: Vec<Hole>,
     /// Labels whose conditions held.
     hits: Vec<(Option<Hole>, Tag)>,
+    pub(crate) declared: BTreeMap<String, bool>,
 }
 
 impl Solved {
@@ -176,6 +177,8 @@ impl Skeleton {
                 }
             }
         }
+        // Reloading labes.
+        let mut declared = BTreeMap::new();
         let mut hits = vec![];
         for (at, tag, cond) in &binds.records.borrow().labels {
             let value = (model.eval(cond, true).and_then(|b| b.as_bool())).ok_or_else(|| {
@@ -183,6 +186,7 @@ impl Skeleton {
                     reason: format!("cannot evalute label {}", tag.name),
                 }
             })?;
+            *declared.entry(tag.name.clone()).or_insert(false) |= value;
             if value {
                 hits.push((at.map(|i| Hole(binds.hole[i])), tag.clone()));
             }
@@ -192,6 +196,7 @@ impl Skeleton {
             holes,
             events: binds.hole.iter().map(|&h| Hole(h)).collect(),
             hits,
+            declared,
         })
     }
 }

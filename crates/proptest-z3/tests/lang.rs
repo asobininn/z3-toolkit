@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use proptest::prelude::*;
-use proptest_z3::prelude::*;
+use proptest::{prelude::*, strategy::ValueTree, test_runner::TestRunner};
+use proptest_z3::{prelude::*, take_label_stats};
 
 const VAR: Space = Space::new("var");
 const FUNC: Space = Space::new("func");
@@ -169,4 +169,57 @@ proptest! {
         let unique: HashSet<_> = defs.iter().collect();
         prop_assert_eq!(s.has(Shape::Reassigned), unique.len() < defs.len(), "{:?}", s);
     }
+}
+
+/// A violation that is always broken together with another one when its precondition fails
+/// can occur on its own once it is guarded with `given`.
+#[test]
+fn given_separates_implied_violations() {
+    let run = |use_given: bool| {
+        let strategy = program_with_kill().fill(names(), move |binds| {
+            constraint!(
+                bound(binds, FUNC),
+                exactly(1) { for i in binds.refs(VAR) {
+                    binds.mark(i, Bug::Killed, killed(binds, i)),
+                    if use_given {
+                        binds.mark(i, Bug::Unbound, (!visible(binds, i)).given([!killed(binds, i)]))
+                    } else {
+                        binds.mark(i, Bug::Unbound, !visible(binds, i))
+                    }
+                } },
+            )
+        });
+        let mut runner = TestRunner::deterministic();
+        (0..100)
+            .flat_map(|_| {
+                strategy
+                    .new_tree(&mut runner)
+                    .unwrap()
+                    .current()
+                    .marks::<Bug>()
+            })
+            .map(|(_, bug)| bug)
+            .collect::<Vec<_>>()
+    };
+    assert!(!run(false).contains(&Bug::Killed));
+    assert!(run(true).contains(&Bug::Killed));
+}
+
+
+/// Occurrences are counted with `label_stats`.
+#[test]
+fn label_stats_count_cases() {
+    let strategy = program().fill(names(), |binds| {
+        binds.observe(Shape::Reassigned, !distinct_defs(binds, VAR));
+        bound(binds, VAR) & bound(binds, FUNC)
+    });
+    let mut runner = TestRunner::deterministic();
+    for _ in 0..50 {
+        strategy.new_tree(&mut runner).unwrap();
+    }
+    let [stat] = &take_label_stats()[..] else {
+        panic!()
+    };
+    assert_eq!((stat.label.as_str(), stat.declared), ("Reassigned", 50));
+    assert!(0 < stat.occurred && stat.occurred < 50, "{stat:?}");
 }
