@@ -7,7 +7,7 @@
 [![z3-toolkit](https://img.shields.io/badge/with-z3--toolkit-orange.svg)](https://crates.io/crates/z3-toolkit)
 
 proptest-z3 は、要素間の依存関係を持つテスト入力を生成するための、[proptest](https://crates.io/crates/proptest) の拡張です。
-入力の構造は通常どおり proptest の Strategy で定義し、要素どうしの関係は [z3](https://crates.io/crates/z3) の制約で指定します。
+入力の構造は通常どおり proptest の Strategy で定義し、要素どうしの関係は [Z3](https://crates.io/crates/z3) の制約で指定します。
 制約を反転することで、指定した数の違反を含む入力を生成でき、違反した箇所も特定できます。縮小時にも要素間の関係は保たれます。
 
 ## Setup
@@ -163,7 +163,7 @@ proptest-z3 warning: label `Delete` never occurred in 4 cases (test `each_kind_i
 
 ## Scope
 
-proptest-z3 は、名前の参照関係を持つ、小さなテスト入力のためのクレートです。
+proptest-z3 は、定義と参照を含む小さなテスト入力のためのクレートです。本クレートで使用される「名前」とは、変数名やテーブル名、行のキーのように、作られてから別の場所で指されるものを広く指します。
 
 - 扱える関係は、名前どうしの等しさだけです。型や値の条件は `constraint!` で足せますが、整数などの値そのものを Z3 に選ばせる機能はまだありません。
 - スコープは、ブロックのような字句的な入れ子だけを扱います。
