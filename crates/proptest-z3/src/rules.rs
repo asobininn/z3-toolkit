@@ -11,7 +11,7 @@ pub fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '
 }
 
 /// `Kill`s between `k` and `i` in the same namespace as `i`.
-pub(crate) fn kills_between(binds: &Binds, k: usize, i: usize) -> impl Iterator<Item = usize> + '_ {
+pub fn kills_between(binds: &Binds, k: usize, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (k + 1..i).filter(move |&j| binds.role[j] == Role::Kill && binds.space[j] == space)
 }
@@ -27,6 +27,21 @@ pub fn visible(binds: &Binds, i: usize) -> Bool {
         })
         .collect();
     Bool::or(&alive)
+}
+
+/// Reference `i` resolves to definition `k`: same name, no later candidate with the same
+/// name, and no `Kill` of that name in between.
+pub fn resolves_to(binds: &Binds, i: usize, k: usize) -> Bool {
+    if !reaching_defs(binds, i).any(|q| q == k) {
+        return Bool::from_bool(false);
+    }
+    let same = |j: usize| constraint!(binds.name[j] == binds.name[i]);
+    let later: Vec<Bool> = reaching_defs(binds, i)
+        .filter(|&q| k < q)
+        .map(&same)
+        .collect();
+    let kills: Vec<Bool> = kills_between(binds, k, i).map(&same).collect();
+    constraint!(same(k), !Bool::or(&later), !Bool::or(&kills))
 }
 
 /// All references in `space` point to visible names

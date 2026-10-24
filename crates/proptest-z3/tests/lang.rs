@@ -67,6 +67,9 @@ enum Shape {
     Reassigned,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Used;
+
 fn the_mark(s: &Solved) -> (usize, Bug) {
     let [(hole, bug)] = s.marks::<Bug>()[..] else {
         panic!("one mark expected: {s:?}")
@@ -177,6 +180,23 @@ proptest! {
             .map(|(_, h)| h.name.as_str()).collect();
         let unique: HashSet<_> = defs.iter().collect();
         prop_assert_eq!(s.has(Shape::Reassigned), unique.len() < defs.len(), "{:?}", s);
+    }
+
+    //`resolves_to` agrees with `Solved::target`.
+    #[test]
+    fn resolves_to_matches_target(s in program_with_kill().fill(names(), |binds| {
+        for space in [VAR, FUNC] {
+            for k in binds.defs(space) {
+                binds.mark(k, Used, constraint!(any { for i in binds.refs(space) {
+                    resolves_to(binds, i, k)
+                }}));
+            }
+        }
+        Bool::from_bool(true)
+    })) {
+        let used: HashSet<Hole> = s.marks::<Used>().into_iter().map(|(hole, _)| hole).collect();
+        let expected: HashSet<Hole> = s.holes().filter_map(|(hole, _)| s.target(hole)).collect();
+        prop_assert_eq!(used, expected, "{:?}", s);
     }
 
 
