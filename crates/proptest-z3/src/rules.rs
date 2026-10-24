@@ -3,7 +3,7 @@ use z3::ast::Bool;
 use z3_toolkit::prelude::*;
 
 /// `Def`s visible from the reference `i`.
-pub(crate) fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
+pub fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (0..i).filter(move |&k| {
         binds.role[k] == Role::Def && binds.space[k] == space && binds.encloses(k, i)
