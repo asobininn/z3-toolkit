@@ -2,7 +2,8 @@ use crate::{Binds, Role, Space};
 use z3::ast::Bool;
 use z3_toolkit::prelude::*;
 
-/// `Def`s visible from the reference `i`.
+/// Candidate `Def`s for the reference `i`: those in the same namespace that come before `i`
+/// in evaluation order and whose scope encloses `i`.
 pub fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (0..i).filter(move |&k| {
@@ -10,7 +11,7 @@ pub fn reaching_defs(binds: &Binds, i: usize) -> impl Iterator<Item = usize> + '
     })
 }
 
-/// `Kill`s between `k` and `i` in the same namespace as `i`.
+/// `Kill`s strictly between `k` and `i` in evaluation order, in the namespace of `i`.
 pub fn kills_between(binds: &Binds, k: usize, i: usize) -> impl Iterator<Item = usize> + '_ {
     let space = binds.space[i];
     (k + 1..i).filter(move |&j| binds.role[j] == Role::Kill && binds.space[j] == space)
@@ -42,6 +43,15 @@ pub fn resolves_to(binds: &Binds, i: usize, k: usize) -> Bool {
         .collect();
     let kills: Vec<Bool> = kills_between(binds, k, i).map(&same).collect();
     constraint!(same(k), !Bool::or(&later), !Bool::or(&kills))
+}
+
+/// Reference `i` resolves to a definition outside a boundary that encloses `i` (a capture).
+pub fn captured(binds: &Binds, i: usize) -> Bool {
+    let cases: Vec<Bool> = reaching_defs(binds, i)
+        .filter(|&k| binds.boundaries_between(k, i) > 0)
+        .map(|k| resolves_to(binds, i, k))
+        .collect();
+    Bool::or(&cases)
 }
 
 /// All references in `space` point to visible names

@@ -20,6 +20,8 @@ pub struct Binds {
     step: Vec<usize>,
     /// Scopes enclosing this one, innermost first. Empty at the top level (outside any scope).
     scopes: Vec<Vec<usize>>,
+    /// Whether each scope is a boundary.
+    boundary: Vec<bool>,
     pub(crate) records: RefCell<Records>,
 }
 
@@ -38,6 +40,7 @@ impl Binds {
                 .map(|i| info(i).step.expect("closed by Skeleton::steps"))
                 .collect(),
             scopes: (0..n).map(|i| path(info(i).scope)).collect(),
+            boundary: frag.scope_boundary.clone(),
             records: RefCell::default(),
         }
     }
@@ -87,6 +90,13 @@ impl Binds {
             Some(s) => self.scopes[inner].contains(s),
             None => true,
         }
+    }
+
+    /// Number of boundaries ([`Frag::boundary`]) that enclose hole `inner` but not hole `outer`.
+    pub fn boundaries_between(&self, outer: usize, inner: usize) -> usize {
+        (self.scopes[inner].iter())
+            .filter(|&&s| self.boundary[s] && !self.scopes[outer].contains(&s))
+            .count()
     }
 
     /// Records an expression stating that hole `i` breaks rule `kind`, and return it unchanged.

@@ -19,27 +19,56 @@ fn program_with_kill() -> impl Strategy<Value = Skeleton> {
         .prop_map(|(head, body, tail)| steps(head.into_iter().chain(body).chain(tail)))
 }
 
+fn program_with_closures() -> impl Strategy<Value = Skeleton> {
+    let head = prop::collection::vec(VAR.def().prop_map(|x| frag!["def ", x]), 1..3);
+    let stmts = || prop::collection::vec(stmt_with_closures(), 0..3);
+    let deep = (stmts(), stmts(), VAR.refer()).prop_map(|(outer, mut inner, u)| {
+        inner.push(frag!["print ", u]);
+        let mut outer = outer;
+        outer.push(closure(inner));
+        closure(outer)
+    });
+    (head, stmts(), deep)
+        .prop_map(|(head, body, deep)| steps(head.into_iter().chain(body).chain([deep])))
+}
+
 fn steps(stmts: impl IntoIterator<Item = Frag>) -> Skeleton {
     Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"]))
 }
 
 fn stmt() -> impl Strategy<Value = Frag> {
-    let leaf = prop_oneof![
+    leaf().prop_recursive(3, 24, 4, |inner| {
+        prop::collection::vec(inner, 0..4).prop_map(block)
+    })
+}
+
+fn stmt_with_closures() -> impl Strategy<Value = Frag> {
+    leaf().prop_recursive(3, 24, 4, |inner| {
+        let body = prop::collection::vec(inner, 0..4);
+        prop_oneof![body.clone().prop_map(block), body.prop_map(closure)]
+    })
+}
+
+fn block(stmts: Vec<Frag>) -> Frag {
+    frag!["{ ", Frag::scope(spaced(stmts)), "}"]
+}
+
+fn closure(stmts: Vec<Frag>) -> Frag {
+    frag!["[ ", Frag::boundary(spaced(stmts)), "]"]
+}
+
+fn spaced(stmts: Vec<Frag>) -> impl Iterator<Item = Frag> {
+    stmts.into_iter().map(|s| frag![s, " "])
+}
+
+fn leaf() -> impl Strategy<Value = Frag> {
+    prop_oneof![
         VAR.def().prop_map(|x| frag!["def ", x]),
         (VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!["set ", x, " ", y]),
         VAR.refer().prop_map(|x| frag!["print ", x]),
         FUNC.def().prop_map(|f| frag!["fn ", f]),
         FUNC.refer().prop_map(|f| frag!["call ", f]),
-    ];
-    leaf.prop_recursive(3, 24, 4, |inner| {
-        prop::collection::vec(inner, 0..4).prop_map(|body| {
-            frag![
-                "{ ",
-                Frag::scope(body.into_iter().map(|s| frag![s, " "])),
-                "}"
-            ]
-        })
-    })
+    ]
 }
 
 fn names() -> NameSpec {
@@ -70,6 +99,17 @@ enum Shape {
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Used;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Captured;
+
+/// What the checker found: errors, the definition each reference resolves to, and how many
+/// closures each resolved reference crosses (all keyed by byte position).
+struct Resolved {
+    errors: Vec<Error>,
+    targets: HashMap<usize, usize>,
+    crossings: HashMap<usize, usize>,
+}
+
 fn the_mark(s: &Solved) -> (usize, Bug) {
     let [(hole, bug)] = s.marks::<Bug>()[..] else {
         panic!("one mark expected: {s:?}")
@@ -77,12 +117,14 @@ fn the_mark(s: &Solved) -> (usize, Bug) {
     (s.span(hole).start, bug)
 }
 
-fn resolve(text: &str) -> (Vec<Error>, HashMap<usize, usize>) {
+fn resolve(text: &str) -> Resolved {
     let mut words =
         (text.split_whitespace()).map(|w| (w, w.as_ptr() as usize - text.as_ptr() as usize));
     let mut frames = vec![HashMap::new()];
+    let mut closures = vec![false];
     let mut errors = vec![];
     let mut targets = HashMap::new();
+    let mut crossings = HashMap::new();
     while let Some((word, _)) = words.next() {
         let space = if matches!(word, "fn" | "call") {
             "func"
@@ -90,34 +132,48 @@ fn resolve(text: &str) -> (Vec<Error>, HashMap<usize, usize>) {
             "var"
         };
         let mut name = || words.next().expect("a name after the keyword");
-        let mut refer = |frames: &Vec<HashMap<_, Option<usize>>>, (name, at): (&str, usize)| {
+        let mut refer = |frames: &Vec<HashMap<_, Option<usize>>>,
+                         closures: &Vec<bool>,
+                         (name, at): (&str, usize)| {
             let state: Vec<Option<usize>> = frames
                 .iter()
                 .filter_map(|f| f.get(&(space, name)).copied())
                 .collect();
             // match (state.contains(&true), state.is_empty()) {
             match (state.iter().rev().find_map(|&def| def), state.is_empty()) {
-                (Some(def), _) => drop(targets.insert(at, def)),
+                (Some(def), _) => {
+                    targets.insert(at, def);
+                    let home = (frames.iter())
+                        .rposition(|f| f.get(&(space, name)) == Some(&Some(def)))
+                        .expect("the frame of the definition");
+                    crossings.insert(at, closures[home + 1..].iter().filter(|&&c| c).count());
+                }
                 (None, true) => errors.push(Error::Undefined(at)),
                 (None, false) => errors.push(Error::Killed(at)),
             }
         };
         match word {
-            "{" => frames.push(HashMap::new()),
-            "}" => drop(frames.pop()),
+            "{" | "[" => {
+                frames.push(HashMap::new());
+                closures.push(word == "[");
+            }
+            "}" | "]" => {
+                frames.pop();
+                closures.pop();
+            }
             "def" | "fn" => {
                 let (x, at) = name();
                 frames.last_mut().unwrap().insert((space, x), Some(at));
             }
             "set" => {
                 let (x, y) = (name(), name());
-                refer(&frames, y);
+                refer(&frames, &closures, y);
                 frames.last_mut().unwrap().insert((space, x.0), Some(x.1));
             }
-            "print" | "call" => refer(&frames, name()),
+            "print" | "call" => refer(&frames, &closures, name()),
             "del" => {
                 let x = name();
-                refer(&frames, x);
+                refer(&frames, &closures, x);
                 frames
                     .iter_mut()
                     .filter_map(|f| f.get_mut(&(space, x.0)))
@@ -126,11 +182,15 @@ fn resolve(text: &str) -> (Vec<Error>, HashMap<usize, usize>) {
             other => panic!("unknown keyword `{other}`"),
         }
     }
-    (errors, targets)
+    Resolved {
+        errors,
+        targets,
+        crossings,
+    }
 }
 
 fn check(text: &str) -> Vec<Error> {
-    resolve(text).0
+    resolve(text).errors
 }
 
 // ==== Tests ====================
@@ -202,12 +262,40 @@ proptest! {
 
     #[test]
     fn targets_match_check(s in program().fill(names(), |binds| bound(binds, VAR) & bound(binds, FUNC))) {
-        let (_, expected) = resolve(&s.text);
+        let expected = resolve(&s.text).targets;
         for (hole, filled) in s.holes().filter(|(_, h)| h.role.is_ref()) {
             let target = s.target(hole).map(|def| s.span(def).start);
             prop_assert_eq!(target, expected.get(&filled.span.start).copied(), "{:?}", s);
         }
     }
+
+    #[test]
+    fn captures_match_check(s in program_with_closures().fill(names(), |binds| {
+        for space in [VAR, FUNC] {
+            for i in binds.refs(space) {
+                binds.mark(i, Captured, captured(binds, i));
+            }
+        }
+        constraint!(
+            bound(binds, VAR),
+            bound(binds, FUNC),
+            any { for i in binds.refs(VAR) { relayed(binds, i) } }
+        )
+    })) {
+        let crossings = resolve(&s.text).crossings;
+        let marked: HashSet<usize> = s.marks::<Captured>().into_iter().map(|(hole, _)| s.span(hole).start).collect();
+        let expected: HashSet<usize> = crossings.iter().filter(|&(_, &n)| n > 0).map(|(&at, _)| at).collect();
+        prop_assert_eq!(marked, expected, "{:?}", s);
+        prop_assert!(crossings.values().any(|&n| n >= 2), "{:?}", s);
+    }
+}
+
+fn relayed(binds: &Binds, i: usize) -> Bool {
+    let cases: Vec<Bool> = reaching_defs(binds, i)
+        .filter(|&k| binds.boundaries_between(k, i) >= 2)
+        .map(|k| resolves_to(binds, i, k))
+        .collect();
+    Bool::or(&cases)
 }
 
 /// A violation that is always broken together with another one when its precondition fails

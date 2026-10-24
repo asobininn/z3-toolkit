@@ -96,6 +96,7 @@ pub struct Frag {
     pub(crate) order: Vec<usize>,
     pub(crate) steps: usize,
     pub(crate) scope_parent: Vec<Option<usize>>,
+    pub(crate) scope_boundary: Vec<bool>,
 }
 
 impl Frag {
@@ -147,6 +148,7 @@ impl Frag {
                     .into_iter()
                     .map(|p| p.map(|s| scope_base + s)),
             );
+            out.scope_boundary.extend(part.scope_boundary);
         }
         out
     }
@@ -167,20 +169,30 @@ impl Frag {
 
     /// Creates a nested scope. Each element is closed as one step.
     pub fn scope(steps: impl IntoIterator<Item = Frag>) -> Self {
-        let mut inner = Frag::closed(steps);
+        Frag::open(steps, false)
+    }
+
+    /// Creates a nested scope that is also a boundary, such as a closure or function body.
+    pub fn boundary(steps: impl IntoIterator<Item = Frag>) -> Self {
+        Frag::open(steps, true)
+    }
+
+    fn open(steps: impl IntoIterator<Item = Frag>, boundary: bool) -> Self {
+        let mut inner = Self::closed(steps);
         let new = Some(inner.scope_parent.len());
         for parent in inner.scope_parent.iter_mut().filter(|p| p.is_none()) {
             *parent = new;
         }
         inner.scope_parent.push(None);
+        inner.scope_boundary.push(boundary);
         for hole in inner.holes.iter_mut().filter(|h| h.scope.is_none()) {
-            hole.scope = new
+            hole.scope = new;
         }
         inner
     }
 
     fn closed(steps: impl IntoIterator<Item = Frag>) -> Self {
-        Frag::concat(steps.into_iter().map(Frag::close))
+        Self::concat(steps.into_iter().map(Frag::close))
     }
 
     fn close(mut self) -> Self {
