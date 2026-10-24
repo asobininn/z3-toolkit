@@ -72,7 +72,7 @@ impl Solved {
         &self.holes[hole.0].name
     }
 
-    /// Holes in evalution order.
+    /// Holes in evaluation order.
     pub fn events(&self) -> &[Hole] {
         &self.events
     }

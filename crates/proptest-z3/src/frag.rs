@@ -59,7 +59,7 @@ pub struct Hint(pub Frac16);
 impl Hint {
     pub fn index(self, size: usize) -> usize {
         assert!(size > 0, "no candidates");
-        // h `div` 65536
+        // (h * n) / 65536
         ((size as u64 * self.0 as u64) >> Frac16::BITS) as usize
     }
 }
