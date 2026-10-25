@@ -246,7 +246,7 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "z3",
- "z3-toolkit 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "z3-toolkit",
 ]
 
 [[package]]
@@ -479,33 +479,12 @@ name = "z3-toolkit"
 version = "0.3.1"
 dependencies = [
  "z3",
- "z3-toolkit-derive 0.2.0",
-]
-
-[[package]]
-name = "z3-toolkit"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09911a40a4b7fa4d47befd5110762531a0865013dc1399255bce3c4ce89432d0"
-dependencies = [
- "z3",
- "z3-toolkit-derive 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "z3-toolkit-derive",
 ]
 
 [[package]]
 name = "z3-toolkit-derive"
 version = "0.3.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "z3-toolkit-derive"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "168638cb34a994d9265f8c91a36fb1072e5b24f3b8f3f0f0a7e0ff28443beffa"
 dependencies = [
  "proc-macro2",
  "quote",
