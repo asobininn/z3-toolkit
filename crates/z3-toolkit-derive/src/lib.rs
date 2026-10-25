@@ -70,3 +70,30 @@ pub fn lin(input: TokenStream) -> TokenStream {
         .unwrap_or_else(syn::Error::into_compile_error)
         .into()
 }
+
+/// `constraint!` taking the path to z3-toolkit first: `__constraint!(($crate) ..)`
+#[doc(hidden)]
+#[proc_macro]
+pub fn __constraint(input: TokenStream) -> TokenStream {
+    constraints::with_crate_path(input.into(), constraints::constraint)
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
+}
+
+/// `constraints!` taking the path to z3-toolkit first: `__constraints!(($crate) ..)`
+#[doc(hidden)]
+#[proc_macro]
+pub fn __constraints(input: TokenStream) -> TokenStream {
+    constraints::with_crate_path(input.into(), constraints::constraints)
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
+}
+
+/// `lin!` taking the path to z3-toolkit first: `__lin!(($crate) ..)`
+#[doc(hidden)]
+#[proc_macro]
+pub fn __lin(input: TokenStream) -> TokenStream {
+    constraints::with_crate_path(input.into(), constraints::lin)
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
+}

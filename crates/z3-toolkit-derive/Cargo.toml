@@ -2,7 +2,7 @@
 name = "z3-toolkit-derive"
 description = "Procedural macros for z3-toolkit."
 readme = "../../README.md"
-version = "0.2.0"
+version = "0.3.0"
 edition.workspace = true
 authors.workspace = true
 repository.workspace = true

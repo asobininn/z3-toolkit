@@ -1,5 +1,7 @@
-use proc_macro2::{Span, TokenStream, TokenTree};
-use quote::{quote, quote_spanned};
+use std::cell::RefCell;
+
+use proc_macro2::{Delimiter, Span, TokenStream, TokenTree};
+use quote::{ToTokens, quote, quote_spanned};
 use syn::{
     BinOp, Expr, ExprBinary, ExprCall, ExprClosure, Ident, Lit, LitStr, Pat, RangeLimits, Result,
     ReturnType, Token, UnOp, braced, parenthesized,
@@ -32,6 +34,41 @@ enum Item {
     Distinct(Expr),
     For(Pat, Expr, Vec<Item>),
     If(Expr, Vec<Item>, Option<Vec<Item>>),
+}
+
+// ==== Create path ====================
+
+thread_local! {
+    static CREATE_PATH: RefCell<Option<TokenStream>> = const { RefCell::new(None) };
+}
+
+/// Path to z3-toolkit in the generated code.
+/// `$crate` when called through the z3-toolkit wrappers, `::z3_toolkit` otherwise.
+struct CreatePath;
+const KRATE: CreatePath = CreatePath;
+
+impl ToTokens for CreatePath {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        CREATE_PATH.with_borrow(|path| match path {
+            Some(path) => tokens.extend(path.clone()),
+            None => tokens.extend(quote!(::z3_toolkit)),
+        });
+    }
+}
+
+pub fn with_crate_path(
+    input: TokenStream,
+    f: impl FnOnce(TokenStream) -> Result<TokenStream>,
+) -> Result<TokenStream> {
+    let mut tokens = input.into_iter();
+    let path = match tokens.next() {
+        Some(TokenTree::Group(g)) if g.delimiter() == Delimiter::Parenthesis => g.stream(),
+        _ => unreachable!("the z3-toolkit wrappers always pass `($crate)` first"),
+    };
+    let prev = CREATE_PATH.replace(Some(path));
+    let out = f(tokens.collect());
+    CREATE_PATH.set(prev);
+    out
 }
 
 const IMPLIES_HELP: &str = "`implies` needs a block on both sides: `{ p } implies { q }`";
@@ -381,7 +418,7 @@ fn operand(expr: &Expr, arith: bool) -> TokenStream {
         }
         Expr::Group(g) => operand(&g.expr, arith),
         Expr::Lit(l) if matches!(&l.lit, Lit::Int(i) if i.suffix().is_empty()) => {
-            quote_spanned!(l.span()=> ::z3_toolkit::__private::int_lit(#expr))
+            quote_spanned!(l.span()=> #KRATE::__private::int_lit(#expr))
         }
         Expr::Unary(u) if matches!(u.op, UnOp::Neg(_)) => {
             let inner = operand(&u.expr, true);
@@ -401,15 +438,15 @@ fn operand(expr: &Expr, arith: bool) -> TokenStream {
             let (iter, cl) = as_sum_by(c).unwrap();
             let (cap, inputs) = (&cl.capture, &cl.inputs);
             let body = operand(&cl.body, true);
-            quote_spanned!(c.span()=> ::z3_toolkit::__private::sum_by(#iter, #cap |#inputs| #body))
+            quote_spanned!(c.span()=> #KRATE::__private::sum_by(#iter, #cap |#inputs| #body))
         }
         Expr::Call(c) if as_lifted_call(c).is_some() => {
             let f = Ident::new(as_lifted_call(c).unwrap(), c.func.span());
             let args = c.args.iter().map(|e| operand(e, true));
-            quote_spanned!(c.span()=> ::z3_toolkit::#f(#(#args),*))
+            quote_spanned!(c.span()=> #KRATE::#f(#(#args),*))
         }
-        _ if arith => quote_spanned!(expr.span()=> ::z3_toolkit::__private::Arith::arith(&(#expr))),
-        _ => quote_spanned!(expr.span()=> ::z3_toolkit::__private::Operand::operand(&(#expr))),
+        _ if arith => quote_spanned!(expr.span()=> #KRATE::__private::Arith::arith(&(#expr))),
+        _ => quote_spanned!(expr.span()=> #KRATE::__private::Operand::operand(&(#expr))),
     }
 }
 
@@ -429,9 +466,7 @@ fn compare(bin_expr: &ExprBinary) -> Option<TokenStream> {
         // `==` / `!=` on plain values
         let f = Ident::new(&format!("shape_{method}"), bin_expr.op.span());
         let (lhs, rhs) = (unmove(&bin_expr.left), unmove(&bin_expr.right));
-        return Some(
-            quote_spanned!(bin_expr.span()=> ::z3_toolkit::__private::#f(&(#lhs), &(#rhs))),
-        );
+        return Some(quote_spanned!(bin_expr.span()=> #KRATE::__private::#f(&(#lhs), &(#rhs))));
     }
     let (lhs, rhs) = (
         operand(&bin_expr.left, arith),
@@ -461,14 +496,14 @@ fn member(lhs: &Expr, rhs: &Expr) -> TokenStream {
             }
             quote_spanned!(rhs.span()=> {
                 let #val = #lhs;
-                ::z3_toolkit::__private::and(::std::vec![#(#parts),*])
+                #KRATE::__private::and(::std::vec![#(#parts),*])
             })
         }
         Expr::Array(arr) => {
             let elems = arr.elems.iter().map(|e| operand(e, true));
-            quote_spanned!(rhs.span()=> ::z3_toolkit::__private::member(&(#lhs), [#(#elems), *]))
+            quote_spanned!(rhs.span()=> #KRATE::__private::member(&(#lhs), [#(#elems), *]))
         }
-        _ => quote_spanned!(rhs.span()=> ::z3_toolkit::__private::member(&(#lhs), #rhs)),
+        _ => quote_spanned!(rhs.span()=> #KRATE::__private::member(&(#lhs), #rhs)),
     }
 }
 
@@ -478,16 +513,16 @@ fn leaf(expr: &Expr) -> TokenStream {
         Expr::Group(g) => leaf(&g.expr),
         Expr::Unary(u) if matches!(u.op, UnOp::Not(_)) => {
             let inner = leaf(&u.expr);
-            quote_spanned!(u.span()=> ::z3_toolkit::__private::not(&#inner))
+            quote_spanned!(u.span()=> #KRATE::__private::not(&#inner))
         }
         Expr::Binary(b) => match b.op {
             BinOp::And(_) => {
                 let (lhs, rhs) = (leaf(&b.left), leaf(&b.right));
-                quote_spanned!(b.span() => ::z3_toolkit::__private::and(::std::vec![#lhs, #rhs]))
+                quote_spanned!(b.span() => #KRATE::__private::and(::std::vec![#lhs, #rhs]))
             }
             BinOp::Or(_) => {
                 let (lhs, rhs) = (leaf(&b.left), leaf(&b.right));
-                quote_spanned!(b.span() => ::z3_toolkit::__private::or(::std::vec![#lhs, #rhs]))
+                quote_spanned!(b.span() => #KRATE::__private::or(::std::vec![#lhs, #rhs]))
             }
             _ => match compare(b) {
                 Some(t) => t,
@@ -496,14 +531,14 @@ fn leaf(expr: &Expr) -> TokenStream {
         },
         Expr::Call(c) if is_differs(c) => {
             let (model, vars) = (&c.args[0], borrow_elems(&c.args[1]));
-            quote_spanned!(c.span()=> ::z3_toolkit::differs(#model, #vars))
+            quote_spanned!(c.span()=> #KRATE::differs(#model, #vars))
         }
         _ => passthrough(expr),
     }
 }
 
 fn passthrough(expr: &Expr) -> TokenStream {
-    quote_spanned!(expr.span()=> ::z3_toolkit::__private::ToBool::to_bool(&(#expr)))
+    quote_spanned!(expr.span()=> #KRATE::__private::ToBool::to_bool(&(#expr)))
 }
 
 fn leaf_bool(item: &Item) -> TokenStream {
@@ -548,11 +583,11 @@ impl Builder {
                     let (v, body) = self.collect(std::slice::from_ref(&**inner));
                     quote!({
                         #[allow(unused_mut)]
-                        let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                        let mut #v = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                         #body
                         #l.push((
                             ::std::string::String::from(#lit),
-                            ::z3_toolkit::__private::and(#v),
+                            #KRATE::__private::and(#v),
                         ));
                     })
                 }
@@ -568,23 +603,23 @@ impl Builder {
                 let (v, body) = self.collect(std::slice::from_ref(&**inner));
                 quote!({
                     #[allow(unused_mut)]
-                    let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    let mut #v = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                     #body
-                    #out.push(::z3_toolkit::__private::tag(#lit, &::z3_toolkit::__private::and(#v)));
+                    #out.push(#KRATE::__private::tag(#lit, &#KRATE::__private::and(#v)));
                 })
             }
             Item::Group(kind, body) => {
                 let (v, inner) = self.collect(body);
                 let call = match kind {
-                    GroupKind::All => quote!(::z3_toolkit::__private::and(#v)),
-                    GroupKind::Any => quote!(::z3_toolkit::__private::or(#v)),
+                    GroupKind::All => quote!(#KRATE::__private::and(#v)),
+                    GroupKind::Any => quote!(#KRATE::__private::or(#v)),
                     GroupKind::Not => {
-                        quote!(::z3_toolkit::__private::not(&::z3_toolkit::__private::and(#v)))
+                        quote!(#KRATE::__private::not(&#KRATE::__private::and(#v)))
                     }
                 };
                 quote!({
                     #[allow(unused_mut)]
-                    let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    let mut #v = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                     #inner
                     #out.push(#call);
                 })
@@ -594,14 +629,14 @@ impl Builder {
                 let (rv, ri) = self.collect(rhs);
                 quote!({
                     #[allow(unused_mut)]
-                    let mut #lv = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    let mut #lv = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                     #li
                     #[allow(unused_mut)]
-                    let mut #rv = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    let mut #rv = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                     #ri
-                    #out.push(::z3_toolkit::__private::implies(
-                        &::z3_toolkit::__private::and(#lv),
-                        &::z3_toolkit::__private::and(#rv),
+                    #out.push(#KRATE::__private::implies(
+                        &#KRATE::__private::and(#lv),
+                        &#KRATE::__private::and(#rv),
                     ));
                 })
             }
@@ -614,13 +649,13 @@ impl Builder {
                 };
                 quote!({
                     #[allow(unused_mut)]
-                    let mut #v = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+                    let mut #v = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
                     #inner
-                    #out.push(::z3_toolkit::__private::#f(&#v, (#k) as i32));
+                    #out.push(#KRATE::__private::#f(&#v, (#k) as i32));
                 })
             }
             Item::Distinct(e) => {
-                quote!(#out.push(::z3_toolkit::__private::distinct(#e));)
+                quote!(#out.push(#KRATE::__private::distinct(#e));)
             }
             Item::For(pat, iter, body) => {
                 let inner = self.items(body, out, labels);
@@ -649,9 +684,9 @@ pub fn constraint(input: TokenStream) -> Result<TokenStream> {
     let body = b.items(&items, &out, None);
     Ok(quote!({
         #[allow(unused_mut)]
-        let mut #out = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+        let mut #out = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
         #body
-        ::z3_toolkit::__private::and(#out)
+        #KRATE::__private::and(#out)
     }))
 }
 
@@ -676,13 +711,13 @@ pub fn constraints(input: TokenStream) -> Result<TokenStream> {
     Ok(quote!({
         let #t = &(#tgt);
         #[allow(unused_mut)]
-        let mut #out = ::std::vec::Vec::<::z3_toolkit::__private::Bool>::new();
+        let mut #out = ::std::vec::Vec::<#KRATE::__private::Bool>::new();
         #[allow(unused_mut)]
-        let mut #lab = ::std::vec::Vec::<(::std::string::String, ::z3_toolkit::__private::Bool)>::new();
+        let mut #lab = ::std::vec::Vec::<(::std::string::String, #KRATE::__private::Bool)>::new();
         #body
-        ::z3_toolkit::Engine::assert_all(#t, #out);
+        #KRATE::Engine::assert_all(#t, #out);
         for (#n, #c) in #lab {
-            ::z3_toolkit::Engine::assert_labeled(#t, &#n, &#c);
+            #KRATE::Engine::assert_labeled(#t, &#n, &#c);
         }
     }))
 }
