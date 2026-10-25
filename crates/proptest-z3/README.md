@@ -1,9 +1,9 @@
 # proptest-z3
 
-[![crates.io](https://img.shields.io/crates/v/proptest-z3.svg)](..)
-[![docs.rs](https://docs.rs/proptest-z3/badge.svg)](..)
-[![Book](https://img.shields.io/badge/book-English-blue.svg)](..)
-[![Book](https://img.shields.io/badge/book-日本語-blue.svg)](..)
+[![crates.io](https://img.shields.io/crates/v/proptest-z3.svg)](https://crates.io/crates/proptest-z3)
+[![docs.rs](https://docs.rs/proptest-z3/badge.svg)](https://docs.rs/proptest-z3/)
+[![Book](https://img.shields.io/badge/book-English-blue.svg)](https://asobininn.github.io/z3-toolkit/)
+[![Book(日本語版)](https://img.shields.io/badge/book-日本語-blue.svg)](https://asobininn.github.io/z3-toolkit/ja/)
 [![z3-toolkit](https://img.shields.io/badge/with-z3--toolkit-orange.svg)](https://crates.io/crates/z3-toolkit)
 
 proptest-z3 is an extension of [proptest](https://crates.io/crates/proptest) for generating test inputs whose elements depend on each other.

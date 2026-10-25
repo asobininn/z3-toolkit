@@ -69,8 +69,8 @@
 //! The Z3 library is required. See the README of the z3 crate for how to install it.
 //!
 //! [proptest]: https://crates.io/crates/proptest
-//! [Book]: https://asobininn.github.io/z3-toolkit/book/proptest-z3-book
-//! [Book(日本語版)]: https://asobininn.github.io/z3-toolkit/book/proptest-z3-book-ja
+//! [Book]: https://asobininn.github.io/z3-toolkit/
+//! [Book(日本語版)]: https://asobininn.github.io/z3-toolkit/ja/
 mod binds;
 mod frag;
 mod label;

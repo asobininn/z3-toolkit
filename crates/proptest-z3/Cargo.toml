@@ -1,13 +1,17 @@
 [package]
 name = "proptest-z3"
 version = "0.1.0"
+description = "Generate test inputs with name dependencies for proptest: build the skeleton with strategies, solve the relations with z3"
+homepage = "https://asobininn.github.io/z3-toolkit/"
+repository = "https://github.com/asobininn/z3-toolkit/tree/main/crates/proptest-z3"
 readme = "./README.md"
+keywords = ["z3", "smt", "proptest", "testing"]
+categories = ["development-tools::testing"]
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-repository.workspace = true
 
 [dependencies]
 proptest = "^1"
 z3 = "0.21"
-z3-toolkit = { version = "0.2.0", path = "../z3-toolkit" }
+z3-toolkit = { version = "0.3.0" }
