@@ -18,6 +18,7 @@ use crate::{
 /// Both are deterministic: the same skeleton, hints and candidates give the same result. Use
 /// [`Fill::Greedy`] by default, and try [`Fill::Optimal`] if the generated names look skewed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[non_exhaustive]
 pub enum Fill {
     /// The default. Solves with the hint of each hole as an assumption; on a conflict, drops the
     /// hint in the unsat core that is last in evaluation order and solves again (using a `QF_LIA`
@@ -44,6 +45,7 @@ pub struct Hole(pub usize);
 
 /// Information about a single hole after filling, returned by [`Solved::holes`] / [`Solved::hole`].
 #[derive(Debug, Clone)]
+#[non_exhaustive]
 pub struct FilledHole {
     /// The namespace.
     pub space: Space,
