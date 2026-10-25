@@ -6,9 +6,9 @@
 [![Book](https://img.shields.io/badge/book-日本語-blue.svg)](..)
 [![z3-toolkit](https://img.shields.io/badge/with-z3--toolkit-orange.svg)](https://crates.io/crates/z3-toolkit)
 
-proptest-z3 は、要素間の依存関係を持つテスト入力を生成するための、[proptest](https://crates.io/crates/proptest) の拡張です。
-入力の構造は通常どおり proptest の Strategy で定義し、要素どうしの関係は [Z3](https://crates.io/crates/z3) の制約で指定します。
-制約を反転することで、指定した数の違反を含む入力を生成でき、違反した箇所も特定できます。縮小時にも要素間の関係は保たれます。
+proptest-z3 is an extension of [proptest](https://crates.io/crates/proptest) for generating test inputs whose elements depend on each other.
+You define the structure of an input with ordinary proptest Strategies, and specify the relations between elements with [Z3](https://crates.io/crates/z3) constraints.
+By flipping a constraint, you can generate inputs that contain a given number of violations, and you can also locate where the violations are. The relations between elements are kept during shrinking as well.
 
 ## Setup
 
@@ -18,23 +18,23 @@ proptest = "1"
 proptest-z3 = "0.1"
 ```
 
-Z3 のライブラリが必要です。インストール方法やリンク設定については、[z3クレートのREADME](https://github.com/prove-rs/z3.rs) を参照してください。
+The Z3 library is required. For how to install it and how to configure linking, see the [README of the z3 crate](https://github.com/prove-rs/z3.rs).
 
 ## Usage
 
-### 骨格を書く
+### Building inputs with dependencies
 
-例として、1行に1文の小さな言語を使います。
+As an example, we use a small language with one statement per line.
 
 ```text
-let x        // x を定義する
-let x = y    // y を使ってから x を定義する
-print x      // x を使う
+let x        // define x
+let x = y    // use y, then define x
+print x      // use x
 ```
 
-テストする対象は、この言語の名前解決器 `undefined_refs(src) -> Vec<usize>` です。未定義の名前を参照した位置(バイト)を返します。
+What we test is the name resolver of this language, `undefined_refs(src) -> Vec<usize>`. It returns the positions (in bytes) where undefined names are referred to.
 
-名前を書く場所には、実際の名前の代わりに穴を置きます。`def`は定義、`refer`は参照です。どの穴にどの名前を入れるかは Z3 が決めるため、生成器の中で名前を追跡する必要はありません。
+Where a name goes, put a hole instead of an actual name. `def` is a definition and `refer` is a reference. Which name goes into which hole is decided by Z3, so you do not need to track names inside the generator.
 
 ```rust
 use proptest::prelude::*;
@@ -55,13 +55,13 @@ fn stmt() -> impl Strategy<Value = Frag> {
     ]
 }
 
-// 名前の候補: [a-c] に合う、互いに異なる名前を3個
+// Name candidates: 3 mutually distinct names matching [a-c]
 fn names() -> NameSpec {
     NameSpec::new().space(VAR, "[a-c]", 3)
 }
 
 proptest! {
-    // 全ての参照が、見ている名前を指す
+    // Every reference points to a visible name
     #[test]
     fn defined_names_resolve(s in program().fill(names(), |binds| bound(binds, VAR))) {
         prop_assert_eq!(undefined_refs(&s.text), vec![], "{:?}", s);
@@ -69,15 +69,15 @@ proptest! {
 }
 ```
 
-### 制約を変えて異常系の入力を生成する
+### Generating negative inputs by changing the constraint
 
-変更するのは `fill` に渡す制約だけです。
+All you change is the constraint passed to `fill`.
 
 ```rust
-// 正常系
+// positive case
 program().fill(names(), |binds| bound(binds, VAR))
 
-// 異常系: 参照できない名前を指す参照がちょうど1つある
+// negative case: exactly one reference points to a name that is not visible
 program().fill(names(), |binds| constraint!(
     exactly(1) { for i in binds.refs(VAR) {
         binds.mark(i, Undefined, !visible(binds, i))
@@ -85,7 +85,7 @@ program().fill(names(), |binds| constraint!(
 ))
 ```
 
-`mark` で印をつけた穴は、制約を解いた後に位置を特定できます。これにより、名前解決器が違反箇所を正しく報告するか検証できます。
+Holes marked with `mark` can be located after the constraints are solved. This lets you check that the name resolver reports the violation at the right place.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -104,7 +104,7 @@ proptest! {
 }
 ```
 
-名前解決器に、`let x = y` で右辺を調べる前に左辺を定義してしまうバグがあると、次のように失敗します。
+If the name resolver has a bug that defines the left-hand side before checking the right-hand side in `let x = y`, it fails as follows.
 
 ```text
 running 2 tests
@@ -118,20 +118,20 @@ minimal failing input: s = Solved{
 }
 ```
 
-正常系のテストが通っていても、本来エラーにすべき入力を受け入れてしまうバグは残り得ます。異常系の入力も生成することで、こうしたバグを検出できます。
+Even when the positive tests pass, bugs that accept inputs which should be errors can remain. By also generating negative inputs, you can detect bugs like these.
 
-### 複数の壊れ方を作り分ける
+### Building different kinds of breakage
 
-名前空間ごとに壊すかどうかを決め、違反を種類ごとに作り分けることもできます。下の例では、変数の再定義を許しつつ、参照のうちちょうど1つに「削除後の使用」「自己参照」「未定義参照」のいずれかの違反を持たせます。
+You can also decide per namespace whether to break it, and build violations separately by kind. In the example below, redefinition of variables is allowed, and exactly one of the references has one of the violations "use after deletion", "self reference" or "undefined reference".
 
 ```rust
 program().fill(names(), |binds| {
     constraint!(
-        // 同名の変数を定義しなおす
+        // define variables of the same name again
         !&distinct_defs(binds, VAR),
-        // 関数の参照はすべて有効
+        // every reference to a function is valid
         bound(binds, FUNC),
-        // 変数の参照のうち、ちょうど1つが3通りのどれかで壊れる
+        // exactly one of the references to variables is broken in one of three ways
         exactly(1) { for i in binds.refs(VAR) { any {
             binds.mark(i, Broken::Delete, killed(binds, i)),
             binds.mark(i, Broken::SelfRef, constraint!(all {
@@ -147,25 +147,25 @@ program().fill(names(), |binds| {
 })
 ```
 
-違反の条件どうしが重なっていたり、ある違反が別の違反を必ず伴ったりすると、一部の種類が意図どおりに生成されないことがあります。上の例で `given` を外した場合などです。このとき、テストが成功していても、一度も現れなかったラベルが警告されます。
+When violation conditions overlap, or one violation always comes with another, some kinds may not be generated as intended, for example when `given` is removed in the example above. In that case, even if the test passes, the labels that never appeared are warned about.
 
 ```text
 proptest-z3 warning: label `Delete` never occurred in 4 cases (test `each_kind_is_reported`); is it implied by another violation? consider `given`
 ```
 
-`given` で前提を明示すると、違反どうしを独立にできます。
+By stating the preconditions explicitly with `given`, the violations can be made independent of each other.
 
-ほかにも、次のことができます。詳しくは [Book](..) を見てください。
+You can also do the following. See the [Book](..) for details.
 
-- ブロックによる入れ子のスコープ
-- 各参照がどの定義を指すかの取得
-- 生成が棄却ばかりになるときの原因の集計
+- nested scopes with blocks
+- getting which definition each reference points to
+- tallying the causes when generation is mostly rejected
 
 ## Scope
 
-proptest-z3 は、定義と参照を含む小さなテスト入力のためのクレートです。本クレートで使用される「名前」とは、変数名やテーブル名、行のキーのように、作られてから別の場所で指されるものを広く指します。
+proptest-z3 is a crate for small test inputs that contain definitions and references. A "name" in this crate broadly means anything that is created and then pointed to from another place, such as variable names, table names and row keys.
 
-- 扱える関係は、名前どうしの等しさだけです。型や値の条件は `constraint!` で足せますが、整数などの値そのものを Z3 に選ばせる機能はまだありません。
-- スコープは、ブロックのような字句的な入れ子だけを扱います。
-- 入力の構造は proptest が決めるため、構造が制約を満たせないと生成が棄却されます。棄却が多いときは、条件を満たせる構造を Strategy の側で用意してください。
-- 穴が多いほど、制約を解くのに時間がかかります。
+- The only relation it can handle is equality between names. Conditions on types or values can be added with `constraint!`, but there is no feature yet for letting Z3 choose the values themselves, such as integers.
+- Scopes are limited to lexical nesting, such as blocks.
+- The structure of an input is decided by proptest, so generation is rejected when the structure cannot satisfy the constraints. When rejections are frequent, provide structures that can satisfy the conditions on the Strategy side.
+- The more holes there are, the longer it takes to solve the constraints.
