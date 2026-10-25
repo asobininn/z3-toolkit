@@ -1,0 +1,5 @@
+[book]
+title = "The proptest-z3 Book"
+authors = ["asobi"]
+language = "en"
+src = "src"
