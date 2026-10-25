@@ -6,14 +6,10 @@ It keeps z3's own `Int`, `Bool`, `Solver` and `Optimize`, and adds one-line vari
 
 ## Setup
 
-```shell
-cargo add z3-toolkit
-```
-
 ```toml
 [dependencies]
 z3 = "0.21"
-z3-toolkit = "0.2"
+z3-toolkit = "0.3"
 ```
 
 ## Usage
@@ -112,7 +108,7 @@ Run one with `cargo run -p z3-toolkit --example <name>`.
 | Constraints | `constraints!` asserts into a `Solver` / `Optimize`; `constraint!` builds one `Bool` |
 | DSL | comparisons and `&&` / `\|\|` / `!`, `x in 1..=3`, `{ p } implies { q }`, `all` / `any` / `not`, `exactly` / `at_most` / `at_least`, `distinct`, `for` / `if` |
 | Shapes | `==`/`!=` compare arrays, `Vec` and tuples element-wise, also against Rust values: `grid[0] == [0, 1]` |
-| Symbolic | `ite(&p, &x, &0)` follows the shape; `xs.at(&i)`/`xs.with(&i, &v)` read/write at a symbolic index; `xs.position(&v)`, `xs.argmax()`, `xs.argmin()` |
+| Symbolic | `ite(&p, &x, &0)` follows the shape; `xs.at(&i)`/`xs.with(&i, &v)` read/write at a symbolic index; `xs.position(&v)`, `xs.argmax()`, `xs.argmin()`, `xs.seen_before(i, filter)`, `xs.distinct_among(witch)` |
 | Linear terms | `sum`, `dot`, `lin!`, `abs`, `max`, `min`; `Bool` counts as 0/1, Rust integers are lifted |
 | Labels | `"name": item` shows up in the unsat core; `"name" @ item` is read back with `model.labels(&expr)` when `item` is true |
 | Solving | `solve()` returns `Result<Model, Failure>`; labeled constraints appear in the unsat core |
