@@ -18,6 +18,7 @@ mod engine;
 mod error;
 mod label;
 mod lin;
+mod macros;
 mod sym;
 mod ty;
 
@@ -33,7 +34,6 @@ pub use ty::{
     Fresh, FromValue, ModelExt, ReadAs, Readback, bools, bools_n, differs, fresh, fresh_n, ints,
     ints_n,
 };
-pub use z3_toolkit_derive::{constraint, constraints, lin};
 
 pub mod prelude {
     pub use crate::{
