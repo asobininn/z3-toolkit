@@ -66,6 +66,7 @@ impl Space {
 /// `Use` and `Kill` together are called **references** ([`Role::is_ref`]); both point to an
 /// existing name. The visibility rules are collected in [`rules`](crate::rules).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum Role {
     /// Defines a name.
     ///

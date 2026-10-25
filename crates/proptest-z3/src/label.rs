@@ -83,6 +83,7 @@ impl Given for Bool {
 
 /// Statistics for a single label, returned by [`label_stats`] / [`take_label_stats`].
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct LabelStat {
     /// The name of the label (see [`Label`]).
     pub label: String,
