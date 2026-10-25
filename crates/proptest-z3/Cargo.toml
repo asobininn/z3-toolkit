@@ -14,4 +14,4 @@ license.workspace = true
 [dependencies]
 proptest = "^1"
 z3 = "0.21"
-z3-toolkit = { version = "0.3.0" }
+z3-toolkit = { version = "0.3.0", path = "../z3-toolkit" }
