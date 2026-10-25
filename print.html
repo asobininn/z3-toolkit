@@ -1,0 +1,1501 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The proptest-z3 Book</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-ecfa526b.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-463f4c01.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The proptest-z3 Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>proptest-z3 extends <a href="https://crates.io/crates/proptest">proptest</a> to generate test inputs whose elements have dependencies on one another. Define the input structure with proptest Strategies as usual, then express relationships between elements as constraints for <a href="https://crates.io/crates/z3">Z3</a>. By inverting constraints, you can generate inputs containing a specified number of violations and identify the locations of those violations. Relationships between elements are preserved during shrinking.</p>
+<p>In this crate, the term <strong>name</strong> collectively refers to things used to identify an entity and refer to it elsewhere, such as variable names, table names, and row keys.</p>
+<h2 id="who-is-this-for"><a class="header" href="#who-is-this-for">Who is this for?</a></h2>
+<p>This crate is intended for people testing software whose input elements depend on one another, such as compilers and static analyzers.</p>
+<p>For example, it can help generate inputs that preserve consistency between definitions and references, as well as inputs that deliberately reference undefined names.</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>This Book does not teach proptest or Z3 from scratch. The required background is:</p>
+<ul>
+<li><strong>proptest:</strong> The basics of property-based testing, including <code>Strategy</code> and <code>proptest!</code>. See the <a href="https://proptest-rs.github.io/proptest/">proptest Book</a>.</li>
+<li><strong>Z3:</strong> A general understanding of SMT solvers. You do not need to know the Z3 API. See <a href="https://z3prover.github.io/papers/programmingz3.html">Programming Z3</a>.</li>
+<li><strong>z3-toolkit:</strong> A companion crate by the same author that provides macros for writing constraints. The parts needed here are covered in <a href="#writing-constraints-with-z3-toolkit">Writing Constraints with z3-toolkit</a>.</li>
+</ul>
+<h2 id="how-to-read-this-book"><a class="header" href="#how-to-read-this-book">How to read this Book</a></h2>
+<p>Start with <a href="#getting-started">Getting Started</a> to see a small working example. The <a href="#feature-guide">Feature Guide</a> explains each feature in detail, and <a href="#common-patterns">Common Patterns</a> shows constraint patterns useful when testing name resolution.</p>
+<p>The <a href="#appendix-api-reference">API Reference</a> documents public APIs and the semantics that are easy to overlook, especially evaluation order, steps, scopes, and labels.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>In this chapter, we will write one normal-case test and one error-case test for a name resolver for a small language.</p>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<pre><code class="language-toml">[dev-dependencies]
+proptest = "1"
+proptest-z3 = "0.1"
+</code></pre>
+<p>The Z3 library is also required. For installation instructions, see the <a href="https://github.com/prove-rs/z3.rs/blob/master/z3/README.md">z3 crate README</a>.</p>
+<h2 id="the-system-under-test"><a class="header" href="#the-system-under-test">The system under test</a></h2>
+<p>Consider a small language with one statement per line.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Statement</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>let x</code></td><td>Define <code>x</code></td></tr>
+<tr><td><code>let x = y</code></td><td>Use <code>y</code>, then define <code>x</code></td></tr>
+<tr><td><code>print x</code></td><td>Use <code>x</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The system under test is this language’s name resolver. It returns the positions where undefined names are referenced.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn undefined_refs(source: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let offset = |word: &amp;str| word.as_ptr() as usize - source.as_ptr() as usize;
+    let mut defined = HashSet::new();
+    let mut errors = vec![];
+    for line in source.lines() {
+        match line.split_whitespace().collect::&lt;Vec&lt;_&gt;&gt;()[..] {
+            ["let", x] =&gt; {
+                defined.insert(x);
+            }
+            ["let", x, "=", y] =&gt; {
+                if !defined.contains(y) {
+                    errors.push(offset(y));
+                }
+                defined.insert(x);
+            }
+            ["print", x] =&gt; {
+                if !defined.contains(x) {
+                    errors.push(offset(x));
+                }
+            }
+            _ =&gt; unreachable!(),
+        }
+    }
+    errors
+}
+<span class="boring">}</span></code></pre>
+<p>This implementation is intentionally simple: definitions become visible after their statement is processed.</p>
+<h2 id="build-a-strategy-for-valid-programs"><a class="header" href="#build-a-strategy-for-valid-programs">Build a Strategy for valid programs</a></h2>
+<p>We will build a <code>program()</code> Strategy that creates the shape of the input, then use constraints to ensure that every reference resolves to a visible definition.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="imgs/hole_en.png" alt="hole"><span class="img-wrapper"><img src="imgs/hole_en.png" alt="hole"></span></label></p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::prelude::*;
+use proptest_z3::prelude::*;
+
+const VAR: Space = Space::new("var");
+
+fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(
+        prop_oneof![
+            Just(VAR.def()).boxed(),
+            (VAR.def(), VAR.refer())
+                .prop_map(|(x, y)| frag!("let ", x, " = ", y))
+                .boxed(),
+            VAR.refer().prop_map(|x| frag!("print ", x)).boxed(),
+        ],
+        1..8,
+    )
+    .prop_map(Skeleton::steps)
+}
+
+fn names() -&gt; NameSpec {
+    NameSpec::new().space(VAR, "[a-c]", 3)
+}
+<span class="boring">}</span></code></pre>
+<p>The Strategy describes the possible statement shapes. <code>fill</code> assigns names to the holes while satisfying the rule.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>proptest! {
+    #[test]
+    fn defined_names_resolve(
+        s in program().fill(names(), |binds| bound(binds, VAR))
+    ) {
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="generate-an-invalid-input-deliberately"><a class="header" href="#generate-an-invalid-input-deliberately">Generate an invalid input deliberately</a></h2>
+<p>A random valid program rarely contains an undefined reference. To test the error path, require exactly one reference to be invisible and mark that location.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy, PartialEq)]
+enum Bug {
+    Unbound,
+}
+
+proptest! {
+    #[test]
+    fn undefined_names_are_reported(
+        s in program().fill(names(), |binds| constraint!(
+            exactly(1) {
+                for i in binds.refs(VAR) {
+                    binds.mark(i, Bug::Unbound, !visible(binds, i))
+                }
+            },
+        ))
+    ) {
+        let [(hole, Bug::Unbound)] = s.marks::&lt;Bug&gt;()[..] else {
+            panic!("expected exactly one marked hole");
+        };
+        let span = s.span(hole);
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![span.start], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>The constraint asks Z3 to generate an input with exactly one invisible reference. <code>mark</code> records which hole violates the rule, and <code>Solved::span</code> maps that hole to a byte range in the generated text.</p>
+<p>This example is deliberately small. The <a href="#feature-guide">Feature Guide</a> explains how to represent scopes, name candidates, and more complex relationships.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="writing-constraints-with-z3-toolkit"><a class="header" href="#writing-constraints-with-z3-toolkit">Writing Constraints with z3-toolkit</a></h1>
+<p>proptest-z3 constraints are written with z3-toolkit’s <code>constraint!</code> macro. This chapter covers only the parts used by proptest-z3. <code>proptest_z3::prelude::*</code> re-exports the z3-toolkit prelude, so you do not need to add a separate import.</p>
+<h2 id="constraint-builds-one-z3astbool"><a class="header" href="#constraint-builds-one-z3astbool"><code>constraint!</code> builds one <code>z3::ast::Bool</code></a></h2>
+<p><code>constraint!(...)</code> turns the conditions inside it into a single Z3 <code>Bool</code>. Since a rule passed to <code>fill</code> must return a <code>Bool</code>, the body of a rule will generally use <code>constraint!(...)</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>program().fill(names(), |binds| constraint!(
+    bound(binds, FUNC),
+    !distinct_defs(binds, VAR),
+))
+<span class="boring">}</span></code></pre>
+<h2 id="writing-conditions"><a class="header" href="#writing-conditions">Writing conditions</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Syntax</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>all { p, q, .. }</code></td><td>All conditions hold</td></tr>
+<tr><td><code>any { p, q, .. }</code></td><td>At least one condition holds</td></tr>
+<tr><td><code>exactly(n) { .. }</code></td><td>Exactly <code>n</code> conditions hold</td></tr>
+<tr><td><code>at_most(n) { .. }</code> / <code>at_least(n) { .. }</code></td><td>At most / at least <code>n</code> conditions hold</td></tr>
+<tr><td><code>!p</code>, <code>p &amp;&amp; q</code>, <code>p || q</code></td><td>Not, and, or</td></tr>
+<tr><td><code>{ p } implies { q }</code></td><td>If <code>p</code>, then <code>q</code></td></tr>
+<tr><td><code>distinct(xs)</code></td><td>All values are distinct</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="expanding-with-for-and-if"><a class="header" href="#expanding-with-for-and-if">Expanding with <code>for</code> and <code>if</code></a></h2>
+<p>Inside <code>constraint!</code>, <code>for</code> and <code>if</code> can expand into per-item conditions. The following example means that exactly one reference to a <code>VAR</code> is not visible.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>constraint!(
+    exactly(1) {
+        for i in binds.refs(VAR) {
+            !visible(binds, i)
+        }
+    },
+)
+<span class="boring">}</span></code></pre>
+<p>A <code>for</code> body can contain multiple conditions; each one contributes separately to the count. An <code>if</code> whose condition is a Rust <code>bool</code> is evaluated while building the constraint, so it can be used to select which terms to include.</p>
+<p>For the complete syntax and more examples, see the <a href="https://github.com/asobininn/z3-toolkit">z3-toolkit documentation</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="feature-guide"><a class="header" href="#feature-guide">Feature Guide</a></h1>
+<p>This chapter introduces proptest-z3 feature by feature.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="imgs/overview_en.png" alt="overview"><span class="img-wrapper"><img src="imgs/overview_en.png" alt="overview"></span></label></p>
+<p>When a test fails, proptest shrinks the structure, hints, and candidate set, and Z3 solves the constraints again. This process is called <strong>shrinking</strong>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Section</th><th>What it covers</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#spaces-and-holes">Spaces and Holes</a></td><td>Namespaces, holes, their roles, and hints</td></tr>
+<tr><td><a href="#frag-and-skeleton">Frag and Skeleton</a></td><td>Building input structure from holes; steps and scopes</td></tr>
+<tr><td><a href="#namespec-and-names">NameSpec and Names</a></td><td>Candidate names that can fill holes</td></tr>
+<tr><td><a href="#binds-and-rules">Binds and Rules</a></td><td>Expressing relationships between names as constraints</td></tr>
+<tr><td><a href="#labels">Labels</a></td><td>Recording broken locations and classifying generated inputs</td></tr>
+<tr><td><a href="#fill-and-solved">fill and Solved</a></td><td>Passing a Strategy to proptest, choosing a solving mode, and reading generated inputs</td></tr>
+</tbody>
+</table>
+</div>
+<p>The examples use the small language from <a href="#getting-started">Getting Started</a>. Each section introduces additional statements as needed. Helper implementations are simplified from <a href="https://github.com/asobininn/z3-toolkit/blob/main/crates/proptest-z3/tests/lang.rs"><code>tests/lang.rs</code></a>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Statement</th><th>Meaning</th><th>Introduced in</th></tr>
+</thead>
+<tbody>
+<tr><td><code>let x</code></td><td>Define <code>x</code></td><td>Getting Started</td></tr>
+<tr><td><code>let x = y</code></td><td>Use <code>y</code>, then define <code>x</code></td><td>Getting Started</td></tr>
+<tr><td><code>print x</code></td><td>Use <code>x</code></td><td>Getting Started</td></tr>
+<tr><td><code>del x</code></td><td>Delete <code>x</code>; it cannot be used afterward</td><td>Spaces and Holes</td></tr>
+<tr><td><code>fn f { .. }</code> / <code>call f</code></td><td>Define and call a function</td><td>Spaces and Holes</td></tr>
+<tr><td><code>{ .. }</code></td><td>A lexical scope</td><td>Frag and Skeleton</td></tr>
+<tr><td><code>[ .. ]</code></td><td>A boundary, such as a closure body</td><td>Frag and Skeleton</td></tr>
+</tbody>
+</table>
+</div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="spaces-and-holes"><a class="header" href="#spaces-and-holes">Spaces and Holes</a></h1>
+<p>A <strong>hole</strong> is a blank that will be filled with a name later. Z3 decides which name goes into each hole based on the constraints. This section explains namespaces (<code>Space</code>), which define the groups of names a hole can draw from, and the information carried by each hole.</p>
+<h2 id="define-namespaces"><a class="header" href="#define-namespaces">Define namespaces</a></h2>
+<p>A namespace is an independent set of names. Create a separate one for each category of name that is resolved independently, such as variables and functions.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>const VAR: Space = Space::new("var");
+const FUNC: Space = Space::new("func");
+<span class="boring">}</span></code></pre>
+<p><code>Space::new()</code> takes an <code>&amp;'static str</code>. This string is used as-is in diagnostic output, including counterexamples.</p>
+<p>The same string name in different namespaces has no relationship to the other.</p>
+<h2 id="hole-roles"><a class="header" href="#hole-roles">Hole roles</a></h2>
+<p>Each hole has a namespace and a <strong>role</strong> (<code>Role</code>). There are three roles:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Role</th><th>How to create it</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Role::Def</code></td><td><code>VAR.def()</code></td><td>Define a name</td></tr>
+<tr><td><code>Role::Use</code></td><td><code>VAR.refer()</code></td><td>Reference a name</td></tr>
+<tr><td><code>Role::Kill</code></td><td><code>VAR.kill()</code></td><td>Delete a name; it is no longer visible afterward</td></tr>
+</tbody>
+</table>
+</div>
+<p>A <code>Use</code> and a <code>Kill</code> hole are collectively called a <strong>reference</strong>, because both point to an existing name. The <a href="#binds-and-rules">Binds and Rules</a> section explains how to handle references together in constraints.</p>
+<p><code>def()</code>, <code>refer()</code>, and <code>kill()</code> each return a Strategy for a <code>Frag</code> containing one hole. To select the role dynamically, use <code>hole(role)</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>VAR.hole(Role::Kill) // Same as VAR.kill()
+<span class="boring">}</span></code></pre>
+<h2 id="example-deletion-and-functions"><a class="header" href="#example-deletion-and-functions">Example: deletion and functions</a></h2>
+<p>Extend the language from Getting Started with <code>del x</code> and function declarations/calls such as <code>fn f { ... }</code> and <code>call f</code>. A <code>Kill</code> hole represents the name in <code>del x</code>. A function declaration introduces a <code>Def</code>, and a call introduces a <code>Use</code>. This lets the same visibility rules express variable references, function calls, and use-after-deletion errors.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="frag-and-skeleton"><a class="header" href="#frag-and-skeleton">Frag and Skeleton</a></h1>
+<p>Arrange holes and text to define the structure of an input. A structure under construction is called a <code>Frag</code> (fragment); the completed structure is a <code>Skeleton</code>.</p>
+<ul>
+<li><code>Frag</code>: A sequence of text and holes. Fragments can be joined with <code>frag!</code> or <code>Frag::concat</code>.</li>
+<li><code>Skeleton</code>: A sequence of <code>Frag</code> values divided into <strong>steps</strong> by <code>Skeleton::steps</code>.</li>
+</ul>
+<h2 id="join-pieces-with-frag"><a class="header" href="#join-pieces-with-frag">Join pieces with <code>frag!</code></a></h2>
+<p><code>frag!</code> concatenates its arguments in order into one <code>Frag</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>(VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!("let ", x, " = ", y))
+<span class="boring">}</span></code></pre>
+<p>The following values can be passed to <code>frag!</code>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Value</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>String</td><td><code>"let "</code></td></tr>
+<tr><td>Number</td><td><code>42</code></td></tr>
+<tr><td><code>Frag</code> containing holes</td><td><code>x</code>, <code>frag![..]</code></td></tr>
+<tr><td><code>Vec&lt;Frag&gt;</code></td><td>Concatenates elements in order</td></tr>
+<tr><td><code>Option&lt;Frag&gt;</code></td><td>Adds nothing when <code>None</code></td></tr>
+<tr><td>Tuple (up to four elements)</td><td>Concatenates elements in order</td></tr>
+<tr><td><code>Text(x)</code></td><td>A user-defined type implementing <code>Display</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Wrap a user-defined type in <code>Text</code> to insert its <code>Display</code> output as text.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy)]
+enum Op { Add, Sub }
+
+impl Display for Op {
+    fn fmt(&amp;self, f: &amp;mut std::fmt::Formatter&lt;'_&gt;) -&gt; std::fmt::Result {
+        f.write_str(match self {
+            Op::Add =&gt; "+",
+            Op::Sub =&gt; "-",
+        })
+    }
+}
+
+(VAR.refer(), prop_oneof![Just(Text(Op::Add)), Just(Text(Op::Sub))])
+    .prop_map(|(x, op)| frag!("let a = ", x, " ", op, " b"))
+<span class="boring">}</span></code></pre>
+<h2 id="steps"><a class="header" href="#steps">Steps</a></h2>
+<p>A step is a unit at which definitions become visible; it corresponds roughly to a statement in a language.</p>
+<p>Only <code>Skeleton::steps</code>, <code>Frag::scope</code>, and <code>Frag::boundary</code> create steps. Each element passed to these functions is closed as a separate step. <code>frag!</code>, <code>Frag::concat</code>, and <code>Frag::join</code> do not create steps. Concatenated fragments become one step when the surrounding construct closes them.</p>
+<p>This distinction matters for statements such as <code>let x = x</code>: the right-hand-side reference is evaluated before the definition on the left becomes visible.</p>
+<h2 id="scopes"><a class="header" href="#scopes">Scopes</a></h2>
+<p><code>Frag::scope(steps)</code> creates a nested lexical scope. Each element in <code>steps</code> becomes a step in that scope. Definitions inside the scope are visible there and in nested scopes, but not outside it or in sibling scopes. Definitions from outer scopes remain visible inside, unless shadowed by a same-named inner definition.</p>
+<p>The scope’s delimiters and whitespace are ordinary text and must be supplied by the caller.</p>
+<h2 id="boundaries"><a class="header" href="#boundaries">Boundaries</a></h2>
+<p><code>Frag::boundary(steps)</code> creates a scope marked as a boundary, suitable for a closure or function body. Name visibility is the same as for <code>Frag::scope</code>; the difference is that the number of boundaries between a reference and its target definition can be counted to detect captures.</p>
+<p>Ordinary scopes do not count as boundaries. Blocks and boundaries can be nested freely.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="namespec-and-names"><a class="header" href="#namespec-and-names">NameSpec and Names</a></h1>
+<p>Names placed in holes are selected from a set of <strong>candidates</strong> defined per namespace. <code>NameSpec</code> describes how to generate those candidates.</p>
+<h2 id="generate-candidates-with-a-regular-expression"><a class="header" href="#generate-candidates-with-a-regular-expression">Generate candidates with a regular expression</a></h2>
+<p>Use <code>space(namespace, regex, count)</code> to generate the requested number of distinct names matching a regular expression.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn names() -&gt; NameSpec {
+    NameSpec::new()
+        .space(VAR, "[a-c]", 3)
+        .space(FUNC, "[a-c]", 3)
+}
+<span class="boring">}</span></code></pre>
+<p>Chain <code>.space</code> calls when using multiple namespaces.</p>
+<p>The candidates are generated by proptest. When a failing input is shrunk, the names can become shorter and simpler while still matching the regular expression.</p>
+<h2 id="provide-a-strategy"><a class="header" href="#provide-a-strategy">Provide a Strategy</a></h2>
+<p>For candidates that cannot conveniently be described by a regular expression, pass a Strategy directly with <code>space_with</code>. This is useful, for example, when names must not overlap with reserved keywords.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>const KEYWORDS: [&amp;str; 5] = ["let", "print", "del", "fn", "call"];
+
+fn names() -&gt; NameSpec {
+    let var = prop::collection::hash_set(
+        "[a-z]{1,4}".prop_filter("keyword", |s| !KEYWORDS.contains(&amp;s.as_str())),
+        3,
+    )
+    .prop_map(|set| set.into_iter().collect::&lt;Vec&lt;_&gt;&gt;());
+    NameSpec::new().space_with(VAR, var.boxed())
+}
+<span class="boring">}</span></code></pre>
+<h2 id="fixed-candidates"><a class="header" href="#fixed-candidates">Fixed candidates</a></h2>
+<p>To keep the candidate set fixed, pass proptest’s <code>Just</code> Strategy to <code>space_with</code>. This is useful for reproducing a bug involving particular names.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn names() -&gt; NameSpec {
+    NameSpec::new().space_with(VAR, Just(vec!["x".into(), "y".into()]).boxed())
+}
+<span class="boring">}</span></code></pre>
+<p>The order of candidates supplied to <code>space_with</code> determines their indices. The solver uses those indices internally; constraints compare names by index rather than by their textual representation.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="binds-and-rules"><a class="header" href="#binds-and-rules">Binds and Rules</a></h1>
+<p>Relationships between names are expressed as <strong>rules</strong>. A rule is a function that takes <code>&amp;Binds</code> and returns a Z3 <code>Bool</code>; it is passed to <code>fill</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>program().fill(names(), |binds| bound(binds, VAR))
+<span class="boring">}</span></code></pre>
+<p>This section describes <code>Binds</code>, the building blocks for rules, and predicates for common relationships.</p>
+<h2 id="bind-hole-indices"><a class="header" href="#bind-hole-indices">Bind: hole indices</a></h2>
+<p><code>Binds</code> lists the holes in a skeleton in <a href="#steps">evaluation order</a>. Within a rule, a hole is referred to by its evaluation-order index <code>i</code>. A smaller index means earlier evaluation, so “a hole before <code>i</code>” can be expressed by comparing indices.</p>
+<p>Hole indices can be selected by namespace and role. Each method returns indices in evaluation order.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Syntax</th><th>Holes returned</th></tr>
+</thead>
+<tbody>
+<tr><td><code>binds.defs(S)</code></td><td><code>Def</code> holes in namespace <code>S</code></td></tr>
+<tr><td><code>binds.uses(S)</code></td><td><code>Use</code> holes in namespace <code>S</code></td></tr>
+<tr><td><code>binds.kills(S)</code></td><td><code>Kill</code> holes in namespace <code>S</code></td></tr>
+<tr><td><code>binds.refs(S)</code></td><td>References (<code>Use</code> and <code>Kill</code>) in namespace <code>S</code></td></tr>
+<tr><td><code>binds.of(S, role)</code></td><td>Holes in namespace <code>S</code> with the given role</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>binds.name[i]</code> is the Z3 <code>Int</code> representing the name assigned to hole <code>i</code>. Its value is a candidate index, so <code>binds.name[p] == binds.name[q]</code> means that holes <code>p</code> and <code>q</code> contain the same name.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// All VAR definitions must have distinct names.
+fn no_redefinition(binds: &amp;Binds) -&gt; Bool {
+    constraint!(
+        distinct(binds.defs(VAR).map(|i| &amp;binds.name[i])),
+    )
+}
+<span class="boring">}</span></code></pre>
+<h2 id="information-known-before-solving"><a class="header" href="#information-known-before-solving">Information known before solving</a></h2>
+<p>Some relationships are properties of the generated structure and are already known before Z3 solves the name assignments. Methods such as <code>same_step</code>, <code>encloses</code>, and <code>boundaries_between</code> return Rust values (<code>bool</code> or <code>usize</code>), not Z3 expressions. Use them to filter candidates or branch while building a constraint.</p>
+<h2 id="common-predicates"><a class="header" href="#common-predicates">Common predicates</a></h2>
+<p>The <code>rules</code> module provides helpers for common name-resolution relationships:</p>
+<ul>
+<li><code>visible(binds, i)</code>: the reference at <code>i</code> resolves to a visible, non-deleted definition.</li>
+<li><code>killed(binds, i)</code>: the referenced name has a visible definition, but it has been deleted.</li>
+<li><code>bound(binds, space)</code>: every reference in the namespace resolves to a visible definition.</li>
+<li><code>unbound(binds, space, n)</code>: exactly <code>n</code> references in the namespace are not visible.</li>
+<li><code>defined_in_same_step(binds, i)</code>: a definition with the same namespace and name exists in the same step, regardless of evaluation order.</li>
+<li><code>distinct_defs(binds, space)</code>: all definitions in the namespace have different names, across the entire skeleton.</li>
+<li><code>resolves_to(binds, i, k)</code>: reference <code>i</code> resolves specifically to definition <code>k</code>.</li>
+<li><code>captured(binds, i)</code>: reference <code>i</code> resolves to a definition outside at least one boundary enclosing the reference.</li>
+</ul>
+<p>See the <a href="#appendix-api-reference">API Reference</a> for exact semantics, including how lexical scopes and <code>Kill</code> interact.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="labels"><a class="header" href="#labels">Labels</a></h1>
+<p>Rules can attach <strong>labels</strong> to generated inputs. Labels serve three purposes:</p>
+<ul>
+<li>Record which hole was broken, and how (<code>mark</code>).</li>
+<li>Classify generated inputs without adding a constraint (<code>observe</code>).</li>
+<li>Name constraints so that rejection causes can be investigated (<code>require</code>).</li>
+</ul>
+<p>Any type implementing <code>Copy + Debug + PartialEq</code> can be used as a label.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// Kinds of violations introduced by a rule.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Bug {
+    Unbound, // Reference to an undefined name
+    Killed,  // Reference to a deleted name
+}
+
+/// Classifications of generated inputs.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Shape {
+    Redefined, // A name is defined more than once
+}
+<span class="boring">}</span></code></pre>
+<h2 id="mark-record-a-broken-location"><a class="header" href="#mark-record-a-broken-location"><code>mark</code>: record a broken location</a></h2>
+<p><code>binds.mark(i, kind, cond)</code> returns <code>cond</code> unchanged and records that hole <code>i</code> is broken in way <code>kind</code> whenever <code>cond</code> holds.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>|binds| constraint!(
+    exactly(1) {
+        for i in binds.refs(VAR) {
+            binds.mark(i, Bug::Unbound, !visible(binds, i))
+        }
+    },
+)
+<span class="boring">}</span></code></pre>
+<p>After solving, <code>s.marks::&lt;Bug&gt;()</code> returns a sequence of <code>(hole, label)</code> pairs. If exactly one hole is marked, a helper can make retrieving it convenient:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn the_mark(s: &amp;Solved) -&gt; (Hole, Bug) {
+    let [(hole, bug)] = s.marks::&lt;Bug&gt;()[..] else {
+        panic!("expected exactly one mark");
+    };
+    (hole, bug)
+}
+<span class="boring">}</span></code></pre>
+<p><code>mark</code> is a record, not a constraint by itself. Its returned <code>Bool</code> must be included in the constraint (for example, inside <code>exactly(1)</code>) to enforce the condition.</p>
+<h2 id="observe-classify-without-constraining"><a class="header" href="#observe-classify-without-constraining"><code>observe</code>: classify without constraining</a></h2>
+<p><code>binds.observe(kind, cond)</code> records a classification when <code>cond</code> is true, but does not constrain which inputs can be generated. Use it to inspect the distribution of generated cases without changing that distribution.</p>
+<h2 id="require-name-a-constraint"><a class="header" href="#require-name-a-constraint"><code>require</code>: name a constraint</a></h2>
+<p><code>binds.require(label, constraint)</code> makes the condition mandatory and associates it with a name. If the combined constraints are unsatisfiable, the label can appear in Z3’s unsat core, helping identify why generation was rejected.</p>
+<p>Use <code>require</code> to split a complicated rule into named parts when diagnosing repeated rejections.</p>
+<h2 id="statistics-and-warnings"><a class="header" href="#statistics-and-warnings">Statistics and warnings</a></h2>
+<p>proptest-z3 tracks label statistics per thread. At the end of a test thread, labels that were declared but never occurred produce a warning, even if the test passes. This can reveal a supposedly covered violation that was never actually generated.</p>
+<p>If one violation necessarily implies another, use <code>given</code> to state the precondition for classifying each one. This lets the two categories be generated and counted independently.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="fill-and-solved"><a class="header" href="#fill-and-solved">fill and Solved</a></h1>
+<p><code>fill</code> combines a skeleton Strategy, candidate names, and a rule to produce a Strategy for inputs with their holes filled. Generated values are <code>Solved</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>proptest! {
+    #[test]
+    fn defined_names_resolve(
+        s in program().fill(names(), |binds| bound(binds, VAR))
+    ) {
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="choose-a-solving-mode"><a class="header" href="#choose-a-solving-mode">Choose a solving mode</a></h2>
+<p>Use <code>fill_with</code> to choose how holes are filled. By default, <code>fill</code> uses <code>Fill::Greedy</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Mode</th><th>Behavior</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Fill::Greedy</code> (default)</td><td>Treat hints as assumptions. If they conflict with constraints, discard the last conflicting hint and solve again.</td></tr>
+<tr><td><code>Fill::Optimal</code></td><td>Maximize the number of hints that can be honored.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Both modes produce the same result from the same skeleton and hints. Re-solving the same input during shrinking is deterministic.</p>
+<ul>
+<li><code>Fill::Greedy</code> is fast. However, its choice of which hint to discard is not globally optimal, so it may discard more hints than <code>Fill::Optimal</code>.</li>
+<li><code>Fill::Optimal</code> tries to honor hints as much as possible, but can be slower for skeletons with many holes.</li>
+</ul>
+<p>Use <code>Fill::Greedy</code> by default, and try <code>Fill::Optimal</code> if the generated names are distributed in an undesirable way.</p>
+<h2 id="shrinking"><a class="header" href="#shrinking">Shrinking</a></h2>
+<p>When a test fails, proptest shrinks its input. proptest-z3 shrinks the structure, hints, and candidate names, and only tries inputs that satisfy the rule. If a shrunken input is unsatisfiable, that shrink direction is abandoned.</p>
+<p>Shrinking does not necessarily reach a fixed point, so statements unrelated to the counterexample may remain in the final input.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h1>
+<p>This chapter presents constraint patterns that are useful when testing name resolution.</p>
+<h2 id="name-resolution-boundary-cases"><a class="header" href="#name-resolution-boundary-cases">Name-resolution boundary cases</a></h2>
+<p>A randomly generated valid program rarely hits situations where a resolver is likely to be wrong. Constrain the input to be valid with <code>bound</code>, then use <code>any</code> to ensure that a tricky situation occurs.</p>
+<h3 id="a-same-named-definition-outside-the-current-statement"><a class="header" href="#a-same-named-definition-outside-the-current-statement">A same-named definition outside the current statement</a></h3>
+<pre><code class="language-rust ignore">let x
+let x = x       // The right-hand side should refer to x from the first line.</code></pre>
+<p>A resolver that registers the left-hand <code>x</code> before resolving the right-hand side may incorrectly bind the right-hand side to itself.</p>
+<pre><code class="language-rust ignore">program().fill(names(), |binds| constraint!(
+    bound(binds, VAR),
+    any { for i in binds.uses(VAR) { defined_in_same_step(binds, i) } },
+))</code></pre>
+<p>Because <code>bound</code> requires every reference to be visible, and the same step contains a definition with the same name, the right-hand side must resolve to the outer definition.</p>
+<h3 id="shadowing"><a class="header" href="#shadowing">Shadowing</a></h3>
+<pre><code class="language-rust ignore">let x
+{
+    let x
+    print x     // Should refer to the inner x.
+}</code></pre>
+<p>The outer <code>x</code> has the same name, so a resolver that does not respect lexical scopes may choose the outer definition.</p>
+<pre><code class="language-rust ignore">/// Whether the definition resolved by reference `i` hides a same-named definition in an outer scope.
+fn hides_outer(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let cases: Vec&lt;Bool&gt; = reaching_defs(binds, i)
+        .flat_map(|k| reaching_defs(binds, i).map(move |q| (k, q)))
+        .map(|(k, q)| constraint!(
+            resolves_to(binds, i, k),
+            binds.encloses(q, i),
+            !binds.encloses(k, q),
+            binds.name[k] == binds.name[q],
+        ))
+        .collect();
+    constraint!(any { for c in cases { c } })
+}</code></pre>
+<p>Use a rule like this to ensure that a reference resolves to an inner definition while a same-named outer definition also exists.</p>
+<h2 id="deliberately-generate-an-undefined-reference"><a class="header" href="#deliberately-generate-an-undefined-reference">Deliberately generate an undefined reference</a></h2>
+<p>To exercise the error path, require exactly one invisible reference and mark it. See <a href="#labels">Labels</a> for retrieving the marked hole and mapping it to a source span.</p>
+<pre><code class="language-rust ignore">program().fill(names(), |binds| constraint!(
+    exactly(1) {
+        for i in binds.refs(VAR) {
+            binds.mark(i, Bug::Unbound, !visible(binds, i))
+        }
+    },
+))</code></pre>
+<h2 id="deleted-names"><a class="header" href="#deleted-names">Deleted names</a></h2>
+<p>To test use-after-deletion, ensure a <code>Kill</code> and a later reference share a name, with no later definition restoring visibility. Since <code>Kill</code> crosses scope boundaries, the shape of the generated program matters: the deletion must occur before the reference in evaluation order.</p>
+<pre><code class="language-rust ignore">constraint!(
+    any {
+        for i in binds.refs(VAR) {
+            killed(binds, i)
+        }
+    },
+)</code></pre>
+<h2 id="captures"><a class="header" href="#captures">Captures</a></h2>
+<p>Use <code>captured</code> to select references that resolve across a boundary, such as a closure body. Ordinary lexical blocks do not count as boundaries. To test a closure that relays a capture through another closure, require a reference whose target is separated from it by two or more boundaries.</p>
+<p>For the exact semantics of evaluation order, scopes, and deletion, see the <a href="#appendix-api-reference">API Reference</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="appendix-api-reference"><a class="header" href="#appendix-api-reference">Appendix: API reference</a></h1>
+<p>This lists the public API of proptest-z3 0.1.0, including signatures and semantics (especially the relation to scopes, steps and evaluation order).
+It is intended as a supplement to the main text, and as context when having an LLM write tests.</p>
+<h2 id="a1-before-reading-two-kinds-of-numbers"><a class="header" href="#a1-before-reading-two-kinds-of-numbers">A.1 Before reading: two kinds of numbers</a></h2>
+<p>proptest-z3 has two kinds of numbers that point to holes. Mixing them up leads to wrong tests.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>Type</th><th>Order</th><th>Where used</th></tr>
+</thead>
+<tbody>
+<tr><td>number in evaluation order</td><td><code>usize</code> (variable names <code>i</code>, <code>k</code>, <code>j</code>)</td><td>evaluation order (A.2)</td><td>inside constraints (<code>Binds</code>, <code>rules</code>)</td></tr>
+<tr><td>number in text order</td><td><code>Hole(pub usize)</code></td><td>the order they appear in the output text</td><td>after solving (<code>Solved</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Inside a constraint, <code>i &lt; k</code> means “<code>i</code> is evaluated before <code>k</code>”. It is not before or after in the text.</li>
+<li>There is no public API for getting a <code>Hole</code> from inside a constraint. If you need the position of a hole, put a mark on it with <code>binds.mark(i, ..)</code> and receive it as a <code>Hole</code> with <code>s.marks()</code> after solving.</li>
+</ul>
+<h2 id="a2-rules-for-steps-evaluation-order-and-scopes"><a class="header" href="#a2-rules-for-steps-evaluation-order-and-scopes">A.2 Rules for steps, evaluation order and scopes</a></h2>
+<h3 id="steps-1"><a class="header" href="#steps-1">Steps</a></h3>
+<ul>
+<li>A step is “the unit at which definitions become visible”, and corresponds to a statement of the language.</li>
+<li>Only three things create steps: <code>Skeleton::steps(..)</code> / <code>Frag::scope(..)</code> / <code>Frag::boundary(..)</code>. Each of them closes each element passed to it as one step.</li>
+<li><code>frag!</code> / <code>Frag::concat</code> / <code>Frag::join</code> do not create steps. Joined fragments become one step together when they are closed outside.</li>
+<li>Holes inside <code>Frag::scope(..)</code> / <code>Frag::boundary(..)</code> belong to the inner steps, not to the step of the outer statement.</li>
+</ul>
+<h3 id="evaluation-order"><a class="header" href="#evaluation-order">Evaluation order</a></h3>
+<p>The evaluation order is determined by the following rules.</p>
+<ol>
+<li>Steps are ordered in text order.</li>
+<li>Within one step,
+<ul>
+<li>first: <code>Use</code> holes, and holes inside nested scopes contained in that step (in text order)</li>
+<li>then: the step’s own <code>Def</code> and <code>Kill</code> holes (in text order)</li>
+</ul>
+</li>
+</ol>
+<p>Consequences:</p>
+<ul>
+<li>The right-hand <code>x</code> (<code>Use</code>) of <code>let x = x</code> is evaluated before the left-hand <code>x</code> (<code>Def</code>) of the same statement, so it does not point to it.</li>
+<li><code>del x</code> (<code>Kill</code>) is evaluated after the <code>Use</code>s of the same statement.</li>
+<li>When the <code>Def</code> of a statement and a scope contained in that statement are placed together, as in <code>fn f { .. call f .. }</code>, every hole inside the scope is evaluated before the definition of <code>f</code>. <strong>Therefore, by default, recursive calls are not visible.</strong> The same applies to boundaries (<code>Frag::boundary</code>).</li>
+<li>The contents of a boundary (the body of a closure) are treated as evaluated at the position where they are written (the same as being called there). A <code>Kill</code> inside a boundary also affects references after the boundary.</li>
+</ul>
+<h3 id="scopes-1"><a class="header" href="#scopes-1">Scopes</a></h3>
+<ul>
+<li><code>Frag::scope(steps)</code> creates one nested scope. Scopes are lexical (static) nesting only.</li>
+<li>A <code>Def</code> inside a scope is visible only from that scope and the scopes further inside it. It is not visible from outer or sibling scopes.</li>
+<li>An outer <code>Def</code> is visible from inside. If the same name is defined inside, that one takes precedence inside (shadowing).</li>
+<li>Scopes are not passed to z3. As Rust-side <code>bool</code>s (<code>Binds::encloses</code>), they are used to narrow down candidates when building constraints.</li>
+</ul>
+<h3 id="boundaries-closures-and-function-bodies"><a class="header" href="#boundaries-closures-and-function-bodies">Boundaries (closures and function bodies)</a></h3>
+<ul>
+<li><code>Frag::boundary(steps)</code> creates <strong>a scope marked as a boundary</strong>. Use it for the bodies of closures and functions.</li>
+<li>The visible range (<code>encloses</code>, <code>visible</code>, <code>target</code> and so on) is exactly the same as for <code>Frag::scope</code>. Boundaries do not change the result of name resolution.</li>
+<li>The only difference is that you can count how many boundaries a reference crosses to reach its definition (<code>Binds::boundaries_between</code>). This is used to decide “captures” (<code>captured</code>).</li>
+<li>Ordinary scopes (<code>Frag::scope</code>) are not counted when crossed. Blocks inside boundaries and boundaries inside blocks can both be nested freely.</li>
+</ul>
+<h3 id="whether-each-api-crosses-scopes"><a class="header" href="#whether-each-api-crosses-scopes">Whether each API crosses scopes</a></h3>
+<p>Legend:</p>
+<ul>
+<li><strong>lexical</strong>: outer definitions are visible from inside. Definitions in inner and sibling scopes are not visible</li>
+<li><strong>whole</strong>: does not look at scopes. All holes in the whole skeleton are targets</li>
+<li><strong>does not cross</strong>: only within the same step (holes in the same step are always in the same scope)</li>
+<li><strong>—</strong>: unrelated to scopes</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>API</th><th>Scope</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Binds::defs</code> / <code>uses</code> / <code>kills</code> / <code>refs</code> / <code>of</code></td><td>whole</td><td>only filters by namespace and role</td></tr>
+<tr><td><code>Binds::same_step</code></td><td>does not cross</td><td>a hole inside a nested scope and a hole of the outer statement containing that scope are in different steps</td></tr>
+<tr><td><code>Binds::encloses</code></td><td>lexical</td><td>this itself is the scope check. Boundaries are treated as ordinary scopes too</td></tr>
+<tr><td><code>Binds::boundaries_between</code></td><td>lexical</td><td>the number of boundaries that enclose <code>inner</code> but not <code>outer</code>. Ordinary scopes are not counted</td></tr>
+<tr><td><code>reaching_defs</code></td><td>lexical</td><td>among <code>Def</code>s in the same namespace earlier in evaluation order, those in a scope enclosing <code>i</code> (visible across boundaries too)</td></tr>
+<tr><td><code>kills_between</code></td><td><strong>whole</strong></td><td><code>Kill</code> looks at neither scopes nor boundaries (see the note below)</td></tr>
+<tr><td><code>visible</code></td><td>lexical + <code>Kill</code> is whole</td><td>a combination of <code>reaching_defs</code> and <code>kills_between</code></td></tr>
+<tr><td><code>killed</code></td><td>lexical + <code>Kill</code> is whole</td><td>same as above</td></tr>
+<tr><td><code>resolves_to</code></td><td>lexical + <code>Kill</code> is whole</td><td>the same rule as <code>Solved::target</code>, written as a constraint</td></tr>
+<tr><td><code>captured</code></td><td>lexical (counts boundaries)</td><td>there is at least one boundary between the definition it points to and the reference</td></tr>
+<tr><td><code>bound</code> / <code>unbound</code></td><td>lexical + <code>Kill</code> is whole</td><td>applies <code>visible</code> to each element of <code>refs</code> (whole)</td></tr>
+<tr><td><code>defined_in_same_step</code></td><td>does not cross</td><td>the order of evaluation does not matter</td></tr>
+<tr><td><code>distinct_defs</code></td><td><strong>whole</strong></td><td>same-name definitions in inner scopes (shadowing) and same names across sibling scopes are also counted as “duplicates”</td></tr>
+<tr><td><code>Solved::target</code></td><td>lexical + <code>Kill</code> is whole</td><td>applies the same rule as <code>visible</code> to the concrete names after solving</td></tr>
+<tr><td><code>Solved::events</code></td><td>whole</td><td>the evaluation order of the whole skeleton</td></tr>
+<tr><td><code>Binds::mark</code> / <code>observe</code> / <code>require</code></td><td>—</td><td></td></tr>
+<tr><td><code>NameSpec</code> / <code>Names</code></td><td>—</td><td>candidates are per namespace, not per scope</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong><code>Kill</code> crosses scopes.</strong> If there is even one <code>Kill</code> of the same name in the same namespace between definition <code>k</code> and reference <code>i</code> (in evaluation order), <code>k</code> is not visible from <code>i</code>. Which scope that <code>Kill</code> is in does not matter.</p>
+<ul>
+<li>If you <code>del a</code> in an inner scope, the outer <code>a</code> also disappears. This is the same even when there is an <code>a</code> of the same name inside and <code>del a</code> points to that one.</li>
+<li>A <code>del a</code> inside a closed sibling scope also affects later references to <code>a</code>.</li>
+<li>If there is a <code>Def</code> of the same name after the <code>Kill</code>, that definition is newly visible. However, the range where it is visible is only inside the scope of that <code>Def</code>.</li>
+</ul>
+<p><strong><code>distinct_defs</code> crosses scopes.</strong> <code>!distinct_defs(binds, S)</code> means “there is a pair of definitions with the same name somewhere”, and is not limited to reassignment in the same scope. If you want to forbid or allow only redefinitions within the same scope, narrow down the pairs of definitions with <code>binds.encloses</code> and <code>binds.same_step</code> and write it yourself with <code>constraint!</code>.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
+<p>The examples in this appendix use the same small language as the main text (<code>def x</code> is a definition, <code>set x y</code> uses <code>y</code> and defines <code>x</code>, <code>print x</code> is a use, <code>del x</code> is a deletion, <code>{ .. }</code> is a scope). The only namespace is <code>VAR</code>, and the candidates are <code>a</code>, <code>b</code>, <code>c</code>.</p>
+<pre><code class="language-text">0| def a
+1| set b a
+2| { def a print a }
+3| del a
+4| print b
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th><code>Hole</code> in text order</th><th>Hole</th><th>Role</th><th>Scope</th><th>Evaluation order <code>i</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>Hole(0)</code></td><td><code>a</code> on line 0</td><td><code>Def</code></td><td>top</td><td>0</td></tr>
+<tr><td><code>Hole(1)</code></td><td><code>b</code> on line 1</td><td><code>Def</code></td><td>top</td><td>2</td></tr>
+<tr><td><code>Hole(2)</code></td><td><code>a</code> on line 1</td><td><code>Use</code></td><td>top</td><td>1</td></tr>
+<tr><td><code>Hole(3)</code></td><td>first <code>a</code> on line 2</td><td><code>Def</code></td><td>inner</td><td>3</td></tr>
+<tr><td><code>Hole(4)</code></td><td>second <code>a</code> on line 2</td><td><code>Use</code></td><td>inner</td><td>4</td></tr>
+<tr><td><code>Hole(5)</code></td><td><code>a</code> on line 3</td><td><code>Kill</code></td><td>top</td><td>5</td></tr>
+<tr><td><code>Hole(6)</code></td><td><code>b</code> on line 4</td><td><code>Use</code></td><td>top</td><td>6</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>On line 1, the <code>Use</code> <code>a</code> (<code>i = 1</code>) is evaluated before the <code>Def</code> <code>b</code> (<code>i = 2</code>).</li>
+<li><code>reaching_defs(4)</code> is <code>{0, 2, 3}</code>. <code>Solved::target(Hole(4))</code> is the inner <code>Hole(3)</code> (the last one in evaluation order among the live definitions of the same name).</li>
+<li><code>reaching_defs(5)</code> is <code>{0, 2}</code>. The inner <code>Hole(3)</code> does not enclose the top-level <code>Kill</code>, so it is not included. <code>target(Hole(5))</code> is <code>Hole(0)</code>.</li>
+<li><code>print b</code> (<code>i = 6</code>) points to <code>Hole(1)</code>. The <code>Kill</code> in between has the name <code>a</code>, so it has no effect.</li>
+<li><code>distinct_defs(binds, VAR)</code> is false, because <code>Hole(0)</code> and <code>Hole(3)</code> are both <code>a</code> (the scopes differ, but it counts over the whole).</li>
+<li>The result is the same even if line 3 is <code>{ del a }</code> (<code>Kill</code> deletes the outer <code>a</code> even when it is inside a scope).</li>
+<li>If line 2 is changed to <code>{ def a del a }</code>, the inner <code>del a</code> points to the inner <code>a</code>, but the outer <code>a</code> (<code>Hole(0)</code>) also disappears at the same time. Later references to <code>a</code> at the top level become deleted (<code>killed</code>).</li>
+</ul>
+<h3 id="example-boundaries"><a class="header" href="#example-boundaries">Example: boundaries</a></h3>
+<p>Let <code>[ .. ]</code> be a boundary (<code>Frag::boundary</code>) and <code>{ .. }</code> an ordinary scope.</p>
+<pre><code class="language-text">0| def a
+1| [ def b [ print a print b ] { print b } ]
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th><code>Hole</code> in text order</th><th>Hole</th><th>Role</th><th>Enclosed by (innermost first)</th><th>Evaluation order <code>i</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>Hole(0)</code></td><td><code>a</code> on line 0</td><td><code>Def</code></td><td>none</td><td>0</td></tr>
+<tr><td><code>Hole(1)</code></td><td><code>b</code> of <code>def b</code></td><td><code>Def</code></td><td>boundary 1</td><td>1</td></tr>
+<tr><td><code>Hole(2)</code></td><td><code>a</code> of <code>print a</code></td><td><code>Use</code></td><td>boundary 2, boundary 1</td><td>2</td></tr>
+<tr><td><code>Hole(3)</code></td><td><code>b</code> of <code>print b</code> inside boundary 2</td><td><code>Use</code></td><td>boundary 2, boundary 1</td><td>3</td></tr>
+<tr><td><code>Hole(4)</code></td><td><code>b</code> of <code>print b</code> inside <code>{ }</code></td><td><code>Use</code></td><td>scope, boundary 1</td><td>4</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>Hole(2)</code> points to <code>Hole(0)</code>. <code>boundaries_between(0, 2) = 2</code> (boundary 1 and boundary 2), so <code>captured</code> is true. It reaches across two boundaries, which means the outer closure relays the capture to the inner one.</li>
+<li><code>Hole(3)</code> points to <code>Hole(1)</code>. <code>boundaries_between(1, 3) = 1</code> (only boundary 2; boundary 1 also encloses the definition), so <code>captured</code> is true.</li>
+<li><code>Hole(4)</code> also points to <code>Hole(1)</code>, but there is only an ordinary scope in between, so <code>boundaries_between(1, 4) = 0</code> and <code>captured</code> is false.</li>
+</ul>
+<h2 id="a3-modules-and-prelude"><a class="header" href="#a3-modules-and-prelude">A.3 Modules and prelude</a></h2>
+<p><code>use proptest_z3::prelude::*;</code> brings in the following.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Origin</th><th>Items</th></tr>
+</thead>
+<tbody>
+<tr><td>proptest-z3</td><td><code>frag!</code>, <code>Binds</code>, <code>Fill</code>, <code>FillExt</code>, <code>Filled</code>, <code>Frag</code>, <code>Given</code>, <code>Hint</code>, <code>Hole</code>, <code>IntoFrag</code>, <code>NameSpec</code>, <code>Names</code>, <code>Role</code>, <code>Skeleton</code>, <code>Solved</code>, <code>Space</code>, <code>Text</code>, <code>label_stats</code></td></tr>
+<tr><td><code>proptest_z3::rules::*</code></td><td><code>visible</code>, <code>bound</code>, <code>unbound</code>, <code>defined_in_same_step</code>, <code>killed</code>, <code>distinct_defs</code>, <code>resolves_to</code>, <code>captured</code>, <code>reaching_defs</code>, <code>kills_between</code></td></tr>
+<tr><td>z3</td><td><code>z3::ast::{Bool, Int}</code></td></tr>
+<tr><td>z3-toolkit</td><td><code>z3_toolkit::prelude::*</code> (<code>constraint!</code>, <code>Failure</code> and so on)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Items not in the prelude, at the crate root: <code>FilledHole</code>, <code>Label</code>, <code>LabelStat</code>, <code>take_label_stats</code>, <code>take_rejections</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::prelude::*;
+use proptest_z3::prelude::*;
+use proptest_z3::{take_label_stats, take_rejections}; // only when needed
+<span class="boring">}</span></code></pre>
+<h2 id="a4-building-the-shape"><a class="header" href="#a4-building-the-shape">A.4 Building the shape</a></h2>
+<h3 id="space-namespace"><a class="header" href="#space-namespace"><code>Space</code> (namespace)</a></h3>
+<p><code>#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]</code>. Distinguished by the string inside (<code>Space</code>s with the same string are the same namespace).</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>const fn new(name: &amp;'static str) -&gt; Space</code></td><td>define it as a <code>const</code>: <code>const VAR: Space = Space::new("var");</code></td></tr>
+<tr><td><code>fn name(self) -&gt; &amp;'static str</code></td><td>used in display and panic messages</td></tr>
+<tr><td><code>fn hole(self, role: Role) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td>a <code>Frag</code> with one hole. The hint is decided by proptest</td></tr>
+<tr><td><code>fn def(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Def)</code></td></tr>
+<tr><td><code>fn refer(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Use)</code></td></tr>
+<tr><td><code>fn kill(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Kill)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Namespaces are independent of each other. The <code>a</code> of <code>VAR</code> and the <code>a</code> of <code>FUNC</code> are unrelated, and every rule only looks at holes in the same namespace.</p>
+<h3 id="role-role-of-a-hole"><a class="header" href="#role-role-of-a-hole"><code>Role</code> (role of a hole)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Value</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Role::Def</code></td><td>defines a name</td></tr>
+<tr><td><code>Role::Use</code></td><td>refers to a name</td></tr>
+<tr><td><code>Role::Kill</code></td><td>refers to a name and deletes it at the same time. Afterwards, no definition of the same name is visible (A.2)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>fn is_ref(self) -&gt; bool</code>: true for <code>Use</code> or <code>Kill</code>. These two are called <strong>references</strong>.</li>
+<li><code>Kill</code> is also a reference, so imposing <code>bound</code> means “delete a live name”.</li>
+</ul>
+<h3 id="hint-preferred-name"><a class="header" href="#hint-preferred-name"><code>Hint</code> (preferred name)</a></h3>
+<p><code>pub struct Hint(pub u16)</code>. A fixed-point number from 0 to 1 representing “which of the candidates I want”. Implements <code>Arbitrary</code>.</p>
+<ul>
+<li><code>fn index(self, size: usize) -&gt; usize</code>: <code>floor(size × h / 65536)</code>. Panics if <code>size == 0</code>.</li>
+<li>It is kept unless it conflicts with the constraints. Shrinking moves it towards 0, so names move towards the first candidate (the lexicographically smallest, as in A.5).</li>
+<li>Normally <code>Space::def()</code> and the like make it automatically, so you only use it directly when calling <code>Frag::hole</code> by hand.</li>
+</ul>
+<h3 id="frag-fragment-under-construction"><a class="header" href="#frag-fragment-under-construction"><code>Frag</code> (fragment under construction)</a></h3>
+<p><code>#[derive(Debug, Clone, Default)]</code>. <code>Frag::default()</code> is the empty fragment.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th><th>Steps and scopes</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn hole(space: Space, role: Role, hint: Hint) -&gt; Frag</code></td><td>one hole</td><td>does not create</td></tr>
+<tr><td><code>fn text(s: impl Into&lt;String&gt;) -&gt; Frag</code></td><td>text only</td><td>does not create</td></tr>
+<tr><td><code>fn concat(parts: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>joins in order</td><td>does not create</td></tr>
+<tr><td><code>fn join(sep: impl IntoFrag + Clone, parts: impl IntoIterator&lt;Item = impl IntoFrag&gt;) -&gt; Frag</code></td><td>joins with separators</td><td>does not create</td></tr>
+<tr><td><code>fn scope(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>a nested scope. Closes each element as one step</td><td>creates steps and a scope</td></tr>
+<tr><td><code>fn boundary(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>a nested scope marked as a boundary (closure, function body). The visible range is the same as <code>scope</code></td><td>creates steps and a scope (boundary)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>The return value of <code>Frag::scope</code> / <code>Frag::boundary</code> is still a <code>Frag</code>. Place it in <code>frag![..]</code> as part of the outer statement, and close it with the outer <code>Skeleton::steps</code> or <code>Frag::scope</code> / <code>Frag::boundary</code>.</li>
+<li>Adding separators (spaces, newlines) to the inner elements is up to the user: <code>Frag::scope(body.into_iter().map(|s| frag![s, " "]))</code>.</li>
+<li>The appearance, such as brackets, is also added by the user. For example, to make blocks and closures separately:</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn block(stmts: Vec&lt;Frag&gt;) -&gt; Frag {
+    frag!["{ ", Frag::scope(stmts.into_iter().map(|s| frag![s, " "])), "}"]
+}
+
+fn closure(stmts: Vec&lt;Frag&gt;) -&gt; Frag {
+    frag!["[ ", Frag::boundary(stmts.into_iter().map(|s| frag![s, " "])), "]"]
+}
+<span class="boring">}</span></code></pre>
+<h3 id="intofrag-and-frag"><a class="header" href="#intofrag-and-frag"><code>IntoFrag</code> and <code>frag!</code></a></h3>
+<p><code>frag![e1, e2, ..]</code> is <code>Frag::concat([e1.into_frag(), e2.into_frag(), ..])</code>. The trailing comma can be omitted.</p>
+<p>Implementations of <code>IntoFrag</code>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Type</th><th>Conversion</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Frag</code>, <code>&amp;Frag</code></td><td>as is (<code>&amp;Frag</code> is cloned)</td></tr>
+<tr><td><code>Vec&lt;T: IntoFrag&gt;</code></td><td>joins the elements</td></tr>
+<tr><td><code>Option&lt;T: IntoFrag&gt;</code></td><td><code>None</code> is empty</td></tr>
+<tr><td><code>(T1, T2)</code>, <code>(T1, T2, T3)</code>, <code>(T1, T2, T3, T4)</code></td><td>joins the elements</td></tr>
+<tr><td><code>&amp;str</code>, <code>String</code>, <code>&amp;String</code>, <code>char</code>, <code>bool</code></td><td>text</td></tr>
+<tr><td>integers (<code>i8</code> to <code>i128</code>, <code>isize</code>, <code>u8</code> to <code>u128</code>, <code>usize</code>), <code>f32</code>, <code>f64</code></td><td>text from <code>to_string()</code></td></tr>
+<tr><td><code>Text&lt;T: Display&gt;</code></td><td>text from <code>to_string()</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>For user types, implement <code>IntoFrag</code> directly, or implement <code>Display</code> and wrap with <code>Text(x)</code>. Holes cannot be put into <code>Display</code> (the hole information is lost once it becomes a string).</p>
+<h3 id="skeleton-finished-skeleton"><a class="header" href="#skeleton-finished-skeleton"><code>Skeleton</code> (finished skeleton)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn steps(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Skeleton</code></td><td>closes each element as one step and completes the skeleton. The only way to make a <code>Skeleton</code></td></tr>
+<tr><td><code>fn holes(&amp;self) -&gt; usize</code></td><td>the number of holes</td></tr>
+<tr><td><code>fn solve(&amp;self, names: &amp;Names, fill: Fill, rule: impl Fn(&amp;Binds) -&gt; Bool) -&gt; Result&lt;Solved, Failure&gt;</code></td><td>solves directly without going through proptest (A.10)</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>fill</code> can only be used on <code>Strategy&lt;Value = Skeleton&gt;</code>, so forgetting to close steps is a type error.</p>
+<p>The typical form:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(stmt(), 1..8)
+        .prop_map(|stmts| Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"])))
+}
+<span class="boring">}</span></code></pre>
+<h2 id="a5-name-candidates"><a class="header" href="#a5-name-candidates">A.5 Name candidates</a></h2>
+<h3 id="namespec-strategy-that-makes-candidates"><a class="header" href="#namespec-strategy-that-makes-candidates"><code>NameSpec</code> (strategy that makes candidates)</a></h3>
+<p>Implements <code>Strategy&lt;Value = Names&gt;</code>. <code>Clone</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn new() -&gt; NameSpec</code></td><td>empty</td></tr>
+<tr><td><code>fn space(self, space: Space, regex: &amp;str, count: usize) -&gt; NameSpec</code></td><td><code>count</code> mutually distinct names matching <code>regex</code>. Candidates are sorted <strong>lexicographically</strong></td></tr>
+<tr><td><code>fn space_with(self, space: Space, names: BoxedStrategy&lt;Vec&lt;String&gt;&gt;) -&gt; NameSpec</code></td><td>passes a strategy of candidates directly. The order becomes the candidate numbers as is</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>The name candidates are also made by proptest, so shrinking also makes the names themselves shorter.</li>
+<li>If fewer than <code>count</code> strings match <code>regex</code>, the candidates cannot be made.</li>
+<li>The fewer the candidates, the more the same names are reused, making the inputs harder for name resolution. However, “mutually distinct” kinds of constraints become harder to solve (e.g. <code>distinct_defs</code> with 4 definitions and 3 candidates is unsat).</li>
+</ul>
+<p>Conditions that panic: an invalid regular expression / registering the same <code>Space</code> twice / the candidates of <code>space_with</code> contain an empty string or duplicates.</p>
+<h3 id="names-concrete-candidates"><a class="header" href="#names-concrete-candidates"><code>Names</code> (concrete candidates)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn default() -&gt; Names</code></td><td>empty</td></tr>
+<tr><td><code>fn with(self, space: Space, names: impl IntoIterator&lt;Item = impl Into&lt;String&gt;&gt;) -&gt; Names</code></td><td>sets candidates by hand (for unit tests that call <code>Skeleton::solve</code> directly)</td></tr>
+<tr><td><code>fn get(&amp;self, space: Space) -&gt; &amp;[String]</code></td><td>the list of candidates. Empty if not registered</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="a6-writing-constraints-binds"><a class="header" href="#a6-writing-constraints-binds">A.6 Writing constraints: <code>Binds</code></a></h2>
+<p>The rule <code>rule: Fn(&amp;Binds) -&gt; Bool</code> passed to <code>fill</code> / <code>solve</code> takes <code>Binds</code> and returns a z3 <code>Bool</code>. The rule is called every time something is solved (including each stage of shrinking), so do not give it side effects (records such as <code>mark</code> are rebuilt on each solve).</p>
+<p>All numbers in <code>Binds</code> are in evaluation order (A.1).</p>
+<h3 id="public-fields"><a class="header" href="#public-fields">Public fields</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>role</code></td><td><code>Vec&lt;Role&gt;</code></td><td>the role of each hole</td></tr>
+<tr><td><code>space</code></td><td><code>Vec&lt;Space&gt;</code></td><td>the namespace of each hole</td></tr>
+<tr><td><code>name</code></td><td><code>Vec&lt;Int&gt;</code></td><td>the name that goes into each hole. A z3 integer variable whose value is the candidate number (<code>0..number of candidates</code>). The range constraint is added automatically</td></tr>
+</tbody>
+</table>
+</div>
+<p>Equality of names is written <code>binds.name[p] == binds.name[q]</code> (inside <code>constraint!</code>). The name strings are not visible from constraints.</p>
+<h3 id="methods"><a class="header" href="#methods">Methods</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Returns</th><th>Scope</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn len(&amp;self) -&gt; usize</code></td><td></td><td></td><td>the number of holes</td></tr>
+<tr><td><code>fn is_empty(&amp;self) -&gt; bool</code></td><td></td><td></td><td></td></tr>
+<tr><td><code>fn of(&amp;self, space: Space, role: Role) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td>evaluation order</td><td>whole</td><td>holes with that namespace and role</td></tr>
+<tr><td><code>fn defs(&amp;self, space: Space)</code></td><td>same as above</td><td>whole</td><td><code>of(space, Def)</code></td></tr>
+<tr><td><code>fn uses(&amp;self, space: Space)</code></td><td>same as above</td><td>whole</td><td><code>of(space, Use)</code></td></tr>
+<tr><td><code>fn kills(&amp;self, space: Space)</code></td><td>same as above</td><td>whole</td><td><code>of(space, Kill)</code></td></tr>
+<tr><td><code>fn refs(&amp;self, space: Space)</code></td><td>same as above</td><td>whole</td><td><code>Use</code> and <code>Kill</code></td></tr>
+<tr><td><code>fn same_step(&amp;self, p: usize, q: usize) -&gt; bool</code></td><td>Rust <code>bool</code></td><td>does not cross</td><td>whether they are in the same step</td></tr>
+<tr><td><code>fn encloses(&amp;self, outer: usize, inner: usize) -&gt; bool</code></td><td>Rust <code>bool</code></td><td>lexical</td><td>whether the scope that <code>outer</code> belongs to encloses <code>inner</code>. Always true if <code>outer</code> is at the top level. True if in the same scope. Boundaries are treated as ordinary scopes too</td></tr>
+<tr><td><code>fn boundaries_between(&amp;self, outer: usize, inner: usize) -&gt; usize</code></td><td>Rust <code>usize</code></td><td>lexical</td><td>the number of boundaries (<code>Frag::boundary</code>) that enclose <code>inner</code> but not <code>outer</code>. Ordinary scopes are not counted. Used when <code>encloses(outer, inner)</code> is true (the number of boundaries crossed from definition <code>outer</code> to reference <code>inner</code>)</td></tr>
+<tr><td><code>fn mark&lt;L: Label&gt;(&amp;self, i: usize, kind: L, broken: Bool) -&gt; Bool</code></td><td>returns <code>broken</code> as is</td><td>—</td><td>A.8</td></tr>
+<tr><td><code>fn observe&lt;L: Label&gt;(&amp;self, kind: L, cond: Bool)</code></td><td></td><td>—</td><td>A.8</td></tr>
+<tr><td><code>fn require&lt;L: Label&gt;(&amp;self, label: L, constraint: Bool)</code></td><td>nothing</td><td>—</td><td>A.8</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>same_step</code>, <code>encloses</code> and <code>boundaries_between</code> are information fixed at generation time, so they are Rust values rather than z3 expressions. Use them with <code>filter</code> or <code>if</code> to narrow down candidates.</p>
+<h2 id="a7-writing-constraints-rules-proptest_z3rules"><a class="header" href="#a7-writing-constraints-rules-proptest_z3rules">A.7 Writing constraints: rules (<code>proptest_z3::rules</code>)</a></h2>
+<p>All of them take <code>&amp;Binds</code> and return a z3 <code>Bool</code>. <code>i</code> is a number in evaluation order.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Scope</th><th>Holds when</th></tr>
+</thead>
+<tbody>
+<tr><td><code>visible(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>lexical + <code>Kill</code> is whole</td><td>reference <code>i</code> points to a definition that is visible and not deleted. That is, for some <code>k</code> in <code>reaching_defs(i)</code>, <code>name[k] == name[i]</code> and there is no <code>Kill</code> of the same name between <code>k</code> and <code>i</code></td></tr>
+<tr><td><code>killed(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>same as above</td><td>the name of reference <code>i</code> was defined within the visible range but has been deleted. And <code>!visible(i)</code></td></tr>
+<tr><td><code>bound(binds: &amp;Binds, space: Space) -&gt; Bool</code></td><td>same as above</td><td>every reference in <code>space</code> is <code>visible</code></td></tr>
+<tr><td><code>unbound(binds: &amp;Binds, space: Space, n: usize) -&gt; Bool</code></td><td>same as above</td><td>exactly <code>n</code> of the references in <code>space</code> are <code>!visible</code></td></tr>
+<tr><td><code>defined_in_same_step(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>does not cross</td><td>there is a <code>Def</code> with the same namespace and the same name in the same step as <code>i</code> (the order of evaluation does not matter)</td></tr>
+<tr><td><code>distinct_defs(binds: &amp;Binds, space: Space) -&gt; Bool</code></td><td><strong>whole</strong></td><td>the names of the <code>Def</code>s in <code>space</code> are mutually distinct. True if there are 0 or 1 <code>Def</code>s</td></tr>
+<tr><td><code>resolves_to(binds: &amp;Binds, i: usize, k: usize) -&gt; Bool</code></td><td>lexical + <code>Kill</code> is whole</td><td>reference <code>i</code> points to definition <code>k</code>. That is, <code>k</code> is in <code>reaching_defs(i)</code>, <code>name[k] == name[i]</code>, no candidate in <code>reaching_defs(i)</code> after <code>k</code> has the same name, and there is no <code>Kill</code> of the same name between <code>k</code> and <code>i</code>. A constant false if <code>k</code> is not in <code>reaching_defs(i)</code></td></tr>
+<tr><td><code>captured(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>lexical (counts boundaries)</td><td>reference <code>i</code> points to a definition outside a boundary that encloses <code>i</code> (capture). That is, <code>resolves_to(i, k)</code> for some <code>k</code> in <code>reaching_defs(i)</code> satisfying <code>boundaries_between(k, i) &gt; 0</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Functions that are material for constraints (they return iterators, not z3 expressions):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Scope</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>reaching_defs(binds: &amp;Binds, i: usize) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td>lexical</td><td>candidate definitions that <code>i</code> may point to. <code>k</code> satisfying <code>k &lt; i</code>, <code>Def</code>, the same namespace as <code>i</code>, and <code>encloses(k, i)</code> (evaluation order)</td></tr>
+<tr><td><code>kills_between(binds: &amp;Binds, k: usize, i: usize) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td><strong>whole</strong></td><td><code>j</code> satisfying <code>k &lt; j &lt; i</code> (strictly between, in evaluation order), <code>Kill</code>, and the same namespace as <code>i</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>resolves_to(i, k)</code> is <code>Solved::target</code> turned into a constraint. After solving, <code>target(hole of i) == Some(hole of k)</code> only when <code>resolves_to(i, k)</code> is true. <code>visible(i)</code> is equivalent to “<code>resolves_to</code> for some element of <code>reaching_defs(i)</code>”.</p>
+<h3 id="the-three-states-of-a-reference"><a class="header" href="#the-three-states-of-a-reference">The three states of a reference</a></h3>
+<p>Reference <code>i</code> is in exactly one of the following. <code>!visible</code> is the union of “deleted” and “undefined”.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>State</th><th>Expression</th></tr>
+</thead>
+<tbody>
+<tr><td>visible</td><td><code>visible(binds, i)</code></td></tr>
+<tr><td>deleted</td><td><code>killed(binds, i)</code></td></tr>
+<tr><td>undefined (no visible definition anywhere)</td><td><code>(!visible(binds, i)).given([!killed(binds, i)])</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>“Undefined” also includes the case where there are only definitions not visible from outside (inside a closed scope, inside a sibling scope). If you want to distinguish “points to a definition out of scope” from “there is no definition anywhere”, narrow down <code>binds.defs(..)</code> with <code>encloses</code> and write it yourself with <code>constraint!</code>.</p>
+<h3 id="common-forms"><a class="header" href="#common-forms">Common forms</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// positive case
+bound(binds, VAR)
+
+// positive case including redefinition (including same names across scopes)
+constraint!(bound(binds, VAR), !distinct_defs(binds, VAR))
+
+// negative case: exactly one reference is not visible. Mark that hole
+constraint!(exactly(1) { for i in binds.refs(VAR) {
+    binds.mark(i, Bug::Unbound, !visible(binds, i))
+} })
+
+// self reference (`let x = x`)
+constraint!(all { !visible(binds, i), defined_in_same_step(binds, i) })
+
+// definition k is used (for detecting unused definitions; add `!` for unused)
+constraint!(any { for i in binds.refs(VAR) { resolves_to(binds, i, k) } })
+
+// mark captured references (a classification, so not made a constraint)
+for i in binds.refs(VAR) {
+    binds.mark(i, Captured, captured(binds, i));
+}
+
+// at least one capture that crosses two or more boundaries (relayed by an outer closure)
+fn relayed(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let cases: Vec&lt;Bool&gt; = reaching_defs(binds, i)
+        .filter(|&amp;k| binds.boundaries_between(k, i) &gt;= 2)
+        .map(|k| resolves_to(binds, i, k))
+        .collect();
+    Bool::or(&amp;cases)
+}
+constraint!(bound(binds, VAR), any { for i in binds.refs(VAR) { relayed(binds, i) } })
+<span class="boring">}</span></code></pre>
+<p>When you want to change the condition by the number of boundaries, do not use <code>captured</code>; like <code>relayed</code>, narrow down <code>reaching_defs</code> with <code>boundaries_between</code> and combine <code>resolves_to</code>.</p>
+<h2 id="a8-marks-classification-and-named-constraints-labels"><a class="header" href="#a8-marks-classification-and-named-constraints-labels">A.8 Marks, classification and named constraints (labels)</a></h2>
+<h3 id="label"><a class="header" href="#label"><code>Label</code></a></h3>
+<p>Every type that is <code>Copy + Debug + PartialEq + Send + Sync + 'static</code> is a <code>Label</code> (blanket implementation). Use your own enums or <code>&amp;'static str</code>.</p>
+<ul>
+<li>The <strong>name</strong> of a label is the string itself for <code>&amp;'static str</code>, and the <code>Debug</code> output otherwise. Statistics (<code>label_stats</code>) and the tally of rejections (<code>take_rejections</code>) are counted by this name. Two labels of different types are counted as the same if their names are the same.</li>
+<li><code>marks::&lt;L&gt;()</code> / <code>labels::&lt;L&gt;()</code> filter by the type <code>L</code>.</li>
+</ul>
+<h3 id="recording-methods-of-binds"><a class="header" href="#recording-methods-of-binds">Recording (methods of <code>Binds</code>)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Becomes a constraint?</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>mark(i, kind, broken: Bool) -&gt; Bool</code></td><td>only when the return value is put into a constraint</td><td>records that hole <code>i</code> is broken as <code>kind</code>. After solving, if <code>broken</code> is true, <code>(Hole, kind)</code> appears in <code>s.marks()</code></td></tr>
+<tr><td><code>observe(kind, cond: Bool)</code></td><td>no</td><td>only checks whether <code>cond</code> is true after solving. Classifies without changing the distribution of generation</td></tr>
+<tr><td><code>require(label, constraint: Bool)</code></td><td>yes (mandatory)</td><td>a named constraint. When it cannot be solved, the name of <code>label</code> appears in the unsat core. It returns no value, so it cannot be written inside <code>constraint!</code>. Call it in the body of the rule</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>mark</code> returns <code>broken</code> as is. It only becomes a constraint once the return value is placed inside <code>exactly(1) { .. }</code> or the like. If not placed, it is the same as an <code>observe</code> attached to a hole.</li>
+<li>The truth of <code>mark</code> is determined by evaluating <code>broken</code> in the model after solving. Multiple <code>mark</code>s can be true for one hole (when violation conditions overlap).</li>
+<li>The return value of <code>rule</code> and the range constraints on names have no names, so they do not appear in the unsat core. When a named constraint conflicts with an unnamed one, only the named side appears in the reason. Even if a reason has only one name, that constraint is not necessarily unsatisfiable on its own. Move every constraint whose rejection causes you want to investigate into a <code>require</code>, and return <code>Bool::from_bool(true)</code>.</li>
+<li>If you <code>require</code> a constraint and also include it in the return value of <code>rule</code>, the unnamed side alone can explain the conflict, so that label no longer appears in the reason.</li>
+<li>Calling <code>require</code> several times with the same label groups them into one named constraint (calling it per hole in a loop still shows the name only once in a reason).</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn rule(binds: &amp;Binds) -&gt; Bool {
+    binds.require("self_ref", constraint!(any { for i in binds.uses(VAR) { defined_in_same_step(binds, i) } }));
+    binds.require("all_bound", bound(binds, VAR));
+    binds.require("no_redefinition", distinct_defs(binds, VAR));
+    Bool::from_bool(true)
+}
+<span class="boring">}</span></code></pre>
+<h3 id="given"><a class="header" href="#given"><code>Given</code></a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Given {
+    fn given(self, guard: impl IntoIterator&lt;Item = Bool&gt;) -&gt; Bool;
+}
+impl Given for Bool { .. } // self ∧ guard1 ∧ guard2 ∧ ..
+<span class="boring">}</span></code></pre>
+<p>A way of writing “ask only when the preconditions hold”. When one violation always comes with another, excluding one of them with <code>given</code> makes both kinds generated independently.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>exactly(1) { for i in binds.refs(VAR) { any {
+    binds.mark(i, Bug::Killed, killed(binds, i)),
+    binds.mark(i, Bug::SelfRef, constraint!(all {
+        !visible(binds, i),
+        defined_in_same_step(binds, i),
+    })),
+    binds.mark(i, Bug::Undefined, (!visible(binds, i)).given([
+        !killed(binds, i),
+        !defined_in_same_step(binds, i),
+    ])),
+} } }
+<span class="boring">}</span></code></pre>
+<h3 id="statistics-per-thread"><a class="header" href="#statistics-per-thread">Statistics (per thread)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>label_stats() -&gt; Vec&lt;LabelStat&gt;</code></td><td>the number of occurrences per label in the cases generated on this thread</td></tr>
+<tr><td><code>take_label_stats() -&gt; Vec&lt;LabelStat&gt;</code></td><td>takes the same as above and resets</td></tr>
+<tr><td><code>take_rejections() -&gt; Vec&lt;(Vec&lt;String&gt;, usize)&gt;</code></td><td>takes the reasons and counts of rejections and resets. A reason is the names of <code>require</code> that appeared in the unsat core (sorted). An empty set when only unnamed constraints conflict. Failures other than unsat are the display string of <code>Failure</code>. Only counted at generation time in <code>fill</code></td></tr>
+</tbody>
+</table>
+</div>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LabelStat {
+    pub label: String,   // the name of the label
+    pub declared: usize, // the number of cases in which the label was recorded
+    pub occurred: usize, // the number of cases in which the label was true at least once
+}
+<span class="boring">}</span></code></pre>
+<ul>
+<li>Only newly generated cases are counted; cases in the middle of shrinking are not counted.</li>
+<li>When the test thread ends, labels that never became true are warned about on standard error. They are shown even if the test passed.</li>
+</ul>
+<pre><code class="language-text">proptest-z3 warning: label `Delete` never occurred in 4 cases (test `each_kind_is_reported`); is it implied by another violation? consider `given`
+</code></pre>
+<ul>
+<li>If you <code>mark</code> even kinds that you constrained not to occur, this warning appears. <code>mark</code> only the kinds you aim for.</li>
+</ul>
+<h2 id="a9-passing-to-proptest"><a class="header" href="#a9-passing-to-proptest">A.9 Passing to proptest</a></h2>
+<h3 id="fillext"><a class="header" href="#fillext"><code>FillExt</code></a></h3>
+<p>Implemented for every type that implements <code>Strategy&lt;Value = Skeleton&gt;</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn fill&lt;R&gt;(self, names: NameSpec, rule: R) -&gt; Filled&lt;Self, R&gt;</code></td><td><code>fill_with(Fill::Greedy, ..)</code></td></tr>
+<tr><td><code>fn fill_with&lt;R&gt;(self, fill: Fill, names: NameSpec, rule: R) -&gt; Filled&lt;Self, R&gt;</code></td><td>chooses how to solve</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>R: Fn(&amp;Binds) -&gt; Bool + 'static</code>. When using outside values, make it a <code>move</code> closure.</p>
+<p><code>Filled&lt;S, R&gt;</code> is a <code>Strategy&lt;Value = Solved&gt;</code>.</p>
+<h3 id="fill"><a class="header" href="#fill"><code>Fill</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Value</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Fill::Greedy</code> (default)</td><td>solves with the hint of each hole as an assumption. On a conflict, drops the hint that is last in evaluation order within the unsat core and solves again. Uses a <code>QF_LIA</code> solver. Deterministic and fast</td></tr>
+<tr><td><code>Fill::Optimal</code></td><td>maximizes the number of hints kept (<code>Optimize</code>). Faithful, but slow with many holes</td></tr>
+</tbody>
+</table>
+</div>
+<p>In <code>Greedy</code>, preferences are given up starting from holes later in evaluation order, so names are closer to the hints for holes evaluated earlier.</p>
+<h3 id="behavior-of-generation-and-shrinking"><a class="header" href="#behavior-of-generation-and-shrinking">Behavior of generation and shrinking</a></h3>
+<ul>
+<li>Generation: makes a skeleton and candidates, and remakes them if they cannot be solved (unsat). One remake is one local reject in proptest, and the test is aborted when the limit (<code>max_local_rejects</code>) is exceeded.</li>
+<li>Shrinking: when a shrunk input cannot be solved, it goes back as “the failure cannot be reproduced in that direction” and searches another direction.</li>
+<li>If the solved result (the text and the marks and labels) is the same as one tested before, the test is not called. If the skeleton and candidates are the same, it is not solved again.</li>
+<li>Shrinking is not run to a fixed point. Lines unrelated to the counterexample may remain.</li>
+</ul>
+<h2 id="a10-result-solved"><a class="header" href="#a10-result-solved">A.10 Result: <code>Solved</code></a></h2>
+<p><code>Clone</code>. Contains no z3 types.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td><code>pub text: String</code></td><td>the text with holes filled</td></tr>
+<tr><td><code>fn holes(&amp;self) -&gt; impl Iterator&lt;Item = (Hole, &amp;FilledHole)&gt;</code></td><td>all holes in text order</td></tr>
+<tr><td><code>fn hole(&amp;self, hole: Hole) -&gt; &amp;FilledHole</code></td><td></td></tr>
+<tr><td><code>fn span(&amp;self, hole: Hole) -&gt; Range&lt;usize&gt;</code></td><td>the position in <code>text</code> (bytes)</td></tr>
+<tr><td><code>fn name(&amp;self, hole: Hole) -&gt; &amp;str</code></td><td>the name that went in</td></tr>
+<tr><td><code>fn events(&amp;self) -&gt; &amp;[Hole]</code></td><td>holes arranged in evaluation order. <code>events()[i]</code> is the hole at evaluation order <code>i</code></td></tr>
+<tr><td><code>fn target(&amp;self, hole: Hole) -&gt; Option&lt;Hole&gt;</code></td><td>the definition hole that a reference points to. For <code>Kill</code>, the definition it deletes. <code>None</code> for definition holes and for references that are not visible</td></tr>
+<tr><td><code>fn marks&lt;L: Label&gt;(&amp;self) -&gt; Vec&lt;(Hole, L)&gt;</code></td><td>the <code>mark</code>s that became true</td></tr>
+<tr><td><code>fn labels&lt;L: Label&gt;(&amp;self) -&gt; Vec&lt;L&gt;</code></td><td>the <code>observe</code>s that became true</td></tr>
+<tr><td><code>fn has&lt;L: Label&gt;(&amp;self, kind: L) -&gt; bool</code></td><td>whether <code>kind</code> of <code>observe</code> became true</td></tr>
+<tr><td><code>fn numbered(&amp;self) -&gt; String</code></td><td>the text with line numbers (starting from 0)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules of <code>target</code> (the same as A.2):</p>
+<ul>
+<li>The candidates are those in <code>reaching_defs</code> (lexical) with the same name and with no <code>Kill</code> of the same name (in any scope) in between.</li>
+<li>It returns the last one among them in evaluation order. Therefore, with shadowing it points to the inner definition, and with reassignment in the same scope it points to the last assignment.</li>
+<li>What a <code>Kill</code> actually deletes is every definition of the same name. <code>target</code> returns only one of them (the one chosen by the rule above).</li>
+<li>To write the same thing inside a constraint, use <code>resolves_to(binds, i, k)</code> (A.7). Boundaries do not change the result of <code>target</code>.</li>
+</ul>
+<h3 id="filledhole"><a class="header" href="#filledhole"><code>FilledHole</code></a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct FilledHole {
+    pub space: Space,
+    pub role: Role,
+    pub name: String,
+    pub span: Range&lt;usize&gt;, // the position in text (bytes)
+}
+<span class="boring">}</span></code></pre>
+<h3 id="hole"><a class="header" href="#hole"><code>Hole</code></a></h3>
+<p><code>pub struct Hole(pub usize)</code>. A number in text order. <code>Copy</code>, <code>Eq</code>, <code>Ord</code>, <code>Hash</code>.</p>
+<h3 id="the-debug-display"><a class="header" href="#the-debug-display">The <code>Debug</code> display</a></h3>
+<p>Used for displaying counterexamples. It shows the text (with line numbers), the marks that became true, and the labels of <code>observe</code> that became true.</p>
+<pre><code class="language-text">Solved{
+  0| let b
+  1| let a = a
+ marks: Undefined @ 14..15 `a`
+ labels: Reassigned
+}
+</code></pre>
+<p>A mark has the form “label name @ byte range name (in backquotes)”. The <code>marks:</code> and <code>labels:</code> lines are not shown if empty.</p>
+<h2 id="a11-solving-directly-skeletonsolve"><a class="header" href="#a11-solving-directly-skeletonsolve">A.11 Solving directly: <code>Skeleton::solve</code></a></h2>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn solve(&amp;self, names: &amp;Names, fill: Fill, rule: impl Fn(&amp;Binds) -&gt; Bool) -&gt; Result&lt;Solved, Failure&gt;
+<span class="boring">}</span></code></pre>
+<p>Solves one skeleton without going through proptest. Used in unit tests and when checking generated inputs.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let skeleton = Skeleton::steps([frag!["def ", Frag::hole(VAR, Role::Def, Hint(0))]]);
+let names = Names::default().with(VAR, ["a", "b"]);
+let solved = skeleton.solve(&amp;names, Fill::Greedy, |binds| bound(binds, VAR))?;
+<span class="boring">}</span></code></pre>
+<ul>
+<li>If it cannot be solved, <code>Err(Failure::Unsat { core })</code> (<code>core</code> is the names of <code>require</code>); if it cannot be decided, <code>Err(Failure::Unknown { reason })</code>.</li>
+<li>It panics if the candidates of a namespace that has holes in the skeleton are empty (<code>no names for space ..</code>).</li>
+<li>It does not count label statistics (they are only counted at generation time in <code>fill</code>).</li>
+</ul>
+<h2 id="a12-what-is-used-from-z3-toolkit"><a class="header" href="#a12-what-is-used-from-z3-toolkit">A.12 What is used from z3-toolkit</a></h2>
+<p>Inside rules, z3-toolkit’s <code>constraint!</code> is used (it comes in with the prelude). The forms used in proptest-z3’s examples and tests are as follows. For the exact syntax, see the documentation of z3-toolkit.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>constraint!(e1, e2, ..)</code></td><td>all hold (conjunction)</td></tr>
+<tr><td><code>constraint!(x == y)</code> / <code>constraint!(x in 0..n)</code></td><td>comparison / range</td></tr>
+<tr><td><code>all { .. }</code> / <code>any { .. }</code></td><td>conjunction / disjunction</td></tr>
+<tr><td><code>exactly(n) { .. }</code> / <code>at_most(n) { .. }</code></td><td>exactly n / at most n are true</td></tr>
+<tr><td><code>{ for i in iter { e1, e2 } }</code></td><td>lists terms by iteration. If multiple terms are written in the body, all of them are counted</td></tr>
+<tr><td><code>if cond { e } else { e }</code> (Rust <code>bool</code>)</td><td>chooses terms by a condition fixed at generation time</td></tr>
+<tr><td><code>e1 || e2</code>,<code>!e</code></td><td>disjunction / negation</td></tr>
+</tbody>
+</table>
+</div>
+<p>z3 <code>Bool</code>s can also be built directly: <code>bound(binds, VAR) &amp; bound(binds, FUNC)</code>, <code>Bool::from_bool(true)</code> (no constraint), <code>Bool::or(&amp;[..])</code> (false if empty), <code>Bool::and(&amp;[..])</code> (true if empty).</p>
+<h2 id="a13-conditions-that-lead-to-rejection-or-panic"><a class="header" href="#a13-conditions-that-lead-to-rejection-or-panic">A.13 Conditions that lead to rejection or panic</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Situation</th><th>Result</th></tr>
+</thead>
+<tbody>
+<tr><td>the rule is unsat (e.g. <code>exactly(1) { for i in binds.refs(..) .. }</code> on a skeleton with no references)</td><td>a local reject during generation. Treated as “passed” during shrinking</td></tr>
+<tr><td>local rejects exceed <code>max_local_rejects</code></td><td>the test is aborted</td></tr>
+<tr><td>a namespace that has holes in the skeleton is not registered in <code>NameSpec</code></td><td>panic (<code>no names for space ..</code>)</td></tr>
+<tr><td>registering the same <code>Space</code> in <code>NameSpec</code> twice</td><td>panic</td></tr>
+<tr><td>the candidates of <code>space_with</code> contain an empty string or duplicates</td><td>panic</td></tr>
+<tr><td>the regular expression of <code>NameSpec::space</code> is invalid</td><td>panic</td></tr>
+</tbody>
+</table>
+</div>
+<p>When rejections are frequent, give names to the constraints with <code>require</code> and look at <code>take_rejections()</code>. Often the shape (strategy) cannot satisfy the conditions, so prepare shapes that can satisfy them on the strategy side (e.g. in a use-after-delete test, make sure to build a shape that places a use after <code>del</code>).</p>
+<ul>
+<li>A <code>proptest!</code> test panics when rejections exceed the limit, and cannot proceed to <code>take_rejections()</code> afterwards. Generate by calling <code>new_tree</code> directly on a <code>TestRunner</code>, and tally the results</li>
+<li>A set with only one name is almost always caused by the shape (it is rejected even if the other constraints are removed). A contradiction in the rule itself appears as a set that no shape can satisfy. The most frequent set is not necessarily the cause</li>
+<li>The sets returned by Z3 are not necessarily minimal. Remove suspicious constraints one at a time to confirm</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::test_runner::TestRunner;
+use proptest_z3::take_rejections;
+
+#[test]
+fn why_rejected() {
+    let strategy = program().fill(names(), rule);
+    let mut runner = TestRunner::default();
+    for _ in 0..50 {
+        if strategy.new_tree(&amp;mut runner).is_err() {
+            break; // rejections exceeded the limit
+        }
+    }
+    for (core, count) in take_rejections() {
+        eprintln!("{count:&gt;5} {core:?}");
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="a14-checklist-when-writing-tests"><a class="header" href="#a14-checklist-when-writing-tests">A.14 Checklist when writing tests</a></h2>
+<p>Points where an LLM tends to make mistakes when writing tests.</p>
+<ul>
+<li>Numbers inside constraints are in evaluation order; the <code>Hole</code> of <code>Solved</code> is in text order. A <code>Hole</code> cannot be made inside a constraint.</li>
+<li>The right-hand side of a statement does not see the definition on the left-hand side. The <code>Def</code> of a statement is not visible from the scopes contained in that statement either (by default, recursion is not possible).</li>
+<li><code>Kill</code> deletes every definition of the same name across scopes.</li>
+<li><code>distinct_defs</code> counts across scopes. <code>!distinct_defs</code> means “there is a definition of the same name somewhere”, not necessarily a reassignment in the same scope.</li>
+<li><code>Frag::boundary</code> does not change the visible range. Outer definitions are normally visible from inside a closure. Whether it is a capture is decided with <code>captured</code> / <code>boundaries_between</code>.</li>
+<li><code>boundaries_between</code> does not count ordinary scopes (<code>Frag::scope</code>). Pointing to an outer definition from inside a block is not a capture.</li>
+<li>The contents of a boundary are treated as evaluated at the position where they are written. A <code>Kill</code> in a closure body also affects later references.</li>
+<li>To distinguish “undefined” from other violations, add preconditions with <code>given</code>. Otherwise, some kind may never be generated (you can notice it from the warning).</li>
+<li>If you forget to put the return value of <code>mark</code> into a constraint, it is only a record.</li>
+<li><code>exactly(1)</code> in a negative case is unsat if the skeleton has no target hole at all. Make sure the target hole is built on the shape side.</li>
+<li>Write the checker for positive cases (the expected values of tests) independently of <code>rules</code>. If written with the same semantics, it shares the same mistakes.</li>
+<li>The closure of a rule is <code>'static</code>. Bring outside values in with <code>move</code>.</li>
+<li><code>require</code> returns no value, so do not write it inside <code>constraint!</code>. Call it in the body of the rule, and do not also put the same constraint in the return value.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

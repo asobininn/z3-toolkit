@@ -1,0 +1,1980 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The proptest-z3 Book(日本語版)</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-2a50303d.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-dd47e668.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The proptest-z3 Book(日本語版)</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="はじめに"><a class="header" href="#はじめに">はじめに</a></h1>
+<p>proptest-z3 は、要素間の依存関係を持つテスト入力を生成するための、<a href="https://crates.io/crates/proptest">proptest</a> の拡張です。入力の構造は通常どおり proptest の Strategy で定義し、要素どうしの関係は <a href="https://crates.io/crates/z3">Z3</a> の制約で指定します。制約を反転することで、指定した数の違反を含む入力を生成でき、違反した箇所も特定できます。縮小時にも要素間の関係は保たれます。</p>
+<p>本クレートでは、変数名やテーブル名、行のキーのように、ある対象を識別し、別の場所から参照するために使われるものを総称して「名前」と呼びます。</p>
+<h2 id="対象読者"><a class="header" href="#対象読者">対象読者</a></h2>
+<p>コンパイラや静的解析器など、入力の要素間に依存関係があるソフトウェアをテストしたい人向けです。</p>
+<p>例えば、定義と参照の整合性を保った入力や、意図的に未定義の名前を参照する入力を生成したいときに役立ちます。proptest-z3 は、このような入力の生成を支援します。</p>
+<h2 id="前提知識"><a class="header" href="#前提知識">前提知識</a></h2>
+<p>この Book では、proptest と Z3 の使い方を説明しません。必要な範囲は次の通りです。</p>
+<ul>
+<li><strong>proptest</strong>: <code>Strategy</code>、<code>proptest!</code>などのプロパティベーステストの考え方。 <a href="https://proptest-rs.github.io/proptest/">proptest book</a>にて学ぶことができます。</li>
+<li><strong>Z3</strong>: SMTソルバの概要を理解していること。Z3自体の使い方を知っている必要はありません。詳しく知りたい方はこちら → <a href="https://z3prover.github.io/papers/programmingz3.html">Programming Z3</a></li>
+<li><strong>z3-toolkit</strong>: 同じ作者のクレートで、制約を書くマクロを提供します。<a href="#z3-toolkit-で制約を書く">z3-toolkitで制約を書く</a>で、必要な部分を説明しています。</li>
+</ul>
+<h2 id="このクレートが扱う範囲"><a class="header" href="#このクレートが扱う範囲">このクレートが扱う範囲</a></h2>
+<p>proptest-z3 は、定義と参照を含む小さなテスト入力のためのクレートです。本クレートで使用される「名前」とは、変数名やテーブル名、行のキーのように、作られてから別の場所で指されるものを広く指します。</p>
+<ul>
+<li>扱える関係は、名前どうしの等しさだけです。型や値の条件は constraint! で足せますが、整数などの値そのものを Z3 に選ばせる機能はまだありません。</li>
+<li>スコープは、ブロックのような字句的な入れ子だけを扱います。</li>
+<li>入力の構造は proptest が決めるため、構造が制約を満たせないと生成が棄却されます。棄却が多いときは、条件を満たせる構造を Strategy の側で用意してください。</li>
+<li>穴が多いほど、制約を解くのに時間がかかります。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>この章では、小さな言語の名前解決器を例に、正常系と異常系のテストを1本ずつ書きます。</p>
+<h2 id="準備"><a class="header" href="#準備">準備</a></h2>
+<pre><code class="language-toml">[dev-dependencies]
+proptest = "1"
+proptest-z3 = "0.1"
+</code></pre>
+<p>Z3 のライブラリが必要です。入れ方については <a href="https://github.com/prove-rs/z3.rs/blob/master/z3/README.md">z3 クレートのREADME</a> を参照してください。</p>
+<h2 id="テストする対象"><a class="header" href="#テストする対象">テストする対象</a></h2>
+<p>1行に1文の、小さな言語を考えます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>文</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>let x</code></td><td>x を定義する</td></tr>
+<tr><td><code>let x = y</code></td><td>y を使ってから x を定義する</td></tr>
+<tr><td><code>print x</code></td><td>x を使う</td></tr>
+</tbody>
+</table>
+</div>
+<p>テストする対象は、この言語の名前解決器です。未定義の名前を参照した位置を返します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn undefined_refs(source: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let offset = |word: &amp;str| word.as_ptr() as usize - source.as_ptr() as usize;
+    let mut defined = HashSet::new();
+    let mut errors = vec![];
+    for line in source.lines() {
+        match line.split_whitespace().collect::&lt;Vec&lt;_&gt;&gt;()[..] {
+            ["let", x] =&gt; {
+                defined.insert(x);
+            }
+            ["let", x, "=", y] =&gt; {
+                if !defined.contains(y) {
+                    errors.push(offset(y));
+                }
+                defined.insert(x);
+            }
+            ["print", y] =&gt; {
+                if !defined.contains(y) {
+                    errors.push(offset(y));
+                }
+            }
+            ref other =&gt; panic!("unexpected line: {other:?}"),
+        }
+    }
+    errors
+}
+<span class="boring">}</span></code></pre>
+<h2 id="1-骨格を書く"><a class="header" href="#1-骨格を書く">1. 骨格を書く</a></h2>
+<p>名前を書く場所に、文字列の代わりに「穴」を置きます。穴は「後で名前が入る空欄」です。どの穴にどの名前が入るかは、制約をもとに Z3 が決定します。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="imgs/hole.png" alt="hole"><span class="img-wrapper"><img src="imgs/hole.png" alt="hole"></span></label></p>
+<p><code>VAR</code> は<strong>名前空間</strong>(<code>Space</code>)です。変数と関数のように、互いに独立した名前の集まりごとに1つ作ります。</p>
+<ul>
+<li><code>VAR.def()</code>: 名前を定義する穴</li>
+<li><code>VAR.refer()</code>: 名前を参照する穴</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::prelude::*;
+use proptest_z3::prelude::*;
+
+const VAR: Space = Space::new("var");
+
+fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(stmt(), 1..8)
+        .prop_map(|stmts| Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"])))
+}
+
+fn stmt() -&gt; impl Strategy&lt;Value = Frag&gt; {
+    prop_oneof![
+        VAR.def().prop_map(|x| frag!["let ", x]),
+        (VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!["let ", x, " = ", y]),
+        VAR.refer().prop_map(|y| frag!["print ", y]),
+    ]
+}
+<span class="boring">}</span></code></pre>
+<p><code>frag!</code> は、文字列を穴を並べて1つの断片(<code>Frag</code>)にします。<code>Skeleton::steps</code> は、要素を1つずつステップとして区切ります。言語の「文」に当たる単位で区切ってください。</p>
+<h2 id="2-名前の候補を決める"><a class="header" href="#2-名前の候補を決める">2. 名前の候補を決める</a></h2>
+<p>穴に入る名前は、ユーザーが用意した候補の中から選ばれます。<code>NameSpec</code> は、名前空間ごとに候補の作り方を決めるものです。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn names() -&gt; NameSpec {
+    // [a-c] に合う、互いに異なる名前を3個
+    NameSpec::new().space(VAR, "[a-c]", 3)
+}
+<span class="boring">}</span></code></pre>
+<h2 id="3-正常系-定義済みの名前だけ使用する"><a class="header" href="#3-正常系-定義済みの名前だけ使用する">3. 正常系: 定義済みの名前だけ使用する</a></h2>
+<p><code>.fill(names, rule)</code> で、穴を埋めた入力の Strategy になります。<code>rule</code> は、守らせたい関係を返す関数です。</p>
+<p><code>bound(VAR)</code> は「<code>VAR</code> のすべての参照の穴に、それより前の文で定義された名前が入る」という制約です。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>proptest! {
+    #[test]
+    fn defined_names_resolve(s in program().fill(names(), |binds| bound(binds, VAR))) {
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="4-異常系-1箇所だけ未定義にする"><a class="header" href="#4-異常系-1箇所だけ未定義にする">4. 異常系: 1箇所だけ未定義にする</a></h2>
+<p>正常系の制約を反転させると異常系になります。<code>!visible(binds, i)</code> は「参照 <code>i</code> が、見えていない名前を指す」です。それがちょうど1つあるように書きます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy, PartialEq)]
+struct Undefined;
+
+proptest! {
+    #[test]
+    fn undefined_name_is_reported_where_it_is(s in program().fill(names(), |binds| constraint!(
+        exactly(1) {for i in binds.refs(VAR) {
+            binds.mark(i, Undefined, !visible(binds, i))
+        }},
+    ))) {
+        eprintln!("{}", s.text);
+        let [(hole, Undefined)] = s.marks::&lt;Undefined&gt;()[..] else {panic!("{s:?}")};
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![s.span(hole).start], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<p><code>mark</code> は穴に印をつけるためのものです。<code>binds.mark(i, Undefined, 条件)</code> と書くと、生成された入力でその条件が成り立っていれば、穴 <code>i</code> に <code>Undefined</code> という印が付きます。</p>
+<h2 id="5-バグを見つける"><a class="header" href="#5-バグを見つける">5. バグを見つける</a></h2>
+<p>名前解決器によくあるバグを入れてみます。<code>let x = y</code> で、右辺を調べる前に左辺を定義してしまうバグです。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>["let", x, "=", y] =&gt; {
+    defined.insert(x);
+    if !defined.contains(y) {
+        errors.push(offset(y));
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>テストを実行すると、異常系が失敗し、入力が縮められます。</p>
+<pre><code class="language-text">test undefined_name_is_reported_where_it_is ... FAILED
+test defined_names_resolve ... ok
+
+minimal failing input: s = Solved{
+  0| let b
+  1| let a = a
+ marks: Undefined @ 14..15 `a`
+}
+</code></pre>
+<p>2行目の右辺の a は未定義のはずですが、名前解決器はエラーを報告しませんでした。</p>
+<p>正常系のテストが通っていても、本来エラーにすべき入力を受け入れてしまうバグは残り得ます。異常系の入力も生成することで、こうしたバグを検出できます。</p>
+<blockquote>
+<p><strong>縮小について</strong>: 反例に、バグと関係のない let b が残っています。proptest-z3 の縮小は、名前の関係を保ちながら入力を小さくしますが、これ以上縮まなくなるまで繰り返すことはしません。原因が読み取れる大きさまで縮めば十分という方針で、その分テストの実行が速く終わります。残った行も、制約を満たす正しい入力の一部です。</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="z3-toolkit-で制約を書く"><a class="header" href="#z3-toolkit-で制約を書く">z3-toolkit で制約を書く</a></h1>
+<p>proptest-z3 の制約は、z3-toolkit の constraint! マクロで書きます。この章では、proptest-z3 で使う部分だけを説明します。proptest_z3::prelude::* が z3-toolkit の prelude を再エクスポートしているので、依存を足す必要はありません。</p>
+<h2 id="constraint-は-z3astbool-を1つ作る"><a class="header" href="#constraint-は-z3astbool-を1つ作る"><code>constraint!</code> は <code>z3::ast::Bool</code> を1つ作る</a></h2>
+<p><code>constraint!(..)</code> は、中に書いた条件からZ3の <code>Bool</code> を1つ作ります。<code>fill</code> に渡す規則は <code>Bool</code> を返す関数なので、規則の本体は基本 <code>constraint!(..)</code> を使用します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>program().fill(names(), |binds| constraint!(
+    bound(binds, FUNC),
+    !distinct_defs(binds, VAR),
+))
+<span class="boring">}</span></code></pre>
+<h2 id="条件の書き方"><a class="header" href="#条件の書き方">条件の書き方</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>all { p, q, .. }</code></td><td>すべて成り立つ</td></tr>
+<tr><td><code>any { p, q, .. }</code></td><td>どれかが成り立つ</td></tr>
+<tr><td><code>exactly(n) { .. }</code></td><td>ちょうど n 個が成り立つ</td></tr>
+<tr><td><code>at_most(n) { .. }</code> / <code>at_least(n) { .. }</code></td><td>n 個以下 / n 個以上が成り立つ</td></tr>
+<tr><td><code>!p</code>、<code>p &amp;&amp; q</code>、<code>p || q</code></td><td>否定、かつ、または</td></tr>
+<tr><td><code>{ p } implies { q }</code></td><td>p ならば q</td></tr>
+<tr><td><code>distinct(xs)</code></td><td>すべて異なる</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="for-と-if-で展開する"><a class="header" href="#for-と-if-で展開する"><code>for</code> と <code>if</code> で展開する</a></h2>
+<p><code>constraint!</code>内では <code>for</code> と <code>if</code> が使用でき、要素ごとの条件に展開されます。次の例は「<code>VAR</code>の参照のうち、見えていないものがちょうど1つ」です。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>constraint!( exactly(1) { for i in binds.refs(VAR) {
+    !visible(binds, i)
+} })
+<span class="boring">}</span></code></pre>
+<p><code>if</code> はRustの <code>bool</code> で条件を絞ります。</p>
+<p><code>constraint!</code> は z3 の <code>Bool</code> を返す式なので、長くなった制約は <code>&amp;Binds</code> を受け取って <code>Bool</code> を返す関数に切り出せます。次の例は「<code>VAR</code>の名前は再定義がない」です。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn no_redefinition(binds: &amp;Binds) -&gt; Bool {
+    let defs: Vec&lt;_&gt; = binds.defs(VAR).collect();
+    constraint!(
+        all { for &amp;p in &amp;defs { for &amp;q in &amp;defs {
+            if p &lt; q {
+                binds.name[p] != binds.name[q]
+            }
+        } } },
+    )
+}
+<span class="boring">}</span></code></pre>
+<p>この例では、<code>distinct</code> を使うと、より簡潔に書けます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn no_redefinition(binds: &amp;Binds) -&gt; Bool {
+    constraint!(
+        distinct(binds.defs(VAR).map(|i| &amp;binds.name[i])),
+    )
+}
+<span class="boring">}</span></code></pre>
+<h2 id="もっと知りたい場合"><a class="header" href="#もっと知りたい場合">もっと知りたい場合</a></h2>
+<p>constraint! の機能一覧や詳しい使い方は、<a href="https://github.com/asobininn/z3-toolkit">z3-toolkit のREADME</a> を参照してください。</p>
+<p>また、パズルを制約として記述し、解を求める例を <a href="https://github.com/asobininn/z3-toolkit/blob/main/crates/z3-toolkit/examples.md">Examples</a> で紹介しています。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="機能ガイド"><a class="header" href="#機能ガイド">機能ガイド</a></h1>
+<p>この章では、proptest-z3 の機能を項目ごとに紹介します。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="imgs/overvew.png" alt="overview"><span class="img-wrapper"><img src="imgs/overvew.png" alt="overview"></span></label></p>
+<p>テストが失敗すると、proptest が構造・ヒント・項目を小さくし、Z3 がもう一度解き直します(縮小)。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>節</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#space-と穴">Space と穴</a></td><td>名前空間と、名前が入る穴。穴の役割とヒント</td></tr>
+<tr><td><a href="#frag-と-skeleton">Frag と Skeleton</a></td><td>穴を並べて入力の構造を作る。ステップとスコープ</td></tr>
+<tr><td><a href="#namespec-と-names">NameSpec と Names</a></td><td>穴に入る名前の候補</td></tr>
+<tr><td><a href="#binds-と規則">Binds と規則</a></td><td>名前どうしの関係を制約として書く</td></tr>
+<tr><td><a href="#ラベル">ラベル</a></td><td>壊した場所の記録と、生成された入力の分類</td></tr>
+<tr><td><a href="#fill-と-solved">fill と Solved</a></td><td>proptest に渡す。解き方と、生成された入力の読み方</td></tr>
+</tbody>
+</table>
+</div>
+<p>例には、<a href="#getting-started">Getting Started</a> の小さな言語を使用します。各節では、説明に必要な文を追加しながら機能を紹介します。例で使用する関数などの実装は、<a href="https://github.com/asobininn/z3-toolkit/blob/main/crates/proptest-z3/tests/lang.rs">tests/lang.rs</a> を基に、一部を簡略化しています。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>文</th><th>意味</th><th>登場する節</th></tr>
+</thead>
+<tbody>
+<tr><td><code>let x</code></td><td>x を定義する</td><td>Getting Started</td></tr>
+<tr><td><code>let x = y</code></td><td>y を使ってから x を定義する</td><td>Getting Started</td></tr>
+<tr><td><code>print x</code></td><td>x を使う</td><td>Getting Started</td></tr>
+<tr><td><code>del x</code></td><td>x を削除する。以降 x は使えない</td><td>Space と穴</td></tr>
+<tr><td><code>{ .. }</code></td><td>ブロック。中で定義した名前は外から見えない</td><td>Frag と Skeleton</td></tr>
+<tr><td><code>fn f</code> / <code>call f</code></td><td>関数 f を定義する / 呼ぶ</td><td>Space と穴</td></tr>
+</tbody>
+</table>
+</div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="space-と穴"><a class="header" href="#space-と穴">Space と穴</a></h1>
+<p>穴は「後で名前が入る空欄」です。どの穴にどの名前が入るかは、制約をもとにZ3が決めます。この節では、穴を作るための名前空間(<code>Space</code>)と、穴が持つ情報を説明します。</p>
+<h2 id="名前空間を作る"><a class="header" href="#名前空間を作る">名前空間を作る</a></h2>
+<p>名前空間は互いに独立した名前の集まりです。変数と関数のように、別々に解決される名前ごとに1つ作ります。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>const VAR: Space = Space::new("var");
+const FUNC: Space = Space::new("func");
+<span class="boring">}</span></code></pre>
+<p><code>Space::new()</code> には <code>&amp;'static str</code> を渡します。この文字列は、反例の表示などにそのまま使用されます。</p>
+<p>名前空間が違えば、同じ名前の文字列でも関係を持ちません。</p>
+<h2 id="穴の役割"><a class="header" href="#穴の役割">穴の役割</a></h2>
+<p>穴は名前空間と<strong>役割</strong>(<code>Role</code>)を持ちます。役割は次の3つです。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>役割</th><th>作り方</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Role::Def</code></td><td><code>VAR.def()</code></td><td>名前を定義する</td></tr>
+<tr><td><code>Role::Use</code></td><td><code>VAR.refer()</code></td><td>名前を参照する</td></tr>
+<tr><td><code>Role::Kill</code></td><td><code>VAR.kill()</code></td><td>名前を削除する。以降、その名前は見えなくなる</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>Use</code>と<code>Kill</code>の穴をまとめて<strong>参照</strong>と呼びます。どちらも既にある名前を指す穴だからです。制約の中で参照をまとめて扱う方法は、<a href="#binds-と規則">Binds と規則</a>で説明します。</p>
+<p><code>def()</code> / <code>refer()</code> / <code>kill()</code>は、穴を1つだけ含む <code>Frag</code> の Strategy を返します。役割を引数で選びたいときは <code>hole(role)</code> を使用します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>VAR.hole(Role::Kill)   // VAR.kill() と同じ
+<span class="boring">}</span></code></pre>
+<h2 id="例-削除と関数を追加する"><a class="header" href="#例-削除と関数を追加する">例: 削除と関数を追加する</a></h2>
+<p>Getting Started の言語に、<code>del x</code> と、関数の <code>fn f</code> / <code>call f</code> を追加します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn stmt() -&gt; impl Strategy&lt;Value = Frag&gt; {
+    prop_oneof![
+        VAR.def().prop_map(|x| frag!["let ", x]),
+        (VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!["let ", x, " = ", y]),
+        VAR.refer().prop_map(|y| frag!["print ", y]),
+        VAR.kill().prop_map(|x| frag!["del ", x]),
+        FUNC.def().prop_map(|f| frag!["fn ", f]),
+        FUNC.refer().prop_map(|f| frag!["call ", f]),
+    ]
+}
+<span class="boring">}</span></code></pre>
+<p>テスト対象の名前解決器も、<code>del</code> と関数を扱えるように広げてください。</p>
+<blockquote>
+<p><strong>削除後の参照を作りたいとき</strong>: 「削除した名前を使う」入力は、<code>del</code> の後に同じ名前空間の参照が来る構造からしか作れません。構造は proptest が決めるので、<code>del</code> の出現率が低い Strategy では、制約を満たせずに棄却が増えます。このような場合は、<code>del</code> を出やすくするか、<code>del</code> の後に参照を置く文を Strategy の側で用意してください。</p>
+</blockquote>
+<h2 id="ヒント"><a class="header" href="#ヒント">ヒント</a></h2>
+<p>各穴は、名前とは別に<strong>ヒント</strong>を持ちます。ヒントは「候補の何番目の名前が欲しいか」を表す0～1の固定小数点数(<code>Hint(u16)</code>)で、proptest が決めます。</p>
+<p>Z3 は制約とぶつからない限りヒントどおりの名前を選びます。そのため、制約で決まらない部分の名前は proptest によってばらつきます。</p>
+<p>ヒントは縮小にも使用されます。縮小するとヒントは 0 に寄るので、穴に入る名前の候補も先頭に寄っていきます。反例で同じ名前が繰り返し使われやすいのはこのためです。</p>
+<p>ヒントを利用者が直接扱う必要はありません。穴を<code>defs()</code>などで作れば、ヒントも一緒に作られます。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="frag-と-skeleton"><a class="header" href="#frag-と-skeleton">Frag と Skeleton</a></h1>
+<p>穴と文字列を並べて入力の構造を作ります。組み立て中のものを <code>Frag</code>(断片)、完成したものを <code>Skeleton</code> と呼びます。</p>
+<ul>
+<li><code>Frag</code>: 文字列と穴の並び。<code>frag!</code> や <code>Frag::concat</code> でつなげることができる</li>
+<li><code>Skeleton</code>: <code>Skeleton::steps</code>で、<code>Frag</code> の列を<strong>ステップ</strong>に区切ったもの</li>
+</ul>
+<h2 id="frag-でつなげる"><a class="header" href="#frag-でつなげる"><code>frag!</code> でつなげる</a></h2>
+<p><code>frag!</code> は渡したものを順につなげて1つの <code>Frag</code> にします。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>(VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!("let ", x, " = ", y))
+<span class="boring">}</span></code></pre>
+<p><code>frag!</code> に渡せる値は次のとおりです。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>渡せるもの</th><th>例</th></tr>
+</thead>
+<tbody>
+<tr><td>文字列</td><td><code>"let "</code></td></tr>
+<tr><td>数値</td><td><code>42</code></td></tr>
+<tr><td><code>Frag</code>(穴を含む)</td><td><code>x</code>、<code>frag![..]</code></td></tr>
+<tr><td><code>Vec&lt;Frag&gt;</code></td><td>要素を順につなげる</td></tr>
+<tr><td><code>Option&lt;Frag&gt;</code></td><td><code>None</code> なら何も足さない</td></tr>
+<tr><td>タプル(4要素まで)</td><td>要素を順につなげる</td></tr>
+<tr><td><code>Text(x)</code></td><td><code>Display</code> を実装したユーザ型</td></tr>
+</tbody>
+</table>
+</div>
+<p>ユーザの型は <code>Text</code> で包むと <code>Display</code> の結果が文字列として入ります。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy)]
+enum Op { Add, Sub, }
+
+impl Display for Op {
+    fn fmt(&amp;self, f: &amp;mut std::fmt::Formatter&lt;'_&gt;) -&gt; std::fmt::Result {
+        f.write_str(match self { Op::Add =&gt; "+", Op::Sub =&gt; "-", })
+    }
+}
+
+(VAR.refer(), prop_oneof![Just(Op::Add), Just(Op::Sub)], VAR.refer())
+    .prop_map(|(lhs, op, rhs)| frag!(lhs, " ", Text(op), " ", rhs))
+<span class="boring">}</span></code></pre>
+<h2 id="手で組む"><a class="header" href="#手で組む">手で組む</a></h2>
+<p><code>frag!</code> を使わずに、関数で組み立てることもできます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>関数</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Frag::text(s)</code></td><td>文字列だけの <code>Frag</code></td></tr>
+<tr><td><code>Frag::hole(..)</code></td><td>穴1つの <code>Frag</code></td></tr>
+<tr><td><code>Frag::concat(frags)</code></td><td>順につなげる</td></tr>
+<tr><td><code>Frag::join(sep, frags)</code></td><td>間に区切りを挟んでつなげる</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>Frag::join</code> は、引数の並びのような区切りのある列に使います。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>prop::collection::vec(VAR.refer(), 0..4)
+    .prop_map(|args| frag!["print(", Frag::join(", ", args), ")"])
+<span class="boring">}</span></code></pre>
+<h2 id="ステップ"><a class="header" href="#ステップ">ステップ</a></h2>
+<p><code>Skeleton::steps</code> は、渡した列の要素を1つずつ<strong>ステップ</strong>として区切ります。ステップは、定義した名前が見えるようになる単位です。言語の「文」に当たる単位で区切ってください。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(stmt(), 1..8)
+        .prop_map(|stmts| Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"])))
+}
+<span class="boring">}</span></code></pre>
+<h3 id="評価順"><a class="header" href="#評価順">評価順</a></h3>
+<p>穴は、テキストの順ではなく<strong>評価順</strong>に並べて扱われます。評価順は次のように決まります。</p>
+<ul>
+<li>ステップは、並んでいる順に評価される</li>
+<li>ステップの中では、<code>Use</code> の穴が先、<code>Def</code> と <code>Kill</code> の穴が後に評価される</li>
+</ul>
+<p>そのため、<code>let x = y</code> の <code>y</code> は <code>x</code> より先に評価されます。<code>let a = a</code> の右辺の <code>a</code> は、同じ文の左辺の <code>a</code> を指しません。Rust の <code>let</code> と同じ振る舞いです。</p>
+<p>制約は、この評価順をもとに書きます。詳しくは <a href="#binds-と規則">Binds と規則</a> で説明します。</p>
+<h2 id="スコープ"><a class="header" href="#スコープ">スコープ</a></h2>
+<p><code>Frag::scope</code> は、入れ子のスコープを作ります。渡した列の要素は <code>Skeleton::steps</code> と同じようにステップとして区切られ、中で定義した名前はスコープの外から見えません。</p>
+<p>ブロック <code>{ .. }</code> を足すと、次のようになります。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn stmt() -&gt; impl Strategy&lt;Value = Frag&gt; {
+    let simple = prop_oneof![
+        VAR.def().prop_map(|x| frag!["let ", x]),
+        (VAR.def(), VAR.refer()).prop_map(|(x, y)| frag!["let ", x, " = ", y]),
+        VAR.refer().prop_map(|y| frag!["print ", y]),
+    ];
+    simple.prop_recursive(3, 16, 4, |inner| {
+        prop::collection::vec(inner, 1..4).prop_map(|stmts| {
+            frag!["{\n", Frag::scope(stmts.into_iter().map(|s| frag![s, "\n"])), "}"]
+        })
+    })
+}
+<span class="boring">}</span></code></pre>
+<p>外側から見ると、ブロック全体が1つのステップです。ブロックの中の文は、それぞれがスコープの中のステップになります。</p>
+<ul>
+<li>ブロックの中からは、ブロックより前に外で定義された名前が見える</li>
+<li>ブロックの中で定義した名前は、ブロックの後では見えない</li>
+<li>ブロックの中で、外と同じ名前を定義し直せる(シャドーイング)</li>
+</ul>
+<p>スコープは、ブロックのような字句的な入れ子だけを扱います。</p>
+<blockquote>
+<p><strong><code>Kill</code> とスコープ</strong>: <code>Kill</code> はスコープに関係なく、その名前を以降すべて見えなくします。外で定義した名前をブロックの中で <code>del</code> すると、ブロックを出た後も見えません。</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="namespec-と-names"><a class="header" href="#namespec-と-names">NameSpec と Names</a></h1>
+<p>穴に入る名前は、名前空間ごとに用意した<strong>候補</strong>の中から選ばれます。候補の作り方を決めるのが <code>NameSpec</code> です。</p>
+<h2 id="正規表現で候補を作る"><a class="header" href="#正規表現で候補を作る">正規表現で候補を作る</a></h2>
+<p><code>space(名前空間, 正規表現, 個数)</code> で、正規表現に合う互いに異なる名前を、指定した個数だけ作ります。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn names() -&gt; NameSpec {
+    NameSpec::new()
+        .space(VAR, "[a-c]", 3)
+        .space(FUNC, "[a-c]", 3)
+}
+<span class="boring">}</span></code></pre>
+<p>名前空間を複数使うときは <code>.space</code> を続けて書きます。</p>
+<p>候補は proptest が作ります。そのため、失敗した入力を縮小すると、名前も正規表現の範囲で短く単純なものになります。</p>
+<h2 id="strategy-を渡す"><a class="header" href="#strategy-を渡す">Strategy を渡す</a></h2>
+<p>正規表現で書けない候補は、<code>space_with</code> で Strategy を直接渡します。予約語と重なる名前を避けたいときに使用します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>const KEYWORDS: [&amp;str; 5] = ["let", "print", "del", "fn", "call"];
+
+fn names() -&gt; NameSpec {
+    let var = prop::collection::hash_set(
+        "[a-z]{1,4}".prop_filter("keyword", |s| !KEYWORDS.contains(&amp;s.as_str())),
+        3,
+    )
+    .prop_map(|set| set.into_iter().collect::&lt;Vec&lt;_&gt;&gt;());
+    NameSpec::new().space_with(VAR, var.boxed())
+}
+<span class="boring">}</span></code></pre>
+<h2 id="固定の候補"><a class="header" href="#固定の候補">固定の候補</a></h2>
+<p>候補を固定したいときは、<code>space_with</code> に proptest の <code>Just</code> を渡します。特定の名前で起きるバグを再現したいときや、単体テストに向いています。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let names = NameSpec::new().space_with(VAR, Just(vec!["x".to_string(), "y".to_string()]).boxed());
+<span class="boring">}</span></code></pre>
+<h2 id="候補の数の決め方"><a class="header" href="#候補の数の決め方">候補の数の決め方</a></h2>
+<p>候補の数は生成される入力の性質を大きく変えます。</p>
+<p><strong>少ないとき</strong>は同じ名前が何度も使われます。再定義やシャドーイング、同じ名前の削除と再定義が自然に起こり、名前解決器にとって難しい入力になります。</p>
+<p><strong>多いとき</strong>は名前がばらけて関係が単純になります。名前どうしの衝突で起きるバグは見つかりにくくなります。</p>
+<p>一方で、少なすぎると制約を満たせなくなります。</p>
+<ul>
+<li><code>distinct_defs</code>(再定義なし)は、定義の数が候補の数を超えると満たせない</li>
+<li>「見えていない名前を参照する」は、その時点ですべての候補が見えていると満たせない</li>
+</ul>
+<p>満たせない入力は棄却されるので、棄却が多いときは候補の数を見直してください。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="binds-と規則"><a class="header" href="#binds-と規則">Binds と規則</a></h1>
+<p>名前どうしの関係は<strong>規則</strong>として書きます。規則は <code>&amp;Binds</code> を受け取って Z3 の <code>Bool</code> を返す関数で、<code>fill</code> に渡します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>program().fill(names(), |binds| bound(binds, VAR))
+<span class="boring">}</span></code></pre>
+<p>この節では、規則の材料になる <code>Binds</code> と、よく使う関係を表す述語を説明します。</p>
+<h2 id="bind-穴の番号"><a class="header" href="#bind-穴の番号">Bind: 穴の番号</a></h2>
+<p><code>Binds</code> は、骨格の穴を<a href="#評価順">評価順</a>に並べたものです。規則の中では、穴を評価順の番号 <code>i</code> で指します。番号が小さいほど先に評価されるので、「<code>i</code> より前の穴」は番号の大小で表せます。</p>
+<p>穴の番号は名前空間と役割で取り出します。どれも評価順に並んだ番号を返します。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>取り出す穴</th></tr>
+</thead>
+<tbody>
+<tr><td><code>binds.defs(S)</code></td><td>名前空間 S の <code>Def</code></td></tr>
+<tr><td><code>binds.uses(S)</code></td><td>名前空間 S の <code>Use</code></td></tr>
+<tr><td><code>binds.kills(S)</code></td><td>名前空間 S の <code>Kill</code></td></tr>
+<tr><td><code>binds.refs(S)</code></td><td>名前空間 S の参照(<code>Use</code> と <code>Kill</code>)</td></tr>
+<tr><td><code>binds.of(S, role)</code></td><td>名前空間 S の、役割 <code>role</code> の穴</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>binds.name[i]</code> は穴 <code>i</code> に入る名前を表す Z3 の <code>Int</code> です。値は候補の番号なので、<code>binds.name[p] == binds.name[q]</code> で「穴 p と穴 q に同じ名前が入る」と書けます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// VAR の定義の名前は、すべて異なる
+fn no_redefinition(binds: &amp;Binds) -&gt; Bool {
+    constraint!(
+        distinct(binds.defs(VAR).map(|i| &amp;binds.name[i])),
+    )
+}
+<span class="boring">}</span></code></pre>
+<h3 id="生成時に決まる関係"><a class="header" href="#生成時に決まる関係">生成時に決まる関係</a></h3>
+<p>ステップやスコープは構造を作った時点で決まっています。このような関係は Z3 の <code>Bool</code> ではなく、 Rust の値 (<code>bool</code> や <code>usize</code>) で返されます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>binds.same_step(p, q)</code></td><td>穴 p と q が同じステップにある</td></tr>
+<tr><td><code>binds.encloses(outer, inner)</code></td><td>穴 outer で定義した名前が、穴 inner から見える範囲にある</td></tr>
+<tr><td><code>binds.boundaries_between(outer, inner)</code></td><td>穴 inner から穴 outer の定義まで、越えるクロージャの数(<a href="#クロージャ">クロージャ</a>を参照)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rust の <code>bool</code> なので、<code>constraint!</code> の中では <code>if</code> で制約を絞るのに使います。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 同じステップの中では、参照と定義に違う名前を使う
+constraint!(for p in binds.uses(VAR) {
+    for q in binds.defs(VAR) {
+        if binds.same_step(p, q) {
+            binds.name[p] != binds.name[q]
+        }
+    }
+})
+<span class="boring">}</span></code></pre>
+<h2 id="束縛の述語"><a class="header" href="#束縛の述語">束縛の述語</a></h2>
+<p>名前解決でよく使用する関係は関数として用意されています。どれも Z3 の <code>Bool</code> を返すので、<code>constraint!</code> の中でそのまま組み合わせられます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>visible(binds, i)</code></td><td>参照 <code>i</code> が、見えていて削除されていない定義を指す</td></tr>
+<tr><td><code>resolves_to(binds, i, k)</code></td><td>参照 <code>i</code> が、定義 <code>k</code> を指す(同名の定義のうち評価順で最後のもので、間に削除がない)</td></tr>
+<tr><td><code>killed(binds, i)</code></td><td>参照 <code>i</code> が、削除済みの名前を指す</td></tr>
+<tr><td><code>bound(binds, S)</code></td><td>名前空間 S の参照が、すべて見えている</td></tr>
+<tr><td><code>unbound(binds, S, n)</code></td><td>名前空間 S の、見えていない参照がちょうど n 個</td></tr>
+<tr><td><code>defined_in_same_step(binds, i)</code></td><td>参照 <code>i</code> と同じステップに、同じ名前の定義がある</td></tr>
+<tr><td><code>distinct_defs(binds, S)</code></td><td>名前空間 S の定義の名前が、すべて異なる</td></tr>
+</tbody>
+</table>
+</div>
+<p>「見えている」は、次をすべて満たすことです。</p>
+<ul>
+<li>その名前の定義が、参照より前に評価される</li>
+<li>その定義のスコープが、参照を囲む</li>
+<li>定義から参照までの間に、その名前が削除されていない</li>
+</ul>
+<p>上の規則で足りないときは、次の2つを使って自分で制約を作れます。<code>visible</code> や <code>resolves_to</code> も、この2つの組み合わせで書かれています。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>返すもの</th></tr>
+</thead>
+<tbody>
+<tr><td><code>reaching_defs(binds, i)</code></td><td>参照 <code>i</code> の候補の定義。同じ名前空間で、<code>i</code> より前にあり、<code>i</code> を囲むスコープにあるもの</td></tr>
+<tr><td><code>kills_between(binds, k, i)</code></td><td><code>k</code> と <code>i</code> の間で、<code>i</code> と同じ名前空間の名前を削除している穴</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="参照の3つの状態"><a class="header" href="#参照の3つの状態">参照の3つの状態</a></h2>
+<p>参照は、次の3つのどれかの状態にあります。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>状態</th><th>書き方</th></tr>
+</thead>
+<tbody>
+<tr><td>見えている</td><td><code>visible(binds, i)</code></td></tr>
+<tr><td>削除済み</td><td><code>killed(binds, i)</code></td></tr>
+<tr><td>未定義</td><td><code>(!visible(binds, i)).given([!killed(binds, i)])</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>!visible</code> は「削除済み」と「未定義」の両方を含みます。Getting Started の異常系を <code>del</code> を含む言語でそのまま使うと、削除済みの名前を使う入力も「未定義」として生成されます。</p>
+<p><code>given</code> は前提が成り立つときだけ条件を問う書き方です。詳細は<a href="#ラベル">ラベル</a>で説明します。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ラベル"><a class="header" href="#ラベル">ラベル</a></h1>
+<p>規則の中で生成した入力に<strong>ラベル</strong>を付けられます。ラベルは次の3つの用途があります。</p>
+<ul>
+<li>どの穴を、どの種類の誤りとして壊したかを記録する(<code>mark</code>)</li>
+<li>制約にはせず、生成された入力を分類する(<code>observe</code>)</li>
+<li>制約に名前をつけ、棄却の原因を調べる(<code>require</code>)</li>
+</ul>
+<p>ラベルには <code>Copy + Debug + PartialEq</code> を実装した任意の型を使用できます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// 規則で壊した種類
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Bug {
+    Unbound, // 未定義の名前を使う
+    Killed,  // 削除済みの名前を使う
+}
+
+/// 生成された入力の分類
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Shape {
+    Redefined, // 同じ名前の定義が2回以上ある
+}
+<span class="boring">}</span></code></pre>
+<h2 id="mark-壊した場所を記録する"><a class="header" href="#mark-壊した場所を記録する">mark: 壊した場所を記録する</a></h2>
+<p><code>binds.mark(i, kind, cond)</code>は、<code>cond</code> をそのまま返し、同時に「<code>cond</code> が成り立つなら、穴 <code>i</code> は <code>kind</code> として壊れている」を記録します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>|binds| constraint!(
+    exactly(1) { for i in binds.refs(VAR) {
+        binds.mark(i, Bug::Unbound, !visible(binds, i))
+    } },
+)
+<span class="boring">}</span></code></pre>
+<p>解いた後は、 <code>s.marks::&lt;Bug&gt;()</code> で <code>(穴, ラベル)</code> の列を受け取ります。ここでは「壊れているのがちょうど1箇所」しか扱わないため、次のような取り出す関数を用意しておくと便利です。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn the_mark(s: &amp;Solved) -&gt; (usize, Bug) {
+    let [(hole, bug)] = s.marks::&lt;Bug&gt;()[..] else {
+        panic!("one mark expected: {s:?}")
+    };
+    (s.span(hole).start, bug)
+}
+<span class="boring">}</span></code></pre>
+<h2 id="given-違反条件の重複を避ける"><a class="header" href="#given-違反条件の重複を避ける">given: 違反条件の重複を避ける</a></h2>
+<p>ある違反を起こすと、別の違反も必ず起きてしまうことがあります。例えば、関数の呼び出しに「未定義の関数を呼ぶ」と「引数の数が合わない」の2種類の違反を用意したとします。引数の数の違反を「見えている定義と数が合わない」と書くと、未定義の関数の呼び出しは、引数の数の違反も同時に満たします。</p>
+<p>違反を種類ごとに数えると、未定義の関数を呼ぶ入力では違反が2つ数えられます。そのため <code>exactly(1)</code> で1か所だけ壊そうとすると、この入力は作れず、一度も生成されません。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy, PartialEq)]
+enum CallBug {
+    Unbound,
+    ArityMismatch,
+}
+
+// 未定義の呼び出しは ArityMismatch も満たすので、Unbound が一度も出ない
+|binds| constraint!(
+    exactly(1) {
+        for i in binds.uses(FUNC) { binds.mark(i, CallBug::Unbound, !visible(&amp;binds, i)) },
+        for i in binds.uses(FUNC) { binds.mark(i, CallBug::ArityMismatch, arity_mismatch(&amp;binds, i)) },
+    },
+)
+<span class="boring">}</span></code></pre>
+<p>引数の数の違反を、<code>given</code> で「関数が見えているとき」に限って問うと、2つの違反を1つずつ独立に作れます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>|binds| constraint!(
+    exactly(1) {
+        for i in binds.uses(FUNC) { binds.mark(i, CallBug::Unbound, !visible(&amp;binds, i)) },
+        for i in binds.uses(FUNC) {
+            binds.mark(i, CallBug::ArityMismatch, arity_mismatch(binds, i).given([visible(&amp;binds, i)]))
+        },
+    },
+)
+<span class="boring">}</span></code></pre>
+<p><code>cond.given([前提..])</code> は、<code>cond</code> とすべての前提の論理積を表します。したがって、前提が偽なら式全体も偽です。前提が成り立つ場合に <code>cond</code> も成り立つことを要求したいときに使用します。</p>
+<h2 id="一度も出ないラベルの警告"><a class="header" href="#一度も出ないラベルの警告">一度も出ないラベルの警告</a></h2>
+<p>一度も真にならなかったラベルは、テストの終わりに警告されます。テストは通っていても、狙った入力が一度も生成されなかったことを知らせるためです。</p>
+<p>原因は大きく2つあります。<strong>作れない</strong>か、<strong>出にくい</strong>かです。</p>
+<p>作れない場合:</p>
+<ul>
+<li><strong>構造が足りない</strong>: 削除の後に参照が来る構造がなければ、削除後の参照は作れません。Strategy 側で、その構造を用意します</li>
+<li><strong>違反が重複する</strong>: ある違反が別の違反も満たすため、<code>exactly(1)</code> では片方だけの入力を作れません。<code>given</code> で条件を分けます</li>
+<li><strong>他の制約で禁じている</strong>: <code>bound</code> などで起こらないようにした種類まで <code>mark</code> すると、そのラベルは付きません</li>
+<li><strong>名前候補が偏っている</strong>: 候補が少ないと未定義参照を作れず、多すぎると再定義などの衝突が起きにくくなります</li>
+</ul>
+<p>出にくい場合:</p>
+<ul>
+<li><strong>条件が稀</strong>: <code>observe</code> で記録する条件は分布を変えないため、生成されたケース数の範囲では一度も真にならないことがあります。構造の出やすさを調整するか、その種類だけを狙うテストを分けます</li>
+</ul>
+<p>迷ったら、その種類だけを <code>exactly(1)</code> で狙うテストを書きます。すべて棄却されるなら作れません。<code>require</code> に名前を付け、<code>take_rejections</code> でどの制約に当たったかを調べます。</p>
+<h2 id="observe-分類する"><a class="header" href="#observe-分類する">observe: 分類する</a></h2>
+<p><code>binds.observe(kind, cond)</code>は、<code>cond</code> を制約にはせず、生成された入力で <code>cond</code> が成り立ったかどうかだけを記録します。生成される入力の分布は変わりません。</p>
+<p><code>observe</code> は <code>Bool</code> を返さないので、<code>constraint!</code> の中には書けません。規則の本体で先に呼んでおき、制約は別に返します。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn bound_observing_redefinition(binds: &amp;Binds) -&gt; Bool {
+    binds.observe(Shape::Redefined, !distinct_defs(binds, VAR));
+    bound(binds, VAR)
+}
+<span class="boring">}</span></code></pre>
+<p>記録したラベルは、<code>s.labels::&lt;L&gt;()</code> や <code>s.has(kind)</code> で確認できます。次のテストは、<code>Shape::Redefined</code> が付いた入力に、実際に同じ名前の定義が2回以上あるかを確かめています。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>proptest! {
+    #[test]
+    fn observe_classifies(s in program().fill(names(), bound_observing_redefinition)) {
+        let defs: Vec&lt;&amp;str&gt; = s.holes()
+            .filter(|(_, h)| h.space == VAR &amp;&amp; h.role == Role::Def)
+            .map(|(_, h)| h.name.as_str())
+            .collect();
+        let unique: HashSet&lt;_&gt; = defs.iter().collect();
+        prop_assert_eq!(s.has(Shape::Redefined), unique.len() &lt; defs.len(), "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="出現回数と未出現の警告"><a class="header" href="#出現回数と未出現の警告">出現回数と未出現の警告</a></h2>
+<p>それぞれのラベルは、何回出現したかが数えられています。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>eprintln!("{:?}", label_stats());
+<span class="boring">}</span></code></pre>
+<p><code>label_stats()</code> はラベルごとの出現回数を返します。<code>take_label_stats()</code> は返し、カウントをリセットします。回数はスレッドごとに数えられます。</p>
+<p>一度も現れなかったラベルは、テストのスレッドが終わるときに標準エラーへ警告されます。テストが通っていても表示されます。</p>
+<pre><code class="language-text">proptest-z3 warning: label `Killed` never occurred in 259 cases (test `tests::my_test`); is it implied by another violation? consider `given`
+</code></pre>
+<h2 id="require-棄却の原因を調べる"><a class="header" href="#require-棄却の原因を調べる">require: 棄却の原因を調べる</a></h2>
+<p>構造が制約を満たせないと、生成は棄却されます。棄却が多いときは、<code>require</code> で原因を調べます。</p>
+<p><code>binds.require(label, cond)</code> は、<code>cond</code> に名前を付けて制約に加えます。<code>mark</code> と違って値を返さないので、<code>constraint!</code> の中には書かず、規則の本体で呼びます。</p>
+<p>規則の戻り値は名前のない制約で、棄却の理由には出ません。名前のない制約と矛盾したときは、名前付きの側だけが理由に出ます。調べたい制約はすべて <code>require</code> に移し、戻り値は <code>Bool::from_bool(true)</code> にします。同じ制約を <code>require</code> しつつ戻り値にも入れると、そのラベルは理由に出なくなります。</p>
+<p>次の規則では、自己参照を含み、すべての参照が見えていて、再定義のない入力を求めています。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn rule(binds: &amp;Binds) -&gt; Bool {
+    binds.require("self_ref", constraint!(any { for i in binds.uses(VAR) { defined_in_same_step(binds, i) } }));
+    binds.require("all_bound", bound(binds, VAR));
+    binds.require("no_redefinition", distinct_defs(binds, VAR));
+    Bool::from_bool(true)
+}
+<span class="boring">}</span></code></pre>
+<p>自己参照の右辺を見えるようにするには、同じ名前の定義が前に必要です。しかし、それは再定義にもなるため、3つの制約を同時には満たせません。このような矛盾は、<code>take_rejections()</code> に現れるラベルの組から見つけられます。</p>
+<p>Z3 が返す組は最小とは限らず、原因と関係のない制約が含まれることもあります。疑わしい制約を1つずつ外し、棄却が解消するか確かめます。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="fill-と-solved"><a class="header" href="#fill-と-solved">fill と Solved</a></h1>
+<p><code>fill</code>で骨格の Strategy と名前の候補と規則をまとめて、穴を埋めた入力の Strategy にします。生成される値は <code>Solved</code> です。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>proptest! {
+    #[test]
+    fn defined_names_resolve(s in program().fill(names(), |binds| bound(binds, VAR))) {
+        prop_assert_eq!(undefined_refs(&amp;s.text), vec![], "{:?}", s);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="解き方を選ぶ"><a class="header" href="#解き方を選ぶ">解き方を選ぶ</a></h2>
+<p><code>fill_with</code> を使用すると、穴の埋め方を選択できます。既定では <code>fill</code> は <code>Fill::Greedy</code> を使用します。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>解き方</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Fill::Greedy</code>(既定)</td><td>ヒントを仮定として解き、制約と衝突したら、衝突したヒントのうち最後のものを捨てて解き直す</td></tr>
+<tr><td><code>Fill::Optimal</code></td><td>守れるヒントの数が最大になるように解く</td></tr>
+</tbody>
+</table>
+</div>
+<p>どちらの解き方でも、同じ骨格と<a href="#ヒント">ヒント</a>からは同じ結果が得られます。縮小の途中で同じ入力を解き直しても、結果は変わりません。</p>
+<ul>
+<li>
+<p><code>Fill::Greedy</code> は速いのが利点です。ただし、捨てるヒントの選び方が最適とは限らないので、<code>Fill::Optimal</code> より多くのヒントを捨てることがあります。</p>
+</li>
+<li>
+<p><code>Fill::Optimal</code> はヒントにできるだけ忠実です。その分、穴が多いと遅くなります。</p>
+</li>
+</ul>
+<p>基本は <code>Fill::Greedy</code> を使用し、生成される名前の偏りが気になる場合に <code>Fill::Optimal</code> を試してください。</p>
+<h2 id="縮小"><a class="header" href="#縮小">縮小</a></h2>
+<p>テストが失敗すると、proptest は入力を縮小します。 proptest-z3 の縮小は、構造・ヒント・名前の候補を縮めながら、規則を満たす入力だけを試します。</p>
+<ul>
+<li>縮めた入力が規則を満たせないときは、別の縮め方を探す</li>
+<li>解いた結果が以前に試したものならば、テストを呼ばない</li>
+<li>縮めた入力が以前と同じならば、解き直さない</li>
+</ul>
+<p>縮小は、これ以上縮まなくなるまで繰り返すことはしません。原因が読み取れる大きさまで縮めば十分という方針です。</p>
+<p>縮小では入力が変わるたびに Z3 が呼ばれるので、縮小には通常の proptest より時間がかかります。</p>
+<h2 id="solved-埋めた結果を使用する"><a class="header" href="#solved-埋めた結果を使用する">Solved: 埋めた結果を使用する</a></h2>
+<p><code>Solved</code> は穴を埋めた結果です。Z3 の型を含まないので、テストの本体では Z3 を意識する必要はありません。</p>
+<h3 id="テキスト"><a class="header" href="#テキスト">テキスト</a></h3>
+<p><code>s.text</code> は、穴を埋めた文字列です。テスト対象にはこれを渡します。</p>
+<h3 id="穴"><a class="header" href="#穴">穴</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>s.holes()</code></td><td>テキストに現れる順の穴。<code>(Hole, &amp;FilledHole)</code> の列</td></tr>
+<tr><td><code>s.events()</code></td><td><a href="#評価順">評価順</a>の穴。<code>&amp;[Hole]</code></td></tr>
+<tr><td><code>s.hole(h)</code></td><td>穴 h の情報(<code>&amp;FilledHole</code>)</td></tr>
+<tr><td><code>s.name(h)</code></td><td>穴 h に入った名前。<code>s.hole(h).name</code> と同じ</td></tr>
+<tr><td><code>s.span(h)</code></td><td>穴 h の、テキスト中の位置。<code>s.hole(h).span</code> と同じ</td></tr>
+<tr><td><code>s.target(h)</code></td><td>参照 h が指す定義の穴(<code>Option&lt;Hole&gt;</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>FilledHole</code> は、次のフィールドを持ちます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>フィールド</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>space</code></td><td>名前空間</td></tr>
+<tr><td><code>role</code></td><td>役割(<code>Def</code> / <code>Use</code> / <code>Kill</code>)</td></tr>
+<tr><td><code>name</code></td><td>入った名前</td></tr>
+<tr><td><code>span</code></td><td>テキスト中の位置(バイト)</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>s.target(h)</code> が返すものは、穴の役割で決まります。定義へジャンプ、参照検索、rename などの検査で役立ちます。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>穴</th><th>返すもの</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Use</code></td><td>その名前が指す、見えている定義</td></tr>
+<tr><td><code>Kill</code></td><td>削除する定義</td></tr>
+<tr><td>見えていない参照、定義</td><td><code>None</code></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="ラベル-1"><a class="header" href="#ラベル-1">ラベル</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>書き方</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>s.marks::&lt;L&gt;()</code></td><td><code>mark</code> で記録された <code>(穴, ラベル)</code> の列</td></tr>
+<tr><td><code>s.labels::&lt;L&gt;()</code></td><td>記録されたラベルの列</td></tr>
+<tr><td><code>s.has(kind)</code></td><td><code>kind</code> が記録されたか</td></tr>
+</tbody>
+</table>
+</div>
+<p>使い方は <a href="#ラベル">ラベル</a> を参照してください。</p>
+<h3 id="表示"><a class="header" href="#表示">表示</a></h3>
+<p><code>Solved</code> の <code>Debug</code> は、行番号を付けたテキストと、記録された <code>mark</code> とラベルの一覧を表示します。反例の表示に向いています。</p>
+<pre><code class="language-text">Solved{
+  0| let b
+  1| let a = a
+ marks: Undefined @ 14..15 `a`
+}
+</code></pre>
+<p>proptest は縮小した反例を <code>Debug</code> で表示するので、テストが失敗するとこの形で表示されます。<code>prop_assert!</code> のメッセージに <code>{:?}</code> で <code>s</code> を渡しておくと、アサーションの失敗にも同じ表示が付きます。</p>
+<p>行番号を付けたテキストだけが欲しいときは、<code>s.numbered()</code> を使います。戻り値は <code>String</code> で、<code>mark</code> とラベルは含みません。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="よくあるパターン"><a class="header" href="#よくあるパターン">よくあるパターン</a></h1>
+<p>この章では、名前解決のテストでよく使う制約の書き方を紹介します。制約を作る参考にご活用ください。</p>
+<h2 id="名前解決の境界条件"><a class="header" href="#名前解決の境界条件">名前解決の境界条件</a></h2>
+<p>ランダムに作った正常系では、名前解決器が間違えやすい状況はめったに出てきません。<code>bound</code> で正常系にしたうえで、そうした状況を <code>any</code> で必ず含めます。</p>
+<h3 id="外に同じ名前がある"><a class="header" href="#外に同じ名前がある">外に同じ名前がある</a></h3>
+<pre><code class="language-rust ignore">let x
+let x = x       // 右辺は1行目の x を指す</code></pre>
+<p>誤って左辺の <code>x</code> を先に登録してしまう名前解決器は、右辺の自分自身に結び付けてしまいます。</p>
+<pre><code class="language-rust ignore">program().fill(names(), |binds| constraint!(
+    bound(binds, VAR),
+    any { for i in binds.uses(VAR) { defined_in_same_step(binds, i) } },
+))</code></pre>
+<p><code>bound</code> の下では、すべての参照が見えている、そのうえで同じステップに同じ名前の定義があるので、右辺は必ず外側の定義を指します。</p>
+<h3 id="シャドーイング"><a class="header" href="#シャドーイング">シャドーイング</a></h3>
+<pre><code class="language-rust ignore">let x
+{
+    let x
+    print x     // 内側の x を指す
+}</code></pre>
+<p>外側の <code>x</code> も名前は一致するので、スコープを正しく辿らない名前解決器は外側を選んでしまいます。</p>
+<pre><code class="language-rust ignore">/// 参照 `i` が指す定義が、外側のスコープにある同じ名前の定義を隠している
+fn hides_outer(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let cases: Vec&lt;Bool&gt; = reaching_defs(binds, i)
+        // i が見える可能性のある定義の列挙
+        .flat_map(|k| reaching_defs(binds, i).map(move |q| (k, q))) 
+        // q が k より外側にある(同じスコープは含まない)
+        .filter(|&amp;(k, q)| !binds.encloses(k, q)) 
+        // i が実際に k を指す、同じ名前のもの
+        .map(|(k, q)| constraint!(resolves_to(binds, i, k), binds.name[q] == binds.name[k]))
+        .collect();
+    Bool::or(&amp;cases)
+}
+
+program().fill(names(), |binds| constraint!(
+    bound(binds, VAR),
+    any { for i in binds.uses(VAR) { hides_outer(binds, i) } },
+))</code></pre>
+<h3 id="テスト"><a class="header" href="#テスト">テスト</a></h3>
+<p>どちらの例も、名前解決の結果を <code>Solved::target</code> と比べます。</p>
+<pre><code class="language-rust ignore">let resolved = resolve(&amp;s.text);    // 参照の位置 → 定義の位置
+for (hole, filled) in s.holes().filter(|(_, h)| h.role.is_ref()) {
+    let expected = s.target(hole).map(|def| s.span(def).start);
+    prop_assert_eq!(resolved.get(&amp;filled.span.start).copied(), expected, "{:?}", s);
+}</code></pre>
+<p>定義へのジャンプや参照検索のような「どこを指すか」を返す機能も、同じ形でテストが可能です。</p>
+<h2 id="巻き上げ"><a class="header" href="#巻き上げ">巻き上げ</a></h2>
+<p>Rust の関数宣言のように、後ろで定義した名前も、同じスコープの前の位置から見える言語があります。これを「巻き上げ」と呼びます。</p>
+<pre><code class="language-rust ignore">call f      // まだ定義されていないが、呼べる
+fn f</code></pre>
+<p><code>visible</code> や <code>bound</code> は「評価順で前の定義だけが見える」という規則で書かれています。そのため巻き上げのある名前空間では、可視性の規則を自分で書く必要があります。</p>
+<pre><code class="language-rust ignore">/// 参照 `i` から、前後に関係なく、囲むスコープにある同じ名前の定義が見える
+fn hoisted(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let defs: Vec&lt;Bool&gt; = (0..binds.len())
+        .filter(|&amp;k| binds.role[k] == Role::Def &amp;&amp; binds.space[k] == binds.space[i])
+        .filter(|&amp;k| binds.encloses(k, i))
+        .map(|k| constraint!(binds.name[k] == binds.name[i]))
+        .collect();
+    Bool::or(&amp;defs)
+}</code></pre>
+<p>正常系では、すべての呼び出しが巻き上げで見えていることを要求します。そのうえで、巻き上げがなければ見えていない呼び出し(前方参照)を必ず含めます。</p>
+<pre><code class="language-rust ignore">program().fill(names(), |binds| constraint!(
+    bound(binds, VAR),
+    all { for i in binds.refs(FUNC) { hoisted(binds, i) } },
+    // 前方参照が少なくとも1つある
+    any { for i in binds.refs(FUNC) { hoisted(binds, i) &amp; !visible(binds, i) } },
+))</code></pre>
+<p>ここでは、既存の <code>visible</code> を「順序ありの可視性」として使用しています。<code>hoisted</code> が真で <code>visible</code> が偽なら、巻き上げによって初めて見える、ということです。</p>
+<h2 id="再帰と-let-rec"><a class="header" href="#再帰と-let-rec">再帰と <code>let rec</code></a></h2>
+<p>ここでは、同じ言語に次の両方があり、処理系がそれぞれを正しく扱うかを確かめます。</p>
+<pre><code class="language-rust ignore">fn f {
+    call f      // 非再帰の関数なら、ここから f は見えない
+}
+fn rec g {
+    call g      // 再帰の関数なら見える
+}</code></pre>
+<p>再帰かどうかは、制約ではなくステップの切り方で決まります。</p>
+<ul>
+<li>ステップの中では、<code>Def</code> が評価順の最後に回る</li>
+<li>名前と本体を1つのステップにすると、本体から名前は見えない(非再帰)</li>
+<li>名前だけのステップを本体より前に置くと、本体から見える(再帰)</li>
+</ul>
+<pre><code class="language-rust ignore">fn stmt() -&gt; impl Strategy&lt;Value = Vec&lt;Frag&gt;&gt; {
+    let simple = prop_oneof![
+        VAR.def().prop_map(|x| vec![frag!["let ", x, "\n"]]),
+        VAR.refer().prop_map(|y| vec![frag!["print ", y, "\n"]]),
+        FUNC.refer().prop_map(|f| vec![frag!["call ", f, "\n"]]),
+    ];
+    simple.prop_recursive(3, 16, 4, |inner| {
+        let body = prop::collection::vec(inner, 1..4).prop_map(|stmts| stmts.concat());
+        (any::&lt;bool&gt;(), FUNC.def(), body).prop_map(|(rec, f, body)| {
+            let body = frag![" {\n", Frag::scope(body), "}\n"];
+            if rec {
+                vec![frag!["fn rec ", f], body]   // 名前のステップ → 本体のステップ
+            } else {
+                vec![frag!["fn ", f, body]]       // 1つのステップ
+            }
+        })
+    })
+}
+
+fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(stmt(), 1..8).prop_map(|stmts| Skeleton::steps(stmts.concat()))
+}</code></pre>
+<p>テストは「名前解決の境界条件」と同じく <code>Solved::target</code> と比べます。</p>
+<h3 id="注意点"><a class="header" href="#注意点">注意点</a></h3>
+<pre><code class="language-rust ignore">fn rec f { call g } and g { call f }</code></pre>
+<p>のような相互再帰はこの方法では作れません。<code>f</code> の本体はテキスト上の <code>g</code> の定義より前にあるのに、<code>g</code> を見る必要があるからです。これは「グループの中だけの巻き上げ」なので、前の節の <code>hoisted</code> の候補を、そのグループの定義に絞って書きます。</p>
+<h2 id="クロージャ"><a class="header" href="#クロージャ">クロージャ</a></h2>
+<pre><code class="language-rust ignore">let x
+let g = || {
+    let h = || {
+        print x     // 2段のクロージャを越えて x をキャプチャする
+    }
+}</code></pre>
+<p>クロージャの外の名前を参照すると、処理系はその名前をクロージャの中へ持ち込む必要があります(キャプチャ)。ここではキャプチャされる参照を処理系が正しく見つけるかを確かめます。</p>
+<h3 id="骨格"><a class="header" href="#骨格">骨格</a></h3>
+<p>ブロックとクロージャは可視性の規則が全く同じです。違うのは「ここで実行時のフレームが変わる」という点だけです。この違いを表すために、クロージャ本体は <code>Frag::scope</code> の代わりに <code>Frag::boundary</code> で作ります。</p>
+<pre><code class="language-rust ignore">fn closure(f: Frag, stmts: Vec&lt;Frag&gt;) -&gt; Frag {
+    frag!["let ", f, " = || {\n", Frag::boundary(stmts.into_iter().map(|s| frag![s, "\n"])), "}"]
+}</code></pre>
+<p>2段の入れ子の中の参照は、ランダムな形ではめったに生まれません。専用の骨格を用意します。</p>
+<pre><code class="language-rust ignore">fn program_with_nested_closures() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    let head = prop::collection::vec(VAR.def().prop_map(|x| frag!["let ", x]), 1..3);
+    let deep = (VAR.def(), VAR.def(), VAR.refer()).prop_map(|(g, h, u)| {
+        closure(g, vec![closure(h, vec![frag!["print ", u]])])
+    });
+    (head, prop::collection::vec(stmt(), 0..5), deep).prop_map(|(head, body, deep)| {
+        Skeleton::steps(head.into_iter().chain(body).chain([deep]).map(|s| frag![s, "\n"]))
+    })
+}</code></pre>
+<h3 id="制約"><a class="header" href="#制約">制約</a></h3>
+<p><code>rules::captured(binds, i)</code> は、参照 <code>i</code> が境界の外の定義を指すことを表します。何段の境界を越えるかは <code>binds.boundaries_between(k, i)</code> で数えられるので、2段以上越えるキャプチャも自分で書けます。</p>
+<pre><code class="language-rust ignore">/// 参照 i が、2段以上のクロージャを越えて定義を指す
+fn relayed(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let cases: Vec&lt;Bool&gt; = reaching_defs(binds, i)
+        .filter(|&amp;k| binds.boundaries_between(k, i) &gt;= 2)
+        .map(|k| resolves_to(binds, i, k))
+        .collect();
+    Bool::or(&amp;cases)
+}</code></pre>
+<p>ここで名前の一致ではなく <code>resolves_to</code> を使用しているのは、シャドーイングのためです。</p>
+<pre><code class="language-rust ignore">let x
+let g = || {
+    let x
+    print x    // 内側の x を指す。キャプチャではない
+}</code></pre>
+<h3 id="テスト-1"><a class="header" href="#テスト-1">テスト</a></h3>
+<p>すべての参照に、キャプチャかどうかの印を付けます。<code>mark</code> の戻り値は捨てているので、制約にはなりません。</p>
+<pre><code class="language-rust ignore">#[derive(Debug, Clone, Copy, PartialEq)]
+struct Captured;
+
+proptest! {
+    #[test]
+    fn captures_are_found(s in program_with_nested_closures().fill(names(), |binds| {
+        for i in binds.refs(VAR) {
+            binds.mark(i, Captured, captured(binds, i));
+        }
+        constraint!(
+            bound(binds, VAR),
+            any { for i in binds.refs(VAR) { relayed(binds, i) } },
+        )
+    })) {
+        let expected: HashSet&lt;usize&gt; =
+            s.marks::&lt;Captured&gt;().into_iter().map(|(hole, _)| s.span(hole).start).collect();
+        prop_assert_eq!(captures(&amp;s.text), expected, "{:?}", s);
+    }
+}</code></pre>
+<h3 id="注意点-1"><a class="header" href="#注意点-1">注意点</a></h3>
+<ul>
+<li><code>captured</code> は、トップレベルの定義への参照もキャプチャに数えます。グローバル変数をキャプチャと呼ばない言語では、期待値を作るときに除いてください。</li>
+<li><code>captured</code> は順序ありの可視性に従います。巻き上げる名前空間では使えません。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="付録-api-一覧"><a class="header" href="#付録-api-一覧">付録: API 一覧</a></h1>
+<p>proptest-z3 0.1.0 の公開 API を、シグネチャと意味論(特にスコープ・ステップ・評価順との関係)まで含めて列挙します。
+本文の補足として、また LLM にテストを書かせるときのコンテキストとして使うことを想定しています。</p>
+<h2 id="a1-読む前に-2種類の番号"><a class="header" href="#a1-読む前に-2種類の番号">A.1 読む前に: 2種類の番号</a></h2>
+<p>proptest-z3 には、穴を指す番号が2種類あります。混ぜると誤ったテストになります。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>型</th><th>並び</th><th>使う場所</th></tr>
+</thead>
+<tbody>
+<tr><td>評価順の番号</td><td><code>usize</code>(変数名は <code>i</code>, <code>k</code>, <code>j</code>)</td><td>評価順(A.2)</td><td>制約の中(<code>Binds</code>、<code>rules</code>)</td></tr>
+<tr><td>テキスト順の番号</td><td><code>Hole(pub usize)</code></td><td>出力テキストに現れる順</td><td>解いた後(<code>Solved</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>制約の中で <code>i &lt; k</code> は「<code>i</code> が <code>k</code> より先に評価される」を意味します。テキスト上の前後ではありません。</li>
+<li>制約の中から <code>Hole</code> を得る公開 API はありません。穴の位置が必要なら <code>binds.mark(i, ..)</code> で印を付け、解いた後に <code>s.marks()</code> で <code>Hole</code> として受け取ります。</li>
+</ul>
+<h2 id="a2-ステップ評価順スコープの規則"><a class="header" href="#a2-ステップ評価順スコープの規則">A.2 ステップ・評価順・スコープの規則</a></h2>
+<h3 id="ステップ-1"><a class="header" href="#ステップ-1">ステップ</a></h3>
+<ul>
+<li>ステップは「定義が見えるようになる単位」で、言語の文に当たります。</li>
+<li>ステップを作るのは <code>Skeleton::steps(..)</code> / <code>Frag::scope(..)</code> / <code>Frag::boundary(..)</code> の3つだけです。どれも、渡された各要素を1ステップとして閉じます。</li>
+<li><code>frag!</code> / <code>Frag::concat</code> / <code>Frag::join</code> はステップを作りません。連結した断片は、外側で閉じられたときに同じ1ステップになります。</li>
+<li><code>Frag::scope(..)</code> / <code>Frag::boundary(..)</code> の中の穴は中のステップに属し、外側の文のステップには属しません。</li>
+</ul>
+<h3 id="評価順-1"><a class="header" href="#評価順-1">評価順</a></h3>
+<p>評価順は次の規則で決まります。</p>
+<ol>
+<li>ステップはテキスト順に並びます。</li>
+<li>1つのステップの中では、
+<ul>
+<li>先: <code>Use</code> の穴と、そのステップに含まれる入れ子スコープ内の穴(テキスト順)</li>
+<li>後: そのステップ自身の <code>Def</code> と <code>Kill</code> の穴(テキスト順)</li>
+</ul>
+</li>
+</ol>
+<p>帰結:</p>
+<ul>
+<li><code>let x = x</code> の右辺 <code>x</code>(<code>Use</code>)は、同じ文の左辺 <code>x</code>(<code>Def</code>)より先に評価されるので、それを指しません。</li>
+<li><code>del x</code>(<code>Kill</code>)は、同じ文の <code>Use</code> より後に評価されます。</li>
+<li><code>fn f { .. call f .. }</code> のように、文の <code>Def</code> とその文に含まれるスコープを並べると、スコープ内の穴はすべて <code>f</code> の定義より先に評価されます。<strong>そのため、既定では再帰呼び出しは見えません。</strong> 境界(<code>Frag::boundary</code>)でも同じです。</li>
+<li>境界の中身(クロージャの本体)は、書かれた位置で評価されたものとして扱われます(その場で呼ばれたのと同じ)。境界の中の <code>Kill</code> は、境界の後の参照にも効きます。</li>
+</ul>
+<h3 id="スコープ-1"><a class="header" href="#スコープ-1">スコープ</a></h3>
+<ul>
+<li><code>Frag::scope(steps)</code> が入れ子のスコープを1つ作ります。スコープは字句的(静的)な入れ子だけです。</li>
+<li>スコープ内の <code>Def</code> は、そのスコープとさらに内側のスコープからだけ見えます。外側と兄弟スコープからは見えません。</li>
+<li>外側の <code>Def</code> は内側から見えます。内側で同名を定義すると、内側ではそちらが優先されます(シャドーイング)。</li>
+<li>スコープは z3 に渡されません。Rust 側の <code>bool</code>(<code>Binds::encloses</code>)として、制約を組み立てるときに候補を絞るのに使われます。</li>
+</ul>
+<h3 id="境界クロージャ関数本体"><a class="header" href="#境界クロージャ関数本体">境界(クロージャ・関数本体)</a></h3>
+<ul>
+<li><code>Frag::boundary(steps)</code> は、<strong>境界の印が付いたスコープ</strong>を作ります。クロージャや関数の本体に使います。</li>
+<li>見える範囲(<code>encloses</code>、<code>visible</code>、<code>target</code> など)は <code>Frag::scope</code> と全く同じです。境界は名前解決の結果を変えません。</li>
+<li>違いは、参照が境界を何個越えて定義に届くかを数えられることだけです(<code>Binds::boundaries_between</code>)。これを使って「キャプチャ」(<code>captured</code>)を判定します。</li>
+<li>普通のスコープ(<code>Frag::scope</code>)は越えても数えません。境界の中のブロック、ブロックの中の境界は、どちらも自由に入れ子にできます。</li>
+</ul>
+<h3 id="各-api-がスコープを跨ぐか"><a class="header" href="#各-api-がスコープを跨ぐか">各 API がスコープを跨ぐか</a></h3>
+<p>凡例:</p>
+<ul>
+<li><strong>字句的</strong>: 外側の定義は内側から見える。内側・兄弟スコープの定義は見えない</li>
+<li><strong>全体</strong>: スコープを見ない。骨格全体のすべての穴が対象</li>
+<li><strong>跨がない</strong>: 同じステップの中だけ(同じステップの穴は必ず同じスコープにある)</li>
+<li><strong>—</strong>: スコープと関係しない</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>API</th><th>スコープ</th><th>補足</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Binds::defs</code> / <code>uses</code> / <code>kills</code> / <code>refs</code> / <code>of</code></td><td>全体</td><td>名前空間と役割で絞るだけ</td></tr>
+<tr><td><code>Binds::same_step</code></td><td>跨がない</td><td>入れ子スコープ内の穴と、そのスコープを含む外側の文の穴は別ステップ</td></tr>
+<tr><td><code>Binds::encloses</code></td><td>字句的</td><td>これ自体がスコープの判定。境界も普通のスコープとして扱う</td></tr>
+<tr><td><code>Binds::boundaries_between</code></td><td>字句的</td><td><code>inner</code> を囲み <code>outer</code> を囲まない境界の数。普通のスコープは数えない</td></tr>
+<tr><td><code>reaching_defs</code></td><td>字句的</td><td>評価順で前にある、同じ名前空間の <code>Def</code> のうち、<code>i</code> を囲むスコープのもの(境界も越えて見える)</td></tr>
+<tr><td><code>kills_between</code></td><td><strong>全体</strong></td><td><code>Kill</code> はスコープも境界も見ない(下の注意)</td></tr>
+<tr><td><code>visible</code></td><td>字句的 + <code>Kill</code> は全体</td><td><code>reaching_defs</code> と <code>kills_between</code> の組み合わせ</td></tr>
+<tr><td><code>killed</code></td><td>字句的 + <code>Kill</code> は全体</td><td>同上</td></tr>
+<tr><td><code>resolves_to</code></td><td>字句的 + <code>Kill</code> は全体</td><td><code>Solved::target</code> と同じ規則を制約として書いたもの</td></tr>
+<tr><td><code>captured</code></td><td>字句的(境界を数える)</td><td>指す定義と参照の間に境界が1つ以上ある</td></tr>
+<tr><td><code>bound</code> / <code>unbound</code></td><td>字句的 + <code>Kill</code> は全体</td><td><code>refs</code>(全体)の各要素に <code>visible</code> を適用</td></tr>
+<tr><td><code>defined_in_same_step</code></td><td>跨がない</td><td>評価順の前後は問わない</td></tr>
+<tr><td><code>distinct_defs</code></td><td><strong>全体</strong></td><td>内側スコープの同名定義(シャドーイング)や、兄弟スコープどうしの同名も「重複」に数える</td></tr>
+<tr><td><code>Solved::target</code></td><td>字句的 + <code>Kill</code> は全体</td><td><code>visible</code> と同じ規則を、解いた後の具体的な名前に適用</td></tr>
+<tr><td><code>Solved::events</code></td><td>全体</td><td>骨格全体の評価順</td></tr>
+<tr><td><code>Binds::mark</code> / <code>observe</code> / <code>require</code></td><td>—</td><td></td></tr>
+<tr><td><code>NameSpec</code> / <code>Names</code></td><td>—</td><td>候補は名前空間ごとで、スコープごとではない</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong><code>Kill</code> はスコープを跨ぎます。</strong> 定義 <code>k</code> から参照 <code>i</code> までの間(評価順)に、同じ名前空間・同じ名前の <code>Kill</code> が1つでもあれば、<code>k</code> は <code>i</code> から見えなくなります。その <code>Kill</code> がどのスコープにあるかは問いません。</p>
+<ul>
+<li>内側のスコープで <code>del a</code> すると、外側の <code>a</code> も消えます。内側に同名の <code>a</code> があって、<code>del a</code> がそちらを指していても同じです。</li>
+<li>閉じた兄弟スコープの中の <code>del a</code> も、後の <code>a</code> の参照に効きます。</li>
+<li><code>Kill</code> の後に同名の <code>Def</code> があれば、その定義は新しく見えます。ただし、見える範囲はその <code>Def</code> のスコープの中だけです。</li>
+</ul>
+<p><strong><code>distinct_defs</code> はスコープを跨ぎます。</strong> <code>!distinct_defs(binds, S)</code> は「どこかに同名の定義の組がある」という意味で、同じスコープでの再代入に限りません。同じスコープの中での再定義だけを禁じたい・許したい場合は、<code>binds.encloses</code> と <code>binds.same_step</code> で定義の組を絞り、<code>constraint!</code> で自分で書きます。</p>
+<h3 id="例"><a class="header" href="#例">例</a></h3>
+<p>この付録の例では、本文と同じ小さな言語を使います(<code>def x</code> は定義、<code>set x y</code> は <code>y</code> を使って <code>x</code> を定義、<code>print x</code> は使用、<code>del x</code> は削除、<code>{ .. }</code> はスコープ)。名前空間は <code>VAR</code> だけで、候補は <code>a</code>, <code>b</code>, <code>c</code> です。</p>
+<pre><code class="language-text">0| def a
+1| set b a
+2| { def a print a }
+3| del a
+4| print b
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>テキスト順 <code>Hole</code></th><th>穴</th><th>役割</th><th>スコープ</th><th>評価順 <code>i</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>Hole(0)</code></td><td>0行目 <code>a</code></td><td><code>Def</code></td><td>トップ</td><td>0</td></tr>
+<tr><td><code>Hole(1)</code></td><td>1行目 <code>b</code></td><td><code>Def</code></td><td>トップ</td><td>2</td></tr>
+<tr><td><code>Hole(2)</code></td><td>1行目 <code>a</code></td><td><code>Use</code></td><td>トップ</td><td>1</td></tr>
+<tr><td><code>Hole(3)</code></td><td>2行目 1つ目の <code>a</code></td><td><code>Def</code></td><td>内側</td><td>3</td></tr>
+<tr><td><code>Hole(4)</code></td><td>2行目 2つ目の <code>a</code></td><td><code>Use</code></td><td>内側</td><td>4</td></tr>
+<tr><td><code>Hole(5)</code></td><td>3行目 <code>a</code></td><td><code>Kill</code></td><td>トップ</td><td>5</td></tr>
+<tr><td><code>Hole(6)</code></td><td>4行目 <code>b</code></td><td><code>Use</code></td><td>トップ</td><td>6</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>1行目は <code>Use</code> の <code>a</code>(<code>i = 1</code>)が <code>Def</code> の <code>b</code>(<code>i = 2</code>)より先に評価されます。</li>
+<li><code>reaching_defs(4)</code> は <code>{0, 2, 3}</code>。<code>Solved::target(Hole(4))</code> は内側の <code>Hole(3)</code> です(同名で生きている定義のうち、評価順で最後のもの)。</li>
+<li><code>reaching_defs(5)</code> は <code>{0, 2}</code>。内側の <code>Hole(3)</code> はトップの <code>Kill</code> を囲まないので入りません。<code>target(Hole(5))</code> は <code>Hole(0)</code> です。</li>
+<li><code>print b</code>(<code>i = 6</code>)は <code>Hole(1)</code> を指します。間の <code>Kill</code> は名前が <code>a</code> なので効きません。</li>
+<li><code>distinct_defs(binds, VAR)</code> は偽です。<code>Hole(0)</code> と <code>Hole(3)</code> がどちらも <code>a</code> だからです(スコープは違いますが、全体で数えます)。</li>
+<li>3行目が <code>{ del a }</code> でも結果は同じです(<code>Kill</code> はスコープの中にあっても外側の <code>a</code> を消します)。</li>
+<li>2行目を <code>{ def a del a }</code> に変えると、内側の <code>del a</code> は内側の <code>a</code> を指しますが、外側の <code>a</code>(<code>Hole(0)</code>)も同時に消えます。その後のトップレベルでの <code>a</code> の参照は削除済み(<code>killed</code>)になります。</li>
+</ul>
+<h3 id="例-境界"><a class="header" href="#例-境界">例: 境界</a></h3>
+<p><code>[ .. ]</code> を境界(<code>Frag::boundary</code>)、<code>{ .. }</code> を普通のスコープとします。</p>
+<pre><code class="language-text">0| def a
+1| [ def b [ print a print b ] { print b } ]
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>テキスト順 <code>Hole</code></th><th>穴</th><th>役割</th><th>囲むもの(内側から)</th><th>評価順 <code>i</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>Hole(0)</code></td><td>0行目 <code>a</code></td><td><code>Def</code></td><td>なし</td><td>0</td></tr>
+<tr><td><code>Hole(1)</code></td><td><code>def b</code> の <code>b</code></td><td><code>Def</code></td><td>境界1</td><td>1</td></tr>
+<tr><td><code>Hole(2)</code></td><td><code>print a</code> の <code>a</code></td><td><code>Use</code></td><td>境界2, 境界1</td><td>2</td></tr>
+<tr><td><code>Hole(3)</code></td><td>境界2の中の <code>print b</code> の <code>b</code></td><td><code>Use</code></td><td>境界2, 境界1</td><td>3</td></tr>
+<tr><td><code>Hole(4)</code></td><td><code>{ }</code> の中の <code>print b</code> の <code>b</code></td><td><code>Use</code></td><td>スコープ, 境界1</td><td>4</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>Hole(2)</code> は <code>Hole(0)</code> を指します。<code>boundaries_between(0, 2) = 2</code>(境界1と境界2)なので <code>captured</code> は真です。境界を2つ越えて届くので、外側のクロージャが内側へキャプチャを中継していることになります。</li>
+<li><code>Hole(3)</code> は <code>Hole(1)</code> を指します。<code>boundaries_between(1, 3) = 1</code>(境界2だけ。境界1は定義も囲む)なので <code>captured</code> は真です。</li>
+<li><code>Hole(4)</code> も <code>Hole(1)</code> を指しますが、間にあるのは普通のスコープだけなので <code>boundaries_between(1, 4) = 0</code>、<code>captured</code> は偽です。</li>
+</ul>
+<h2 id="a3-モジュールと-prelude"><a class="header" href="#a3-モジュールと-prelude">A.3 モジュールと prelude</a></h2>
+<p><code>use proptest_z3::prelude::*;</code> で次が入ります。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>由来</th><th>項目</th></tr>
+</thead>
+<tbody>
+<tr><td>proptest-z3</td><td><code>frag!</code>, <code>Binds</code>, <code>Fill</code>, <code>FillExt</code>, <code>Filled</code>, <code>Frag</code>, <code>Given</code>, <code>Hint</code>, <code>Hole</code>, <code>IntoFrag</code>, <code>NameSpec</code>, <code>Names</code>, <code>Role</code>, <code>Skeleton</code>, <code>Solved</code>, <code>Space</code>, <code>Text</code>, <code>label_stats</code></td></tr>
+<tr><td><code>proptest_z3::rules::*</code></td><td><code>visible</code>, <code>bound</code>, <code>unbound</code>, <code>defined_in_same_step</code>, <code>killed</code>, <code>distinct_defs</code>, <code>resolves_to</code>, <code>captured</code>, <code>reaching_defs</code>, <code>kills_between</code></td></tr>
+<tr><td>z3</td><td><code>z3::ast::{Bool, Int}</code></td></tr>
+<tr><td>z3-toolkit</td><td><code>z3_toolkit::prelude::*</code>(<code>constraint!</code>、<code>Failure</code> など)</td></tr>
+</tbody>
+</table>
+</div>
+<p>prelude に入らず、クレート直下にあるもの: <code>FilledHole</code>, <code>Label</code>, <code>LabelStat</code>, <code>take_label_stats</code>, <code>take_rejections</code>。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::prelude::*;
+use proptest_z3::prelude::*;
+use proptest_z3::{take_label_stats, take_rejections}; // 必要なときだけ
+<span class="boring">}</span></code></pre>
+<h2 id="a4-形を作る"><a class="header" href="#a4-形を作る">A.4 形を作る</a></h2>
+<h3 id="space名前空間"><a class="header" href="#space名前空間"><code>Space</code>(名前空間)</a></h3>
+<p><code>#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]</code>。中身の文字列で区別されます(同じ文字列の <code>Space</code> は同じ名前空間)。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>const fn new(name: &amp;'static str) -&gt; Space</code></td><td><code>const</code> として定義する: <code>const VAR: Space = Space::new("var");</code></td></tr>
+<tr><td><code>fn name(self) -&gt; &amp;'static str</code></td><td>表示や panic のメッセージに使われる</td></tr>
+<tr><td><code>fn hole(self, role: Role) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td>穴1つの <code>Frag</code>。ヒントは proptest が決める</td></tr>
+<tr><td><code>fn def(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Def)</code></td></tr>
+<tr><td><code>fn refer(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Use)</code></td></tr>
+<tr><td><code>fn kill(self) -&gt; impl Strategy&lt;Value = Frag&gt;</code></td><td><code>hole(Role::Kill)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>名前空間どうしは独立です。<code>VAR</code> の <code>a</code> と <code>FUNC</code> の <code>a</code> は無関係で、どの規則も同じ名前空間の穴だけを見ます。</p>
+<h3 id="role穴の役割"><a class="header" href="#role穴の役割"><code>Role</code>(穴の役割)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>値</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Role::Def</code></td><td>名前を定義する</td></tr>
+<tr><td><code>Role::Use</code></td><td>名前を参照する</td></tr>
+<tr><td><code>Role::Kill</code></td><td>名前を参照し、同時に削除する。以後、同名の定義はすべて見えない(A.2)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>fn is_ref(self) -&gt; bool</code>: <code>Use</code> か <code>Kill</code> なら真。この2つを<strong>参照</strong>と呼びます。</li>
+<li><code>Kill</code> は参照でもあるので、<code>bound</code> を課すと「生きている名前を削除する」になります。</li>
+</ul>
+<h3 id="hint希望の名前"><a class="header" href="#hint希望の名前"><code>Hint</code>(希望の名前)</a></h3>
+<p><code>pub struct Hint(pub u16)</code>。0〜1 の固定小数点数で、「候補の何番目の名前が欲しいか」を表します。<code>Arbitrary</code> を実装しています。</p>
+<ul>
+<li><code>fn index(self, size: usize) -&gt; usize</code>: <code>floor(size × h / 65536)</code>。<code>size == 0</code> なら panic。</li>
+<li>制約とぶつからない限り守られます。縮小では 0 に寄るので、名前は候補の先頭(A.5 の通り辞書順で最小)に寄ります。</li>
+<li>普段は <code>Space::def()</code> などが自動で作るので、直接使うのは <code>Frag::hole</code> を手で呼ぶときだけです。</li>
+</ul>
+<h3 id="frag組み立て中の断片"><a class="header" href="#frag組み立て中の断片"><code>Frag</code>(組み立て中の断片)</a></h3>
+<p><code>#[derive(Debug, Clone, Default)]</code>。<code>Frag::default()</code> は空の断片です。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th><th>ステップ・スコープ</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn hole(space: Space, role: Role, hint: Hint) -&gt; Frag</code></td><td>穴1つ</td><td>作らない</td></tr>
+<tr><td><code>fn text(s: impl Into&lt;String&gt;) -&gt; Frag</code></td><td>テキストだけ</td><td>作らない</td></tr>
+<tr><td><code>fn concat(parts: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>順に連結</td><td>作らない</td></tr>
+<tr><td><code>fn join(sep: impl IntoFrag + Clone, parts: impl IntoIterator&lt;Item = impl IntoFrag&gt;) -&gt; Frag</code></td><td>区切り付きで連結</td><td>作らない</td></tr>
+<tr><td><code>fn scope(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>入れ子のスコープ。各要素を1ステップとして閉じる</td><td>ステップとスコープを作る</td></tr>
+<tr><td><code>fn boundary(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Frag</code></td><td>境界の印が付いた入れ子のスコープ(クロージャ・関数本体)。見える範囲は <code>scope</code> と同じ</td><td>ステップとスコープ(境界)を作る</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>Frag::scope</code> / <code>Frag::boundary</code> の戻り値はまだ <code>Frag</code> です。外側の文の一部として <code>frag![..]</code> に置き、外側の <code>Skeleton::steps</code> か <code>Frag::scope</code> / <code>Frag::boundary</code> で閉じます。</li>
+<li>中の要素に区切り(空白・改行)を付けるのは利用者です: <code>Frag::scope(body.into_iter().map(|s| frag![s, " "]))</code>。</li>
+<li>括弧などの見た目も利用者が付けます。たとえばブロックとクロージャを作り分けるなら:</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn block(stmts: Vec&lt;Frag&gt;) -&gt; Frag {
+    frag!["{ ", Frag::scope(stmts.into_iter().map(|s| frag![s, " "])), "}"]
+}
+
+fn closure(stmts: Vec&lt;Frag&gt;) -&gt; Frag {
+    frag!["[ ", Frag::boundary(stmts.into_iter().map(|s| frag![s, " "])), "]"]
+}
+<span class="boring">}</span></code></pre>
+<h3 id="intofrag-と-frag"><a class="header" href="#intofrag-と-frag"><code>IntoFrag</code> と <code>frag!</code></a></h3>
+<p><code>frag![e1, e2, ..]</code> は <code>Frag::concat([e1.into_frag(), e2.into_frag(), ..])</code> です。末尾のカンマは省略可。</p>
+<p><code>IntoFrag</code> の実装:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>型</th><th>変換</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Frag</code>, <code>&amp;Frag</code></td><td>そのまま(<code>&amp;Frag</code> は clone)</td></tr>
+<tr><td><code>Vec&lt;T: IntoFrag&gt;</code></td><td>要素を連結</td></tr>
+<tr><td><code>Option&lt;T: IntoFrag&gt;</code></td><td><code>None</code> は空</td></tr>
+<tr><td><code>(T1, T2)</code>, <code>(T1, T2, T3)</code>, <code>(T1, T2, T3, T4)</code></td><td>要素を連結</td></tr>
+<tr><td><code>&amp;str</code>, <code>String</code>, <code>&amp;String</code>, <code>char</code>, <code>bool</code></td><td>テキスト</td></tr>
+<tr><td>整数(<code>i8</code>〜<code>i128</code>, <code>isize</code>, <code>u8</code>〜<code>u128</code>, <code>usize</code>)、<code>f32</code>, <code>f64</code></td><td><code>to_string()</code> したテキスト</td></tr>
+<tr><td><code>Text&lt;T: Display&gt;</code></td><td><code>to_string()</code> したテキスト</td></tr>
+</tbody>
+</table>
+</div>
+<p>利用者の型は <code>IntoFrag</code> を直接実装するか、<code>Display</code> を実装して <code>Text(x)</code> で包みます。<code>Display</code> には穴を入れられません(文字列にした時点で穴の情報が消えます)。</p>
+<h3 id="skeleton完成した骨格"><a class="header" href="#skeleton完成した骨格"><code>Skeleton</code>(完成した骨格)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn steps(steps: impl IntoIterator&lt;Item = Frag&gt;) -&gt; Skeleton</code></td><td>各要素を1ステップとして閉じ、骨格を完成させる。<code>Skeleton</code> を作る唯一の方法</td></tr>
+<tr><td><code>fn holes(&amp;self) -&gt; usize</code></td><td>穴の数</td></tr>
+<tr><td><code>fn solve(&amp;self, names: &amp;Names, fill: Fill, rule: impl Fn(&amp;Binds) -&gt; Bool) -&gt; Result&lt;Solved, Failure&gt;</code></td><td>proptest を通さずに直接解く(A.10)</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>fill</code> は <code>Strategy&lt;Value = Skeleton&gt;</code> に対してだけ使えるので、ステップの閉じ忘れは型エラーになります。</p>
+<p>典型的な形:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn program() -&gt; impl Strategy&lt;Value = Skeleton&gt; {
+    prop::collection::vec(stmt(), 1..8)
+        .prop_map(|stmts| Skeleton::steps(stmts.into_iter().map(|s| frag![s, "\n"])))
+}
+<span class="boring">}</span></code></pre>
+<h2 id="a5-名前の候補"><a class="header" href="#a5-名前の候補">A.5 名前の候補</a></h2>
+<h3 id="namespec候補を作る-strategy"><a class="header" href="#namespec候補を作る-strategy"><code>NameSpec</code>(候補を作る strategy)</a></h3>
+<p><code>Strategy&lt;Value = Names&gt;</code> を実装しています。<code>Clone</code>。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn new() -&gt; NameSpec</code></td><td>空</td></tr>
+<tr><td><code>fn space(self, space: Space, regex: &amp;str, count: usize) -&gt; NameSpec</code></td><td><code>regex</code> に合う、互いに異なる <code>count</code> 個の名前。候補は<strong>辞書順</strong>に並ぶ</td></tr>
+<tr><td><code>fn space_with(self, space: Space, names: BoxedStrategy&lt;Vec&lt;String&gt;&gt;) -&gt; NameSpec</code></td><td>候補の strategy を直接渡す。並び順はそのまま候補の番号になる</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>名前の候補も proptest が作るので、縮小で名前自体も短くなります。</li>
+<li><code>regex</code> に合う文字列が <code>count</code> 個未満だと、候補を作れません。</li>
+<li>候補が少ないほど同じ名前が繰り返し使われ、名前解決にとって難しい入力になります。ただし「互いに異なる」系の制約は解けにくくなります(例: 候補3個で定義4個に <code>distinct_defs</code> は unsat)。</li>
+</ul>
+<p>panic する条件: 不正な正規表現 / 同じ <code>Space</code> を2回登録 / <code>space_with</code> の候補に空文字列か重複がある。</p>
+<h3 id="names具体的な候補"><a class="header" href="#names具体的な候補"><code>Names</code>(具体的な候補)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn default() -&gt; Names</code></td><td>空</td></tr>
+<tr><td><code>fn with(self, space: Space, names: impl IntoIterator&lt;Item = impl Into&lt;String&gt;&gt;) -&gt; Names</code></td><td>候補を手で設定する(<code>Skeleton::solve</code> を直接呼ぶ単体テスト向け)</td></tr>
+<tr><td><code>fn get(&amp;self, space: Space) -&gt; &amp;[String]</code></td><td>候補の列。未登録なら空</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="a6-制約を書く-binds"><a class="header" href="#a6-制約を書く-binds">A.6 制約を書く: <code>Binds</code></a></h2>
+<p><code>fill</code> / <code>solve</code> に渡す規則 <code>rule: Fn(&amp;Binds) -&gt; Bool</code> は、<code>Binds</code> を受け取り z3 の <code>Bool</code> を返します。規則は1回解くごとに(縮小の各段も含めて)呼ばれるので、副作用を持たせないでください(<code>mark</code> などの記録は解くごとに作り直されます)。</p>
+<p><code>Binds</code> の番号はすべて評価順です(A.1)。</p>
+<h3 id="公開フィールド"><a class="header" href="#公開フィールド">公開フィールド</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>フィールド</th><th>型</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>role</code></td><td><code>Vec&lt;Role&gt;</code></td><td>各穴の役割</td></tr>
+<tr><td><code>space</code></td><td><code>Vec&lt;Space&gt;</code></td><td>各穴の名前空間</td></tr>
+<tr><td><code>name</code></td><td><code>Vec&lt;Int&gt;</code></td><td>各穴に入る名前。z3 の整数変数で、値は候補の番号(<code>0..候補数</code>)。範囲の制約は自動で付く</td></tr>
+</tbody>
+</table>
+</div>
+<p>名前の等しさは <code>binds.name[p] == binds.name[q]</code>(<code>constraint!</code> の中)で書きます。名前の文字列は制約からは見えません。</p>
+<h3 id="メソッド"><a class="header" href="#メソッド">メソッド</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>戻り値</th><th>スコープ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn len(&amp;self) -&gt; usize</code></td><td></td><td></td><td>穴の数</td></tr>
+<tr><td><code>fn is_empty(&amp;self) -&gt; bool</code></td><td></td><td></td><td></td></tr>
+<tr><td><code>fn of(&amp;self, space: Space, role: Role) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td>評価順</td><td>全体</td><td>その名前空間・役割の穴</td></tr>
+<tr><td><code>fn defs(&amp;self, space: Space)</code></td><td>同上</td><td>全体</td><td><code>of(space, Def)</code></td></tr>
+<tr><td><code>fn uses(&amp;self, space: Space)</code></td><td>同上</td><td>全体</td><td><code>of(space, Use)</code></td></tr>
+<tr><td><code>fn kills(&amp;self, space: Space)</code></td><td>同上</td><td>全体</td><td><code>of(space, Kill)</code></td></tr>
+<tr><td><code>fn refs(&amp;self, space: Space)</code></td><td>同上</td><td>全体</td><td><code>Use</code> と <code>Kill</code></td></tr>
+<tr><td><code>fn same_step(&amp;self, p: usize, q: usize) -&gt; bool</code></td><td>Rust の <code>bool</code></td><td>跨がない</td><td>同じステップか</td></tr>
+<tr><td><code>fn encloses(&amp;self, outer: usize, inner: usize) -&gt; bool</code></td><td>Rust の <code>bool</code></td><td>字句的</td><td><code>outer</code> の属するスコープが <code>inner</code> を囲むか。<code>outer</code> がトップレベルなら常に真。同じスコープなら真。境界も普通のスコープとして扱う</td></tr>
+<tr><td><code>fn boundaries_between(&amp;self, outer: usize, inner: usize) -&gt; usize</code></td><td>Rust の <code>usize</code></td><td>字句的</td><td><code>inner</code> を囲み、<code>outer</code> を囲まない境界(<code>Frag::boundary</code>)の数。普通のスコープは数えない。<code>encloses(outer, inner)</code> が真のときに使う(定義 <code>outer</code> から参照 <code>inner</code> まで越える境界の数)</td></tr>
+<tr><td><code>fn mark&lt;L: Label&gt;(&amp;self, i: usize, kind: L, broken: Bool) -&gt; Bool</code></td><td><code>broken</code> をそのまま返す</td><td>—</td><td>A.8</td></tr>
+<tr><td><code>fn observe&lt;L: Label&gt;(&amp;self, kind: L, cond: Bool)</code></td><td></td><td>—</td><td>A.8</td></tr>
+<tr><td><code>fn require&lt;L: Label&gt;(&amp;self, label: L, constraint: Bool)</code></td><td>返さない</td><td>—</td><td>A.8</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>same_step</code>、<code>encloses</code>、<code>boundaries_between</code> は生成時に決まる情報なので、z3 の式ではなく Rust の値です。<code>filter</code> や <code>if</code> で候補を絞るのに使います。</p>
+<h2 id="a7-制約を書く-規則proptest_z3rules"><a class="header" href="#a7-制約を書く-規則proptest_z3rules">A.7 制約を書く: 規則(<code>proptest_z3::rules</code>)</a></h2>
+<p>すべて <code>&amp;Binds</code> を受け取り、z3 の <code>Bool</code> を返します。<code>i</code> は評価順の番号です。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>スコープ</th><th>真になる条件</th></tr>
+</thead>
+<tbody>
+<tr><td><code>visible(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>字句的 + <code>Kill</code> は全体</td><td>参照 <code>i</code> が、見えていて削除されていない定義を指す。すなわち <code>reaching_defs(i)</code> のどれか <code>k</code> について、<code>name[k] == name[i]</code> かつ <code>k</code> と <code>i</code> の間に同名の <code>Kill</code> がない</td></tr>
+<tr><td><code>killed(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>同上</td><td>参照 <code>i</code> の名前は、見える範囲で定義されたが削除されている。かつ <code>!visible(i)</code></td></tr>
+<tr><td><code>bound(binds: &amp;Binds, space: Space) -&gt; Bool</code></td><td>同上</td><td><code>space</code> のすべての参照が <code>visible</code></td></tr>
+<tr><td><code>unbound(binds: &amp;Binds, space: Space, n: usize) -&gt; Bool</code></td><td>同上</td><td><code>space</code> の参照のうち、ちょうど <code>n</code> 個が <code>!visible</code></td></tr>
+<tr><td><code>defined_in_same_step(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>跨がない</td><td><code>i</code> と同じステップに、同じ名前空間・同じ名前の <code>Def</code> がある(評価順の前後は問わない)</td></tr>
+<tr><td><code>distinct_defs(binds: &amp;Binds, space: Space) -&gt; Bool</code></td><td><strong>全体</strong></td><td><code>space</code> の <code>Def</code> の名前が互いに異なる。<code>Def</code> が0〜1個なら真</td></tr>
+<tr><td><code>resolves_to(binds: &amp;Binds, i: usize, k: usize) -&gt; Bool</code></td><td>字句的 + <code>Kill</code> は全体</td><td>参照 <code>i</code> が定義 <code>k</code> を指す。すなわち <code>k</code> が <code>reaching_defs(i)</code> に含まれ、<code>name[k] == name[i]</code>、<code>reaching_defs(i)</code> のうち <code>k</code> より後に同名がなく、<code>k</code> と <code>i</code> の間に同名の <code>Kill</code> がない。<code>k</code> が <code>reaching_defs(i)</code> に含まれなければ定数の偽</td></tr>
+<tr><td><code>captured(binds: &amp;Binds, i: usize) -&gt; Bool</code></td><td>字句的(境界を数える)</td><td>参照 <code>i</code> が、<code>i</code> を囲む境界の外にある定義を指す(キャプチャ)。すなわち <code>boundaries_between(k, i) &gt; 0</code> を満たす <code>reaching_defs(i)</code> のどれか <code>k</code> について <code>resolves_to(i, k)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>制約の材料になる関数(イテレータを返し、z3 の式ではありません):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>スコープ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>reaching_defs(binds: &amp;Binds, i: usize) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td>字句的</td><td><code>i</code> が指し得る定義の候補。<code>k &lt; i</code>、<code>Def</code>、<code>i</code> と同じ名前空間、<code>encloses(k, i)</code> を満たす <code>k</code>(評価順)</td></tr>
+<tr><td><code>kills_between(binds: &amp;Binds, k: usize, i: usize) -&gt; impl Iterator&lt;Item = usize&gt;</code></td><td><strong>全体</strong></td><td><code>k &lt; j &lt; i</code>(評価順で厳密に間)、<code>Kill</code>、<code>i</code> と同じ名前空間の <code>j</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>resolves_to(i, k)</code> は <code>Solved::target</code> を制約にしたものです。解いた後に <code>target(i の穴) == Some(k の穴)</code> となるのは、<code>resolves_to(i, k)</code> が真のときだけです。<code>visible(i)</code> は「<code>reaching_defs(i)</code> のどれかに <code>resolves_to</code>」と同値です。</p>
+<h3 id="参照の3状態"><a class="header" href="#参照の3状態">参照の3状態</a></h3>
+<p>参照 <code>i</code> は次のどれか1つになります。<code>!visible</code> は「削除済み」と「未定義」の和です。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>状態</th><th>式</th></tr>
+</thead>
+<tbody>
+<tr><td>見えている</td><td><code>visible(binds, i)</code></td></tr>
+<tr><td>削除済み</td><td><code>killed(binds, i)</code></td></tr>
+<tr><td>未定義(どこにも見える定義がない)</td><td><code>(!visible(binds, i)).given([!killed(binds, i)])</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>「未定義」には、外側から見えない定義(閉じたスコープの中・兄弟スコープの中)しかない場合も含まれます。「スコープ外の定義を指している」と「どこにも定義がない」を区別したいときは、<code>binds.defs(..)</code> を <code>encloses</code> で絞り、<code>constraint!</code> で自分で書きます。</p>
+<h3 id="よく使う形"><a class="header" href="#よく使う形">よく使う形</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 正常系
+bound(binds, VAR)
+
+// 再定義を含む正常系(スコープを跨いだ同名も含む)
+constraint!(bound(binds, VAR), !distinct_defs(binds, VAR))
+
+// 異常系: 参照がちょうど1つ見えない。その穴に印を付ける
+constraint!(exactly(1) { for i in binds.refs(VAR) {
+    binds.mark(i, Bug::Unbound, !visible(binds, i))
+} })
+
+// 自己参照(`let x = x`)
+constraint!(all { !visible(binds, i), defined_in_same_step(binds, i) })
+
+// 定義 k が使われている(未使用の定義の検出に。`!` を付けると未使用)
+constraint!(any { for i in binds.refs(VAR) { resolves_to(binds, i, k) } })
+
+// キャプチャされた参照に印を付ける(分類なので制約にはしない)
+for i in binds.refs(VAR) {
+    binds.mark(i, Captured, captured(binds, i));
+}
+
+// 境界を2つ以上越えるキャプチャ(外側のクロージャが中継する)が少なくとも1つある
+fn relayed(binds: &amp;Binds, i: usize) -&gt; Bool {
+    let cases: Vec&lt;Bool&gt; = reaching_defs(binds, i)
+        .filter(|&amp;k| binds.boundaries_between(k, i) &gt;= 2)
+        .map(|k| resolves_to(binds, i, k))
+        .collect();
+    Bool::or(&amp;cases)
+}
+constraint!(bound(binds, VAR), any { for i in binds.refs(VAR) { relayed(binds, i) } })
+<span class="boring">}</span></code></pre>
+<p>境界の数で条件を変えたいときは、<code>captured</code> を使わずに、<code>relayed</code> のように <code>reaching_defs</code> を <code>boundaries_between</code> で絞って <code>resolves_to</code> を並べます。</p>
+<h2 id="a8-印分類名前付き制約ラベル"><a class="header" href="#a8-印分類名前付き制約ラベル">A.8 印・分類・名前付き制約(ラベル)</a></h2>
+<h3 id="label"><a class="header" href="#label"><code>Label</code></a></h3>
+<p><code>Copy + Debug + PartialEq + Send + Sync + 'static</code> な型はすべて <code>Label</code> です(包括実装)。利用者の列挙体や <code>&amp;'static str</code> を使います。</p>
+<ul>
+<li>ラベルの<strong>名前</strong>は、<code>&amp;'static str</code> ならその文字列、それ以外は <code>Debug</code> の出力です。統計(<code>label_stats</code>)と棄却の集計(<code>take_rejections</code>)は、この名前で数えます。型の違う2つのラベルでも、名前が同じなら同じものとして数えます。</li>
+<li><code>marks::&lt;L&gt;()</code> / <code>labels::&lt;L&gt;()</code> は型 <code>L</code> で絞ります。</li>
+</ul>
+<h3 id="記録するbinds-のメソッド"><a class="header" href="#記録するbinds-のメソッド">記録する(<code>Binds</code> のメソッド)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>制約になるか</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>mark(i, kind, broken: Bool) -&gt; Bool</code></td><td>戻り値を制約に入れたときだけ</td><td>穴 <code>i</code> が <code>kind</code> として壊れていると記録する。解いた後、<code>broken</code> が真なら <code>s.marks()</code> に <code>(Hole, kind)</code> が出る</td></tr>
+<tr><td><code>observe(kind, cond: Bool)</code></td><td>ならない</td><td>解いた後に <code>cond</code> が真か調べるだけ。生成の分布を変えずに分類できる</td></tr>
+<tr><td><code>require(label, constraint: Bool)</code></td><td>なる(必須)</td><td>名前付きの制約。解けないとき、unsat core に <code>label</code> の名前が出る。値を返さないので <code>constraint!</code> の中には書けない。規則の本体で呼ぶ</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>mark</code> は <code>broken</code> をそのまま返します。返り値を <code>exactly(1) { .. }</code> などの中に置いて初めて制約になります。置かなければ穴付きの <code>observe</code> と同じです。</li>
+<li><code>mark</code> の真偽は、解いた後のモデルで <code>broken</code> を評価して決まります。1つの穴に複数の <code>mark</code> が真になることがあります(違反の条件が重なっている場合)。</li>
+<li><code>rule</code> の戻り値と名前の範囲の制約には名前がないので、unsat core に出ません。名前のない制約と矛盾したときは、名前付きの側だけが理由に出ます。理由が1つの名前だけでも、その制約単体で満たせないとは限りません。棄却の原因を調べたい制約はすべて <code>require</code> に移し、戻り値は <code>Bool::from_bool(true)</code> にします。</li>
+<li>同じ制約を <code>require</code> しつつ <code>rule</code> の戻り値にも入れると、名前のない側だけで矛盾を説明できるので、そのラベルは理由に出なくなります。</li>
+<li>同じラベルで複数回 <code>require</code> すると、1つの名前付き制約としてまとまります(ループの中で穴ごとに呼んでも、理由には1回だけ出ます)。</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn rule(binds: &amp;Binds) -&gt; Bool {
+    binds.require("self_ref", constraint!(any { for i in binds.uses(VAR) { defined_in_same_step(binds, i) } }));
+    binds.require("all_bound", bound(binds, VAR));
+    binds.require("no_redefinition", distinct_defs(binds, VAR));
+    Bool::from_bool(true)
+}
+<span class="boring">}</span></code></pre>
+<h3 id="given"><a class="header" href="#given"><code>Given</code></a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Given {
+    fn given(self, guard: impl IntoIterator&lt;Item = Bool&gt;) -&gt; Bool;
+}
+impl Given for Bool { .. } // self ∧ guard1 ∧ guard2 ∧ ..
+<span class="boring">}</span></code></pre>
+<p>「前提が成り立つときだけ問う」ための書き方です。ある違反が別の違反を必ず伴うとき、<code>given</code> で片方を除外すると、両方の種類が独立に生成されます。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>exactly(1) { for i in binds.refs(VAR) { any {
+    binds.mark(i, Bug::Killed, killed(binds, i)),
+    binds.mark(i, Bug::SelfRef, constraint!(all {
+        !visible(binds, i),
+        defined_in_same_step(binds, i),
+    })),
+    binds.mark(i, Bug::Undefined, (!visible(binds, i)).given([
+        !killed(binds, i),
+        !defined_in_same_step(binds, i),
+    ])),
+} } }
+<span class="boring">}</span></code></pre>
+<h3 id="統計スレッドごと"><a class="header" href="#統計スレッドごと">統計(スレッドごと)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>label_stats() -&gt; Vec&lt;LabelStat&gt;</code></td><td>このスレッドで生成したケースの、ラベルごとの出現回数</td></tr>
+<tr><td><code>take_label_stats() -&gt; Vec&lt;LabelStat&gt;</code></td><td>同上を取り出してリセット</td></tr>
+<tr><td><code>take_rejections() -&gt; Vec&lt;(Vec&lt;String&gt;, usize)&gt;</code></td><td>棄却の理由と回数を取り出してリセット。理由は unsat core に出た <code>require</code> の名前(ソート済み)。名前のない制約だけで矛盾したときは空の組。unsat 以外の失敗は <code>Failure</code> の表示文字列。数えるのは <code>fill</code> の生成時だけ</td></tr>
+</tbody>
+</table>
+</div>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LabelStat {
+    pub label: String,   // ラベルの名前
+    pub declared: usize, // そのラベルを記録したケース数
+    pub occurred: usize, // そのラベルが1回以上真になったケース数
+}
+<span class="boring">}</span></code></pre>
+<ul>
+<li>数えるのは新しく生成したケースだけで、縮小の途中は数えません。</li>
+<li>テストのスレッドが終わるとき、一度も真にならなかったラベルが標準エラーに警告されます。テストが通っても表示されます。</li>
+</ul>
+<pre><code class="language-text">proptest-z3 warning: label `Delete` never occurred in 4 cases (test `each_kind_is_reported`); is it implied by another violation? consider `given`
+</code></pre>
+<ul>
+<li>起きないように制約した種類まで <code>mark</code> すると、この警告が出ます。狙った種類だけを <code>mark</code> してください。</li>
+</ul>
+<h2 id="a9-proptest-に渡す"><a class="header" href="#a9-proptest-に渡す">A.9 proptest に渡す</a></h2>
+<h3 id="fillext"><a class="header" href="#fillext"><code>FillExt</code></a></h3>
+<p><code>Strategy&lt;Value = Skeleton&gt;</code> を実装するすべての型に実装されています。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fn fill&lt;R&gt;(self, names: NameSpec, rule: R) -&gt; Filled&lt;Self, R&gt;</code></td><td><code>fill_with(Fill::Greedy, ..)</code></td></tr>
+<tr><td><code>fn fill_with&lt;R&gt;(self, fill: Fill, names: NameSpec, rule: R) -&gt; Filled&lt;Self, R&gt;</code></td><td>解き方を選ぶ</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>R: Fn(&amp;Binds) -&gt; Bool + 'static</code>。外の値を使うときは <code>move</code> クロージャにします。</p>
+<p><code>Filled&lt;S, R&gt;</code> は <code>Strategy&lt;Value = Solved&gt;</code> です。</p>
+<h3 id="fill"><a class="header" href="#fill"><code>Fill</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>値</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Fill::Greedy</code>(既定)</td><td>各穴のヒントを仮定として解く。ぶつかったら unsat core の中で評価順が最後のヒントを捨てて解き直す。<code>QF_LIA</code> のソルバを使う。決定的で速い</td></tr>
+<tr><td><code>Fill::Optimal</code></td><td>守れるヒントの数を最大化する(<code>Optimize</code>)。忠実だが、穴が多いと遅い</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>Greedy</code> では評価順で後ろの穴から希望を諦めるので、名前は先に評価される穴ほどヒントに近くなります。</p>
+<h3 id="生成と縮小の振る舞い"><a class="header" href="#生成と縮小の振る舞い">生成と縮小の振る舞い</a></h3>
+<ul>
+<li>生成: 骨格と候補を作り、解けなければ(unsat)作り直します。作り直し1回が proptest の local reject 1回で、上限(<code>max_local_rejects</code>)を超えるとテストが中断します。</li>
+<li>縮小: 縮めた入力が解けないとき、「その方向では失敗を再現できない」として戻り、別の方向を探します。</li>
+<li>解いた結果(テキストと印・ラベル)が前にテストしたものと同じならテストを呼びません。骨格と候補が同じなら解き直しません。</li>
+<li>縮小は不動点まで回しません。反例に無関係な行が残ることがあります。</li>
+</ul>
+<h2 id="a10-結果-solved"><a class="header" href="#a10-結果-solved">A.10 結果: <code>Solved</code></a></h2>
+<p><code>Clone</code>。z3 の型を含みません。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>シグネチャ</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><code>pub text: String</code></td><td>穴を埋めたテキスト</td></tr>
+<tr><td><code>fn holes(&amp;self) -&gt; impl Iterator&lt;Item = (Hole, &amp;FilledHole)&gt;</code></td><td>テキスト順のすべての穴</td></tr>
+<tr><td><code>fn hole(&amp;self, hole: Hole) -&gt; &amp;FilledHole</code></td><td></td></tr>
+<tr><td><code>fn span(&amp;self, hole: Hole) -&gt; Range&lt;usize&gt;</code></td><td><code>text</code> の中の位置(バイト)</td></tr>
+<tr><td><code>fn name(&amp;self, hole: Hole) -&gt; &amp;str</code></td><td>入った名前</td></tr>
+<tr><td><code>fn events(&amp;self) -&gt; &amp;[Hole]</code></td><td>評価順に並べた穴。<code>events()[i]</code> が評価順 <code>i</code> の穴</td></tr>
+<tr><td><code>fn target(&amp;self, hole: Hole) -&gt; Option&lt;Hole&gt;</code></td><td>参照が指す定義の穴。<code>Kill</code> なら削除した定義。定義の穴と、見えない参照は <code>None</code></td></tr>
+<tr><td><code>fn marks&lt;L: Label&gt;(&amp;self) -&gt; Vec&lt;(Hole, L)&gt;</code></td><td>真になった <code>mark</code></td></tr>
+<tr><td><code>fn labels&lt;L: Label&gt;(&amp;self) -&gt; Vec&lt;L&gt;</code></td><td>真になった <code>observe</code></td></tr>
+<tr><td><code>fn has&lt;L: Label&gt;(&amp;self, kind: L) -&gt; bool</code></td><td><code>observe</code> の <code>kind</code> が真になったか</td></tr>
+<tr><td><code>fn numbered(&amp;self) -&gt; String</code></td><td>行番号(0始まり)付きのテキスト</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>target</code> の規則(A.2 と同じ):</p>
+<ul>
+<li>候補は <code>reaching_defs</code>(字句的)のうち、同名で、間に同名の <code>Kill</code>(スコープを問わない)がないもの。</li>
+<li>その中で評価順が最後のものを返します。そのため、シャドーイングでは内側の定義、同じスコープでの再代入では最後の代入を指します。</li>
+<li><code>Kill</code> が実際に消すのは同名の定義すべてです。<code>target</code> が返すのはそのうち1つ(上の規則で選んだもの)だけです。</li>
+<li>制約の中で同じことを書くには <code>resolves_to(binds, i, k)</code> を使います(A.7)。境界は <code>target</code> の結果を変えません。</li>
+</ul>
+<h3 id="filledhole"><a class="header" href="#filledhole"><code>FilledHole</code></a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct FilledHole {
+    pub space: Space,
+    pub role: Role,
+    pub name: String,
+    pub span: Range&lt;usize&gt;, // text の中の位置(バイト)
+}
+<span class="boring">}</span></code></pre>
+<h3 id="hole"><a class="header" href="#hole"><code>Hole</code></a></h3>
+<p><code>pub struct Hole(pub usize)</code>。テキスト順の番号です。<code>Copy</code>, <code>Eq</code>, <code>Ord</code>, <code>Hash</code>。</p>
+<h3 id="debug-の表示"><a class="header" href="#debug-の表示"><code>Debug</code> の表示</a></h3>
+<p>反例の表示に使われます。テキスト(行番号付き)、真になった印、真になった <code>observe</code> のラベルを出します。</p>
+<pre><code class="language-text">Solved{
+  0| let b
+  1| let a = a
+ marks: Undefined @ 14..15 `a`
+ labels: Reassigned
+}
+</code></pre>
+<p>印は「ラベル名 @ バイト範囲 名前(バッククォート囲み)」の形です。<code>marks:</code> と <code>labels:</code> の行は、空なら出ません。</p>
+<h2 id="a11-直接解く-skeletonsolve"><a class="header" href="#a11-直接解く-skeletonsolve">A.11 直接解く: <code>Skeleton::solve</code></a></h2>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn solve(&amp;self, names: &amp;Names, fill: Fill, rule: impl Fn(&amp;Binds) -&gt; Bool) -&gt; Result&lt;Solved, Failure&gt;
+<span class="boring">}</span></code></pre>
+<p>proptest を通さずに1つの骨格を解きます。単体テストや、生成した入力を確かめるときに使います。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let skeleton = Skeleton::steps([frag!["def ", Frag::hole(VAR, Role::Def, Hint(0))]]);
+let names = Names::default().with(VAR, ["a", "b"]);
+let solved = skeleton.solve(&amp;names, Fill::Greedy, |binds| bound(binds, VAR))?;
+<span class="boring">}</span></code></pre>
+<ul>
+<li>解けなければ <code>Err(Failure::Unsat { core })</code>(<code>core</code> は <code>require</code> の名前)、判定不能なら <code>Err(Failure::Unknown { reason })</code>。</li>
+<li>骨格に穴がある名前空間の候補が空だと panic します(<code>no names for space ..</code>)。</li>
+<li>ラベルの統計は数えません(数えるのは <code>fill</code> の生成時だけ)。</li>
+</ul>
+<h2 id="a12-z3-toolkit-から使うもの"><a class="header" href="#a12-z3-toolkit-から使うもの">A.12 z3-toolkit から使うもの</a></h2>
+<p>規則の中では z3-toolkit の <code>constraint!</code> を使います(prelude から入ります)。proptest-z3 の例やテストで使っている形は次のとおりです。正確な構文は z3-toolkit のドキュメントを見てください。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>形</th><th>意味</th></tr>
+</thead>
+<tbody>
+<tr><td><code>constraint!(e1, e2, ..)</code></td><td>すべて成り立つ(連言)</td></tr>
+<tr><td><code>constraint!(x == y)</code> / <code>constraint!(x in 0..n)</code></td><td>比較・範囲</td></tr>
+<tr><td><code>all { .. }</code> / <code>any { .. }</code></td><td>連言・選言</td></tr>
+<tr><td><code>exactly(n) { .. }</code> / <code>at_most(n) { .. }</code></td><td>ちょうど n 個・高々 n 個が真</td></tr>
+<tr><td><code>{ for i in iter { e1, e2 } }</code></td><td>繰り返しで項を並べる。本体に複数の項を書くと、すべてが数え上げの対象になる</td></tr>
+<tr><td><code>if cond { e } else { e }</code>(Rust の <code>bool</code>)</td><td>生成時に決まる条件で項を選ぶ</td></tr>
+<tr><td><code>e1 || e2</code>,<code>!e</code></td><td>選言・否定</td></tr>
+</tbody>
+</table>
+</div>
+<p>z3 の <code>Bool</code> は直接も組めます: <code>bound(binds, VAR) &amp; bound(binds, FUNC)</code>、<code>Bool::from_bool(true)</code>(制約なし)、<code>Bool::or(&amp;[..])</code>(空なら偽)、<code>Bool::and(&amp;[..])</code>(空なら真)。</p>
+<h2 id="a13-棄却panic-になる条件"><a class="header" href="#a13-棄却panic-になる条件">A.13 棄却・panic になる条件</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>状況</th><th>結果</th></tr>
+</thead>
+<tbody>
+<tr><td>規則が unsat(例: 参照が1つもない骨格に <code>exactly(1) { for i in binds.refs(..) .. }</code>)</td><td>生成時は local reject。縮小時は「通った」扱い</td></tr>
+<tr><td>local reject が <code>max_local_rejects</code> を超える</td><td>テストが中断</td></tr>
+<tr><td>骨格の穴がある名前空間を <code>NameSpec</code> に登録していない</td><td>panic(<code>no names for space ..</code>)</td></tr>
+<tr><td>同じ <code>Space</code> を <code>NameSpec</code> に2回登録</td><td>panic</td></tr>
+<tr><td><code>space_with</code> の候補に空文字列か重複</td><td>panic</td></tr>
+<tr><td><code>NameSpec::space</code> の正規表現が不正</td><td>panic</td></tr>
+</tbody>
+</table>
+</div>
+<p>棄却が多いときは、<code>require</code> で制約に名前を付けて <code>take_rejections()</code> を見ます。形(strategy)が条件を満たし得ないことが多いので、条件を満たせる形を strategy 側で用意します(例: 削除後使用のテストでは、<code>del</code> の後に使用を置く形を確実に作る)。</p>
+<ul>
+<li><code>proptest!</code> のテストは棄却が上限を超えると panic し、その後の <code>take_rejections()</code> に進めません。<code>TestRunner</code> で直接 <code>new_tree</code> を呼んで生成し、集計します</li>
+<li>名前が1つだけの組は、形が原因のことがほとんどです(他の制約を外しても棄却される)。規則そのものの矛盾は、どの形でも満たせない組として現れます。最も多い組が原因とは限りません</li>
+<li>Z3 が返す組は最小とは限りません。疑わしい制約を1つずつ外して確かめます</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::test_runner::TestRunner;
+use proptest_z3::take_rejections;
+
+#[test]
+fn why_rejected() {
+    let strategy = program().fill(names(), rule);
+    let mut runner = TestRunner::default();
+    for _ in 0..50 {
+        if strategy.new_tree(&amp;mut runner).is_err() {
+            break; // 棄却が上限を超えた
+        }
+    }
+    for (core, count) in take_rejections() {
+        eprintln!("{count:&gt;5} {core:?}");
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="a14-テストを書くときの確認事項"><a class="header" href="#a14-テストを書くときの確認事項">A.14 テストを書くときの確認事項</a></h2>
+<p>LLM がテストを書くときに間違えやすい点です。</p>
+<ul>
+<li>制約の中の番号は評価順、<code>Solved</code> の <code>Hole</code> はテキスト順。制約の中で <code>Hole</code> は作れない。</li>
+<li>同じ文の右辺は左辺の定義を見ない。文の <code>Def</code> は、その文に含まれるスコープからも見えない(既定では再帰できない)。</li>
+<li><code>Kill</code> はスコープを跨いで同名をすべて消す。</li>
+<li><code>distinct_defs</code> はスコープを跨いで数える。<code>!distinct_defs</code> は「どこかに同名の定義がある」で、同じスコープでの再代入とは限らない。</li>
+<li><code>Frag::boundary</code> は見える範囲を変えない。外側の定義はクロージャの中から普通に見える。キャプチャかどうかは <code>captured</code> / <code>boundaries_between</code> で判定する。</li>
+<li><code>boundaries_between</code> は普通のスコープ(<code>Frag::scope</code>)を数えない。ブロックの中から外側の定義を指しても、キャプチャにはならない。</li>
+<li>境界の中身は書かれた位置で評価されたものとして扱う。クロージャ本体の <code>Kill</code> は、その後の参照にも効く。</li>
+<li>「未定義」を他の違反と区別するには <code>given</code> で前提を足す。そうしないと、ある種類が一度も生成されないことがある(警告で気づける)。</li>
+<li><code>mark</code> の戻り値を制約に入れ忘れると、ただの記録になる。</li>
+<li>異常系の <code>exactly(1)</code> は、対象の穴が骨格に1つもないと unsat。形の側で対象の穴を確実に作る。</li>
+<li>正常系の検査器(テストの期待値)は、<code>rules</code> と独立に書く。同じ意味論で書くと同じ誤りを共有する。</li>
+<li>規則のクロージャは <code>'static</code>。外の値は <code>move</code> で取り込む。</li>
+<li><code>require</code> は値を返さないので <code>constraint!</code> の中に書かない。規則の本体で呼び、同じ制約を戻り値に重ねて入れない。</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
