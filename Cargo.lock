@@ -476,7 +476,7 @@ dependencies = [
 
 [[package]]
 name = "z3-toolkit"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "z3",
  "z3-toolkit-derive 0.2.0",
@@ -494,7 +494,7 @@ dependencies = [
 
 [[package]]
 name = "z3-toolkit-derive"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
