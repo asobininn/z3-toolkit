@@ -1,9 +1,5 @@
 [workspace]
-members = [
-    "crates/z3-toolkit",
-    "crates/z3-toolkit-derive",
-    "crates/proptest-z3",
-]
+members = ["crates/z3-toolkit", "crates/z3-toolkit-derive"]
 resolver = "2"
 
 [workspace.package]
